@@ -67,7 +67,7 @@ function HomePage() {
     <section className="relative h-screen">
       <Image src="/hero-main.jpg" alt="JY Beauty" fill className="object-cover object-top" priority />
       <div className="absolute inset-0 bg-gradient-to-t from-dark/60 via-transparent to-dark/20" />
-      <div className="absolute bottom-0 left-0 right-0 pb-36 px-8 text-center">
+      <div className="absolute bottom-0 left-0 right-0 pb-44 px-8 text-center">
         <p className="text-gold-light text-xs tracking-[0.4em] uppercase mb-4">RELAX · RENEW · RADIATE</p>
         <h1 className="font-serif-tc text-3xl md:text-5xl font-bold text-white leading-tight mb-5">
           美麗・放鬆<br />從 JY Beauty 開始
