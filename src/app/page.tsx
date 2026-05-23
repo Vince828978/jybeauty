@@ -35,14 +35,12 @@ function Menu({ open, onClose, onNavigate }: { open: boolean; onClose: () => voi
 function Navbar({ onMenuOpen }: { onMenuOpen: () => void }) {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-dark/50 to-transparent">
-      <div className="flex items-center justify-between px-6 py-5">
+      <div className="flex items-center px-6 py-5">
         <button onClick={onMenuOpen} className="w-11 h-11 flex items-center justify-center bg-white/15 backdrop-blur-sm rounded-full">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-white">
             <path d="M4 8h16M4 16h16"/>
           </svg>
         </button>
-        <Image src="/logo.svg" alt="JY Beauty" width={120} height={60} className="h-10 w-auto invert brightness-200" />
-        <div className="w-11" />
       </div>
     </nav>
   );
