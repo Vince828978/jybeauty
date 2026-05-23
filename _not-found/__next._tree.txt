@@ -1,0 +1,3 @@
+:HL["/jybeauty/_next/static/chunks/09fbqj1wmwngr.css","style"]
+:HL["https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Serif+TC:wght@400;600;700&display=swap","style"]
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"/_not-found","param":null,"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}},"staleTime":300,"buildId":"9eAuqHHI0wNi8LW2LnAij"}
