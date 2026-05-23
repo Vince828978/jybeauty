@@ -13,7 +13,8 @@ function Menu({ open, onClose, onNavigate }: { open: boolean; onClose: () => voi
         <button onClick={onClose} className="absolute top-6 right-6 text-white/60">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
         </button>
-        <Image src="/logo.svg" alt="JY Beauty" width={360} height={180} className="h-32 w-auto mb-14" />
+        <Image src="/logo.svg" alt="JY Beauty" width={360} height={180} className="h-32 w-auto mb-4" />
+        <p className="text-gold text-2xl tracking-[0.3em] mb-10">RELAX · RENEW · RADIATE</p>
         {[
           { key: "home" as Page, label: "首頁" },
           { key: "about" as Page, label: "關於我們" },

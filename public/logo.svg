@@ -31,9 +31,4 @@
 
   <!-- Divider line -->
   <line x1="120" y1="158" x2="280" y2="158" stroke="url(#goldLight)" stroke-width="0.8"/>
-
-  <!-- Tagline -->
-  <text x="200" y="178" text-anchor="middle" font-family="'Noto Sans TC', Arial, sans-serif" font-size="9" font-weight="300" fill="#7a6e65" letter-spacing="8">
-    RELAX · RENEW · RADIATE
-  </text>
 </svg>
