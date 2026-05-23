@@ -18,6 +18,8 @@ async function ensureTable() {
     name TEXT,
     phone TEXT,
     total INTEGER,
+    address TEXT,
+    source TEXT DEFAULT 'online',
     status TEXT DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT NOW()
   )`;
