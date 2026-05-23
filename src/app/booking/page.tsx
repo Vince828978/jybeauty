@@ -295,6 +295,12 @@ export default function BookingPage() {
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify({ package: pkg?.name, packageTier: pkg?.tier, addons: selectedAddons, date: selectedDate, time: selectedTime, name, phone, total, address, serviceMode, referralPhone }),
                 });
+                if (referralPhone) {
+                  await fetch("/api/referrals", { method: "POST", headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ referrer_phone: referralPhone, referred_phone: phone, referred_name: name }) });
+                }
+                await fetch("/api/customers", { method: "POST", headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ name, phone, address }) });
                 setSubmitted(true);
               }} disabled={!name || !phone || submitting}
                 className={`flex-1 py-5 rounded-2xl text-base font-medium tracking-wide transition-colors ${name && phone ? "bg-gold text-white active:bg-dark-light" : "bg-gray-200 text-gray-400 cursor-not-allowed"}`}>確認預約</button>
