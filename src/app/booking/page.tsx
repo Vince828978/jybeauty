@@ -115,33 +115,27 @@ export default function BookingPage() {
         {step === 0 && (
           <div className="fade-in">
             <h2 className="font-serif-tc text-2xl font-bold text-dark text-center mb-2">選擇你的療程</h2>
-            <p className="text-text-light text-center text-sm mb-8">挑一個最適合你的放鬆方案</p>
-            <div className="space-y-4 mb-8">
+            <p className="text-text-light text-center text-sm mb-6">挑一個最適合你的放鬆方案</p>
+            <div className="space-y-5 mb-8">
               {packages.map((p) => (
                 <button key={p.id} onClick={() => setSelectedPkg(p.id)}
-                  className={`w-full text-left p-6 rounded-2xl border transition-all ${selectedPkg === p.id ? "border-gold bg-gold/5 shadow-md" : "border-gold-light/20 bg-white hover:border-gold/50"}`}>
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-gold text-xs italic">{p.tier}</span>
-                        {p.popular && <span className="bg-gold text-white text-xs px-2 py-0.5 rounded-full">推薦</span>}
-                      </div>
-                      <h3 className="font-serif-tc text-lg font-bold text-dark mt-1">{p.name}</h3>
-                      <div className="mt-2 space-y-1">
-                        {p.items.map((item) => (
-                          <p key={item} className="text-text-light text-xs flex items-center gap-2">
-                            <span className="w-1 h-1 bg-gold rounded-full inline-block" />{item}
-                          </p>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-serif-tc text-2xl text-gold font-bold">${p.price.toLocaleString()}</p>
-                      <div className={`w-5 h-5 rounded-full border-2 mt-2 ml-auto flex items-center justify-center ${selectedPkg === p.id ? "border-gold bg-gold" : "border-gold-light/40"}`}>
-                        {selectedPkg === p.id && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><path d="M20 6L9 17l-5-5"/></svg>}
-                      </div>
-                    </div>
+                  className={`w-full text-center p-7 rounded-2xl border-2 transition-all duration-300 ${selectedPkg === p.id ? "border-gold bg-gold/5 shadow-lg shadow-gold/20 scale-[1.02]" : "border-gold-light/20 bg-white"}`}>
+                  {p.popular && <span className="inline-block bg-gold text-white text-xs px-4 py-1 rounded-full mb-3">人氣推薦</span>}
+                  <p className="text-gold text-sm italic mb-1">{p.tier}</p>
+                  <h3 className="font-serif-tc text-xl font-bold text-dark mb-3">{p.name}</h3>
+                  <div className="space-y-2 mb-4">
+                    {p.items.map((item) => (
+                      <p key={item} className="text-text-light text-sm flex items-center justify-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-gold rounded-full inline-block flex-shrink-0" />{item}
+                      </p>
+                    ))}
                   </div>
+                  <p className="text-text-light text-xs mb-3">
+                    {p.id === "basic" ? "放鬆身心・深層釋放，適合保養入門" :
+                     p.id === "popular" ? "深層保養・由內而外透亮，找回自信光采" :
+                     "全方位呵護・極致寵愛，給自己最好的體驗"}
+                  </p>
+                  <p className="font-serif-tc text-3xl text-gold font-bold">${p.price.toLocaleString()}</p>
                 </button>
               ))}
             </div>
