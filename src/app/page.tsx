@@ -22,7 +22,7 @@ function Menu({ open, onClose, onNavigate }: { open: boolean; onClose: () => voi
           { key: "contact" as Page, label: "聯繫我們" },
         ].map((item) => (
           <button key={item.key} onClick={() => { onNavigate(item.key); onClose(); }}
-            className="block font-serif-tc text-2xl text-white/80 hover:text-gold py-4 tracking-wider transition-colors">
+            className="block font-serif-tc text-2xl text-white/80 hover:text-gold py-6 tracking-wider transition-colors">
             {item.label}
           </button>
         ))}
