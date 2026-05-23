@@ -46,6 +46,7 @@ export default function BookingPage() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const days = getNextDays(14);
   const weekdays = ["日", "一", "二", "三", "四", "五", "六"];
@@ -270,14 +271,15 @@ export default function BookingPage() {
             <div className="flex gap-4">
               <button onClick={() => setStep(1)} className="flex-1 py-4 rounded-full border border-gold text-gold text-sm tracking-wide hover:bg-gold hover:text-white transition-colors">上一步</button>
               <button onClick={async () => {
-                if (!name || !phone) return;
+                if (!name || !phone || submitting) return;
+                setSubmitting(true);
                 await fetch("/api/bookings", {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify({ package: pkg?.name, packageTier: pkg?.tier, addons: selectedAddons, date: selectedDate, time: selectedTime, name, phone, total }),
                 });
                 setSubmitted(true);
-              }} disabled={!name || !phone}
+              }} disabled={!name || !phone || submitting}
                 className={`flex-1 py-4 rounded-full text-sm tracking-wide transition-colors ${name && phone ? "bg-gold text-white hover:bg-dark-light" : "bg-gray-200 text-gray-400 cursor-not-allowed"}`}>確認預約</button>
             </div>
           </div>

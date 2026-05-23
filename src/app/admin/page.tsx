@@ -2,16 +2,16 @@
 import { useState, useEffect } from "react";
 
 interface Booking {
-  id: string;
+  id: number;
   package: string;
-  packageTier: string;
+  package_tier: string;
   date: string;
   time: string;
   name: string;
   phone: string;
   total: number;
-  addons: string[];
-  createdAt: string;
+  addons: string;
+  created_at: string;
   status: string;
 }
 
@@ -124,7 +124,7 @@ export default function AdminPage() {
                   </div>
                 </div>
                 <p className="text-text-light text-xs">
-                  預約時間：{new Date(b.createdAt).toLocaleString("zh-TW")}
+                  預約時間：{b.created_at ? new Date(b.created_at).toLocaleString("zh-TW") : "剛剛"}
                 </p>
               </div>
             ))}
