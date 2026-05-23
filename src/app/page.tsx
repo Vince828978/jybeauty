@@ -2,12 +2,11 @@
 import Image from "next/image";
 import { useState, useEffect } from "react";
 
-const BASE = "/jybeauty";
 
 function Navbar() {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-warm-bg/90 backdrop-blur-md border-b border-gold-light/30">
-      <div className="max-w-6xl mx-auto px-4 md:px-8 lg:px-12 py-4 flex items-center justify-between">
+      <div className="max-w-6xl mx-auto px-6 md:px-8 lg:px-12 py-4 flex items-center justify-between">
         <a href="#" className="font-serif-tc text-xl md:text-2xl font-bold text-dark tracking-wider">
           <span className="text-gold">JY</span> Beauty
         </a>
@@ -27,7 +26,7 @@ function Hero() {
   return (
     <section className="relative min-h-screen flex items-center pt-24 pb-12">
       <div className="hero-gradient absolute inset-0" />
-      <div className="relative max-w-6xl mx-auto px-6 md:px-8 lg:px-12 grid md:grid-cols-2 gap-12 items-center">
+      <div className="relative max-w-6xl mx-auto px-10 md:px-12 lg:px-16 grid md:grid-cols-2 gap-12 items-center">
         <div className="fade-in order-2 md:order-1">
           <p className="text-gold text-sm tracking-[0.3em] uppercase mb-4">RELAX · RENEW · RADIATE</p>
           <h1 className="font-serif-tc text-3xl md:text-5xl lg:text-6xl font-bold text-dark leading-tight mb-6">
@@ -42,7 +41,7 @@ function Hero() {
           </div>
         </div>
         <div className="relative h-[300px] md:h-[600px] order-1 md:order-2">
-          <Image src={`${BASE}/hero-main.jpg`} alt="JY Beauty" fill className="object-cover object-top" priority />
+          <Image src="/hero-main.jpg" alt="JY Beauty" fill className="object-cover object-top" priority />
           <div className="absolute inset-0 bg-gradient-to-t from-warm-bg/30 to-transparent" />
         </div>
       </div>
@@ -53,9 +52,9 @@ function Hero() {
 function About() {
   return (
     <section id="about" className="py-24 bg-white">
-      <div className="max-w-6xl mx-auto px-8 lg:px-12 grid md:grid-cols-2 gap-12 md:gap-16 items-center">
+      <div className="max-w-6xl mx-auto px-10 md:px-12 lg:px-16 grid md:grid-cols-2 gap-12 md:gap-16 items-center">
         <div className="relative h-[350px] md:h-[500px]">
-          <Image src={`${BASE}/about.jpg`} alt="JY Beauty 美容師" fill className="object-cover object-top" />
+          <Image src="/about.jpg" alt="JY Beauty 美容師" fill className="object-cover object-top" />
         </div>
         <div>
           <p className="text-gold text-sm tracking-[0.3em] uppercase mb-3">ABOUT US</p>
@@ -116,7 +115,7 @@ function Services() {
 
   return (
     <section id="services" className="py-24 bg-cream/50">
-      <div className="max-w-6xl mx-auto px-8 lg:px-12">
+      <div className="max-w-6xl mx-auto px-10 md:px-12 lg:px-16">
         <div className="text-center mb-16">
           <p className="text-gold text-sm tracking-[0.3em] uppercase mb-3">TREATMENTS</p>
           <h2 className="font-serif-tc text-3xl md:text-4xl font-bold text-dark mb-4">療癒時光・專屬於你</h2>
@@ -185,36 +184,32 @@ function PackageCarousel({ packages }: { packages: { tier: string; name: string;
   return (
     <>
       {/* Mobile carousel */}
-      <div className="md:hidden mb-12 mt-4">
+      <div className="md:hidden mb-12 mt-8">
         <div className="relative flex items-center justify-center">
           <button onClick={prev} className="absolute left-0 z-10 w-10 h-10 flex items-center justify-center text-gold text-2xl">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
           </button>
-          <div className="w-[75vw] min-h-[380px] relative">
+          <div className="w-[72vw] min-h-[340px] relative">
             {packages.map((p, i) => (
               <div
                 key={p.name}
                 className={`absolute inset-0 transition-all duration-500 ${i === active ? "opacity-100 scale-100" : "opacity-0 scale-90 pointer-events-none"}`}
               >
-                <div className={`bg-white p-8 rounded-2xl border text-center h-full flex flex-col justify-between ${p.popular ? "border-gold shadow-lg" : "border-gold-light/20"}`}>
+                <div className={`bg-white p-7 rounded-2xl border text-center h-full flex flex-col justify-center items-center ${p.popular ? "border-gold shadow-lg" : "border-gold-light/20"}`}>
                   {p.popular && <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gold text-white text-xs px-5 py-1.5 tracking-wide rounded-full">人氣推薦</div>}
-                  <div>
-                    <p className="text-gold text-sm italic mb-2">{p.tier}</p>
-                    <h3 className="font-serif-tc text-2xl font-bold text-dark mb-2">{p.name}</h3>
-                    <p className="text-text-light text-sm mb-5">{p.subtitle}</p>
-                    <div className="space-y-2.5 mb-5 inline-block text-left">
-                      {p.items.map((item) => (
-                        <div key={item} className="flex items-center gap-3 text-sm text-dark">
-                          <span className="w-1.5 h-1.5 bg-gold rounded-full inline-block flex-shrink-0" />
-                          {item}
-                        </div>
-                      ))}
-                    </div>
+                  <p className="text-gold text-sm italic mb-1">{p.tier}</p>
+                  <h3 className="font-serif-tc text-2xl font-bold text-dark mb-1">{p.name}</h3>
+                  <p className="text-text-light text-sm mb-4">{p.subtitle}</p>
+                  <div className="space-y-2 mb-4 text-left">
+                    {p.items.map((item) => (
+                      <div key={item} className="flex items-center gap-3 text-sm text-dark">
+                        <span className="w-1.5 h-1.5 bg-gold rounded-full inline-block flex-shrink-0" />
+                        {item}
+                      </div>
+                    ))}
                   </div>
-                  <div>
-                    <p className="font-serif-tc text-4xl text-gold font-bold mb-2">{p.price}</p>
-                    <p className="text-text-light text-xs leading-relaxed">{p.desc}</p>
-                  </div>
+                  <p className="font-serif-tc text-4xl text-gold font-bold mb-2">{p.price}</p>
+                  <p className="text-text-light text-xs leading-relaxed">{p.desc}</p>
                 </div>
               </div>
             ))}
@@ -318,7 +313,7 @@ function TargetAudience() {
 function SpecialOffers() {
   return (
     <section className="py-24 bg-dark text-white">
-      <div className="max-w-6xl mx-auto px-8 lg:px-12">
+      <div className="max-w-6xl mx-auto px-10 md:px-12 lg:px-16">
         <div className="text-center mb-12">
           <p className="text-gold-light text-sm tracking-[0.3em] uppercase mb-3">SPECIAL OFFER</p>
           <h2 className="font-serif-tc text-3xl md:text-4xl font-bold mb-4">首次體驗優惠</h2>
@@ -346,7 +341,7 @@ function SpecialOffers() {
 function Contact() {
   return (
     <section id="contact" className="py-24 bg-white">
-      <div className="max-w-6xl mx-auto px-8 lg:px-12 grid md:grid-cols-2 gap-12 md:gap-16 items-center">
+      <div className="max-w-6xl mx-auto px-10 md:px-12 lg:px-16 grid md:grid-cols-2 gap-12 md:gap-16 items-center">
         <div>
           <p className="text-gold text-sm tracking-[0.3em] uppercase mb-3">BOOKING</p>
           <h2 className="font-serif-tc text-3xl md:text-4xl font-bold text-dark mb-6">預約你的放鬆時光</h2>
@@ -360,7 +355,7 @@ function Contact() {
           <a href="#" className="inline-block bg-gold text-white px-10 py-4 text-lg tracking-wide hover:bg-dark-light transition-colors">LINE 立即預約</a>
         </div>
         <div className="relative h-[350px] md:h-[500px]">
-          <Image src={`${BASE}/hero-2.jpg`} alt="JY Beauty 預約" fill className="object-cover object-top" />
+          <Image src="/hero-2.jpg" alt="JY Beauty 預約" fill className="object-cover object-top" />
         </div>
       </div>
     </section>
@@ -370,7 +365,7 @@ function Contact() {
 function Footer() {
   return (
     <footer className="bg-dark text-white/60 py-12">
-      <div className="max-w-6xl mx-auto px-8 lg:px-12 text-center">
+      <div className="max-w-6xl mx-auto px-10 md:px-12 lg:px-16 text-center">
         <p className="font-serif-tc text-2xl font-bold text-white mb-2"><span className="text-gold">JY</span> Beauty</p>
         <p className="text-sm mb-1">RELAX · RENEW · RADIATE</p>
         <p className="text-sm">美麗・放鬆・從 JY Beauty 開始</p>
