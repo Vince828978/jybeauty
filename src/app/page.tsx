@@ -91,7 +91,7 @@ function AboutPage() {
       <div className="relative h-[45vh]">
         <Image src="/about.jpg" alt="JY Beauty 美容師" fill className="object-cover object-top" />
       </div>
-      <div className="max-w-sm md:max-w-xl mx-auto px-10 py-12 text-center">
+      <div className="max-w-xs md:max-w-xl mx-auto px-6 py-12 text-center">
         <p className="text-gold text-xs tracking-[0.3em] uppercase mb-4">ABOUT US</p>
         <h2 className="font-serif-tc text-2xl font-bold text-dark mb-6">不開店，我去找你</h2>
         <div className="text-text-light text-sm leading-loose mb-8 space-y-4">
