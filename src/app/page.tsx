@@ -205,7 +205,7 @@ function PackageCarousel({ packages }: { packages: { tier: string; name: string;
                 className={`absolute inset-0 transition-all duration-500 ${i === active ? "opacity-100 scale-100" : "opacity-0 scale-90 pointer-events-none"}`}
               >
                 <div className={`bg-white px-6 py-6 rounded-2xl border text-center ${p.popular ? "border-gold shadow-lg" : "border-gold-light/20"}`}>
-                  {p.popular && <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gold text-white text-xs px-5 py-1.5 tracking-wide rounded-full z-10">人氣推薦</div>}
+                  {p.popular && <div className="inline-block bg-gold text-white text-xs px-4 py-1 tracking-wide rounded-full mb-2">人氣推薦</div>}
                   <p className="text-gold text-sm italic mb-1">{p.tier}</p>
                   <h3 className="font-serif-tc text-xl font-bold text-dark mb-1">{p.name}</h3>
                   <p className="text-text-light text-xs mb-3">{p.subtitle}</p>
@@ -239,9 +239,9 @@ function PackageCarousel({ packages }: { packages: { tier: string; name: string;
       {/* Desktop grid */}
       <div className="hidden md:grid md:grid-cols-3 gap-8 mb-16">
         {packages.map((p) => (
-          <div key={p.name} className={`bg-white p-10 card-hover border relative rounded-2xl text-center flex flex-col justify-between min-h-[420px] ${p.popular ? "border-gold shadow-lg" : "border-gold-light/20"}`}>
-            {p.popular && <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gold text-white text-xs px-5 py-1.5 tracking-wide rounded-full">人氣推薦</div>}
+          <div key={p.name} className={`bg-white p-10 card-hover border rounded-2xl text-center flex flex-col justify-between min-h-[420px] ${p.popular ? "border-gold shadow-lg" : "border-gold-light/20"}`}>
             <div>
+              {p.popular && <div className="inline-block bg-gold text-white text-xs px-4 py-1 tracking-wide rounded-full mb-2">人氣推薦</div>}
               <p className="text-gold text-sm italic mb-2">{p.tier}</p>
               <h3 className="font-serif-tc text-2xl font-bold text-dark mb-2">{p.name}</h3>
               <p className="text-text-light text-sm mb-8">{p.subtitle}</p>
