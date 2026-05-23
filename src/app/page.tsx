@@ -56,11 +56,11 @@ function About() {
         <div className="relative h-[350px] md:h-[500px]">
           <Image src="/about.jpg" alt="JY Beauty 美容師" fill className="object-cover object-top" />
         </div>
-        <div className="text-center">
+        <div className="text-center max-w-md mx-auto">
           <p className="text-gold text-sm tracking-[0.3em] uppercase mb-3">ABOUT US</p>
           <h2 className="font-serif-tc text-3xl md:text-4xl font-bold text-dark mb-6">把 SPA 帶到你身邊</h2>
           <div className="section-divider mb-8" />
-          <div className="space-y-4 text-text-light leading-relaxed">
+          <div className="space-y-4 text-text-light leading-relaxed text-sm">
             <p>做美容這些年，看過太多客人拖著疲憊的身體來到店裡，做完療程整個人放鬆了，結果一出門又要擠捷運、找車位，那份放鬆在回家路上就消失了一半。</p>
             <p>我一直在想，如果做完就能直接躺在自己的床上，蓋著自己最喜歡的被子，那才是真正完整的放鬆。</p>
             <p className="font-medium text-dark">所以我決定，不開店，我去找你。</p>
@@ -260,7 +260,7 @@ function PackageCarousel({ packages }: { packages: { tier: string; name: string;
 function WhyUs() {
   return (
     <section id="why" className="py-24 bg-white">
-      <div className="max-w-3xl mx-auto px-8 lg:px-12 text-center">
+      <div className="max-w-md md:max-w-3xl mx-auto px-10 lg:px-12 text-center">
         <p className="text-gold text-sm tracking-[0.3em] uppercase mb-3">WHY JY BEAUTY</p>
         <h2 className="font-serif-tc text-3xl md:text-4xl font-bold text-dark mb-6">為什麼選擇我們</h2>
         <div className="section-divider mb-10" />
@@ -295,7 +295,7 @@ function TargetAudience() {
   const tags = ["新手媽媽", "孕婦產後", "忙碌上班族", "準新娘", "孝親禮物", "居家工作者", "輪班工作者", "銀髮族"];
   return (
     <section className="py-24 bg-cream/50">
-      <div className="max-w-3xl mx-auto px-8 lg:px-12 text-center">
+      <div className="max-w-md md:max-w-3xl mx-auto px-10 lg:px-12 text-center">
         <p className="text-gold text-sm tracking-[0.3em] uppercase mb-3">FOR YOU</p>
         <h2 className="font-serif-tc text-3xl md:text-4xl font-bold text-dark mb-6">專為你設計的服務</h2>
         <div className="section-divider mb-10" />
