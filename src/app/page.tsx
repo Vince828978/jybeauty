@@ -26,7 +26,7 @@ function Hero() {
   return (
     <section className="relative min-h-screen flex items-center pt-24 pb-12">
       <div className="hero-gradient absolute inset-0" />
-      <div className="relative max-w-6xl mx-auto px-14 md:px-16 lg:px-20 grid md:grid-cols-2 gap-12 items-center">
+      <div className="relative max-w-6xl mx-auto px-16 md:px-20 lg:px-24 grid md:grid-cols-2 gap-12 items-center">
         <div className="fade-in order-2 md:order-1">
           <p className="text-gold text-sm tracking-[0.3em] uppercase mb-4">RELAX · RENEW · RADIATE</p>
           <h1 className="font-serif-tc text-3xl md:text-5xl lg:text-6xl font-bold text-dark leading-tight mb-6">
@@ -52,7 +52,7 @@ function Hero() {
 function About() {
   return (
     <section id="about" className="py-24 bg-white">
-      <div className="max-w-6xl mx-auto px-14 md:px-16 lg:px-20 grid md:grid-cols-2 gap-12 md:gap-16 items-center">
+      <div className="max-w-6xl mx-auto px-16 md:px-20 lg:px-24 grid md:grid-cols-2 gap-12 md:gap-16 items-center">
         <div className="relative h-[350px] md:h-[500px]">
           <Image src="/about.jpg" alt="JY Beauty 美容師" fill className="object-cover object-top" />
         </div>
@@ -127,7 +127,7 @@ function Services() {
 
   return (
     <section id="services" className="py-24 bg-cream/50">
-      <div className="max-w-6xl mx-auto px-14 md:px-16 lg:px-20">
+      <div className="max-w-6xl mx-auto px-16 md:px-20 lg:px-24">
         <div className="text-center mb-16">
           <p className="text-gold text-sm tracking-[0.3em] uppercase mb-3">TREATMENTS</p>
           <h2 className="font-serif-tc text-3xl md:text-4xl font-bold text-dark mb-4">療癒時光・專屬於你</h2>
@@ -317,7 +317,7 @@ function TargetAudience() {
 function SpecialOffers() {
   return (
     <section className="py-24 bg-dark text-white">
-      <div className="max-w-6xl mx-auto px-14 md:px-16 lg:px-20">
+      <div className="max-w-6xl mx-auto px-16 md:px-20 lg:px-24">
         <div className="text-center mb-12">
           <p className="text-gold-light text-sm tracking-[0.3em] uppercase mb-3">SPECIAL OFFER</p>
           <h2 className="font-serif-tc text-3xl md:text-4xl font-bold mb-4">首次體驗優惠</h2>
@@ -345,7 +345,7 @@ function SpecialOffers() {
 function Contact() {
   return (
     <section id="contact" className="py-24 bg-white">
-      <div className="max-w-6xl mx-auto px-14 md:px-16 lg:px-20 grid md:grid-cols-2 gap-12 md:gap-16 items-center">
+      <div className="max-w-6xl mx-auto px-16 md:px-20 lg:px-24 grid md:grid-cols-2 gap-12 md:gap-16 items-center">
         <div className="text-center md:text-left">
           <p className="text-gold text-sm tracking-[0.3em] uppercase mb-3">BOOKING</p>
           <h2 className="font-serif-tc text-3xl md:text-4xl font-bold text-dark mb-6">預約你的放鬆時光</h2>
@@ -369,7 +369,7 @@ function Contact() {
 function Footer() {
   return (
     <footer className="bg-dark text-white/60 py-12">
-      <div className="max-w-6xl mx-auto px-14 md:px-16 lg:px-20 text-center">
+      <div className="max-w-6xl mx-auto px-16 md:px-20 lg:px-24 text-center">
         <p className="font-serif-tc text-2xl font-bold text-white mb-2"><span className="text-gold">JY</span> Beauty</p>
         <p className="text-sm mb-1">RELAX · RENEW · RADIATE</p>
         <p className="text-sm">美麗・放鬆・從 JY Beauty 開始</p>
