@@ -34,15 +34,15 @@ function Menu({ open, onClose, onNavigate }: { open: boolean; onClose: () => voi
 
 function Navbar({ onMenuOpen }: { onMenuOpen: () => void }) {
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-transparent">
-      <div className="flex items-center justify-between px-6 py-4">
-        <button onClick={onMenuOpen} className="w-10 h-10 flex items-center justify-center">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="text-white drop-shadow-md">
-            <path d="M3 8h18M3 16h18"/>
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-dark/50 to-transparent">
+      <div className="flex items-center justify-between px-6 py-5">
+        <button onClick={onMenuOpen} className="w-11 h-11 flex items-center justify-center bg-white/15 backdrop-blur-sm rounded-full">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-white">
+            <path d="M4 8h16M4 16h16"/>
           </svg>
         </button>
-        <Image src="/logo.svg" alt="JY Beauty" width={120} height={60} className="h-10 w-auto invert brightness-200 drop-shadow-md" />
-        <div className="w-10" />
+        <Image src="/logo.svg" alt="JY Beauty" width={120} height={60} className="h-10 w-auto invert brightness-200" />
+        <div className="w-11" />
       </div>
     </nav>
   );
@@ -69,12 +69,12 @@ function HomePage() {
     <section className="relative h-screen">
       <Image src="/hero-main.jpg" alt="JY Beauty" fill className="object-cover object-top" priority />
       <div className="absolute inset-0 bg-gradient-to-t from-dark/60 via-transparent to-dark/20" />
-      <div className="absolute bottom-0 left-0 right-0 pb-24 px-8 text-center">
-        <p className="text-gold-light text-xs tracking-[0.4em] uppercase mb-3">RELAX · RENEW · RADIATE</p>
-        <h1 className="font-serif-tc text-3xl md:text-5xl font-bold text-white leading-tight mb-4">
+      <div className="absolute bottom-0 left-0 right-0 pb-36 px-8 text-center">
+        <p className="text-gold-light text-xs tracking-[0.4em] uppercase mb-4">RELAX · RENEW · RADIATE</p>
+        <h1 className="font-serif-tc text-3xl md:text-5xl font-bold text-white leading-tight mb-5">
           美麗・放鬆<br />從 JY Beauty 開始
         </h1>
-        <p className="text-white/70 text-sm mb-8 max-w-xs mx-auto">
+        <p className="text-white/70 text-sm mb-10 max-w-xs mx-auto">
           私人到府 SPA，在你最放鬆的空間享受專屬療程
         </p>
         <a href="/booking" className="inline-block bg-gold text-white px-8 py-3 text-sm tracking-wide rounded-full hover:bg-dark-light transition-colors">
