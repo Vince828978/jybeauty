@@ -112,30 +112,59 @@ export default function BookingPage() {
         </div>
 
         {/* Step 0: Package Selection */}
-        {step === 0 && (
-          <div className="fade-in">
-            <h2 className="font-serif-tc text-2xl font-bold text-dark text-center mb-2">選擇你的療程</h2>
-            <p className="text-text-light text-center text-sm mb-6">挑一個最適合你的放鬆方案</p>
-            <div className="space-y-5 mb-8">
+        {step === 0 && !selectedPkg && (
+          <div className="fade-in flex flex-col" style={{ minHeight: "calc(100vh - 140px)" }}>
+            <div className="text-center mb-4">
+              <h2 className="font-serif-tc text-xl font-bold text-dark">選擇你的療程</h2>
+            </div>
+            <div className="flex-1 flex flex-col gap-3">
               {packages.map((p) => (
                 <button key={p.id} onClick={() => setSelectedPkg(p.id)}
-                  className={`w-full text-center p-7 rounded-2xl border-2 transition-all duration-300 ${selectedPkg === p.id ? "border-gold bg-gold/5 shadow-lg shadow-gold/20 scale-[1.02]" : "border-gold-light/20 bg-white"}`}>
-                  {p.popular && <span className="inline-block bg-gold text-white text-xs px-4 py-1 rounded-full mb-3">人氣推薦</span>}
-                  <p className="text-gold text-sm italic mb-1">{p.tier}</p>
-                  <h3 className="font-serif-tc text-xl font-bold text-dark mb-3">{p.name}</h3>
-                  <div className="space-y-2 mb-4">
+                  className="flex-1 text-center rounded-2xl border-2 border-gold-light/20 bg-white active:border-gold active:bg-gold/5 active:shadow-lg transition-all flex flex-col items-center justify-center px-6 relative">
+                  {p.popular && <span className="absolute top-3 right-3 bg-gold text-white text-xs px-3 py-1 rounded-full">推薦</span>}
+                  <p className="text-gold text-sm italic">{p.tier}</p>
+                  <h3 className="font-serif-tc text-2xl font-bold text-dark mt-1">{p.name}</h3>
+                  <div className="mt-2 space-y-1">
                     {p.items.map((item) => (
-                      <p key={item} className="text-text-light text-sm flex items-center justify-center gap-2">
-                        <span className="w-1.5 h-1.5 bg-gold rounded-full inline-block flex-shrink-0" />{item}
-                      </p>
+                      <p key={item} className="text-text-light text-sm">{item}</p>
                     ))}
                   </div>
-                  <p className="text-text-light text-xs mb-3">
-                    {p.id === "basic" ? "放鬆身心・深層釋放，適合保養入門" :
-                     p.id === "popular" ? "深層保養・由內而外透亮，找回自信光采" :
-                     "全方位呵護・極致寵愛，給自己最好的體驗"}
-                  </p>
-                  <p className="font-serif-tc text-3xl text-gold font-bold">${p.price.toLocaleString()}</p>
+                  <p className="font-serif-tc text-3xl text-gold font-bold mt-3">${p.price.toLocaleString()}</p>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Step 0b: Add-ons after selecting package */}
+        {step === 0 && selectedPkg && (
+          <div className="fade-in">
+            <div className="text-center mb-6">
+              <button onClick={() => setSelectedPkg("")} className="text-text-light text-sm mb-2">← 重新選擇套餐</button>
+              <h2 className="font-serif-tc text-xl font-bold text-dark">{pkg?.name}</h2>
+              <p className="text-gold font-serif-tc text-2xl font-bold mt-1">${pkg?.price.toLocaleString()}</p>
+            </div>
+
+            <h3 className="font-serif-tc text-lg font-bold text-dark text-center mb-4">加值項目（選填）</h3>
+            <p className="text-text-light text-center text-sm mb-4">身體加項</p>
+            <div className="grid grid-cols-2 gap-3 mb-5">
+              {bodyAddons.map((a) => (
+                <button key={a.id} onClick={() => toggleAddon(a.id)}
+                  className={`p-5 rounded-2xl border-2 text-center transition-all ${selectedAddons.includes(a.id) ? "border-gold bg-gold/5 shadow-md" : "border-gold-light/20 bg-white"}`}>
+                  <p className="text-dark text-base font-medium">{a.name}</p>
+                  {a.dur && <p className="text-text-light text-sm">{a.dur}</p>}
+                  <p className="text-gold font-semibold text-lg mt-1">+${a.price}</p>
+                </button>
+              ))}
+            </div>
+            <p className="text-text-light text-center text-sm mb-4">臉部加項</p>
+            <div className="grid grid-cols-2 gap-3 mb-6">
+              {faceAddons.map((a) => (
+                <button key={a.id} onClick={() => toggleAddon(a.id)}
+                  className={`p-5 rounded-2xl border-2 text-center transition-all ${selectedAddons.includes(a.id) ? "border-gold bg-gold/5 shadow-md" : "border-gold-light/20 bg-white"}`}>
+                  <p className="text-dark text-base font-medium">{a.name}</p>
+                  {a.dur && <p className="text-text-light text-sm">{a.dur}</p>}
+                  <p className="text-gold font-semibold text-lg mt-1">+${a.price}</p>
                 </button>
               ))}
             </div>
