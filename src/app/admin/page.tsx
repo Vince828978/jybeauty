@@ -15,7 +15,11 @@ interface Booking {
   status: string;
 }
 
+const ADMIN_PASS = "jybeauty2026";
+
 export default function AdminPage() {
+  const [authed, setAuthed] = useState(false);
+  const [pass, setPass] = useState("");
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -26,7 +30,47 @@ export default function AdminPage() {
     setLoading(false);
   };
 
-  useEffect(() => { fetchBookings(); }, []);
+  useEffect(() => {
+    if (typeof window !== "undefined" && sessionStorage.getItem("jyb-admin") === "1") {
+      setAuthed(true);
+    }
+  }, []);
+  useEffect(() => { if (authed) fetchBookings(); }, [authed]);
+
+  if (!authed) {
+    return (
+      <div className="min-h-screen bg-warm-bg flex items-center justify-center px-8">
+        <div className="bg-white rounded-2xl p-10 max-w-sm w-full text-center">
+          <p className="font-serif-tc text-2xl font-bold text-dark mb-2"><span className="text-gold">JY</span> Beauty</p>
+          <p className="text-text-light text-sm mb-8">後台管理登入</p>
+          <input
+            type="password"
+            value={pass}
+            onChange={(e) => setPass(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && pass === ADMIN_PASS) {
+                sessionStorage.setItem("jyb-admin", "1");
+                setAuthed(true);
+              }
+            }}
+            placeholder="請輸入管理密碼"
+            className="w-full px-4 py-3 rounded-xl border border-gold-light/30 bg-white text-dark text-center placeholder-text-light/50 focus:outline-none focus:border-gold transition-colors mb-4"
+          />
+          <button
+            onClick={() => {
+              if (pass === ADMIN_PASS) {
+                sessionStorage.setItem("jyb-admin", "1");
+                setAuthed(true);
+              }
+            }}
+            className="w-full bg-gold text-white py-3 rounded-full text-sm tracking-wide hover:bg-dark-light transition-colors"
+          >
+            登入
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-warm-bg">
