@@ -15,7 +15,7 @@ interface Booking {
   status: string;
 }
 
-const ADMIN_PASS = "jybeauty2026";
+const ADMIN_PASS = "1234";
 
 export default function AdminPage() {
   const [authed, setAuthed] = useState(false);
