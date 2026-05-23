@@ -45,6 +45,9 @@ export default function BookingPage() {
   const [selectedTime, setSelectedTime] = useState("");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const [serviceMode, setServiceMode] = useState<"home"|"studio">("home");
+  const [address, setAddress] = useState("");
+  const [referralPhone, setReferralPhone] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
@@ -257,6 +260,13 @@ export default function BookingPage() {
 
             <div className="space-y-4 mb-8">
               <div>
+                <label className="text-dark text-sm font-medium mb-2 block">服務方式</label>
+                <div className="grid grid-cols-2 gap-3">
+                  <button onClick={() => setServiceMode("home")} className={`py-3 rounded-xl border text-sm transition-all ${serviceMode === "home" ? "border-gold bg-gold/5 text-dark font-medium" : "border-gold-light/30 text-text-light"}`}>到府服務</button>
+                  <button onClick={() => setServiceMode("studio")} className={`py-3 rounded-xl border text-sm transition-all ${serviceMode === "studio" ? "border-gold bg-gold/5 text-dark font-medium" : "border-gold-light/30 text-text-light"}`}>工作室服務</button>
+                </div>
+              </div>
+              <div>
                 <label className="text-dark text-sm font-medium mb-2 block">姓名</label>
                 <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="請輸入您的姓名"
                   className="w-full px-4 py-3 rounded-xl border border-gold-light/30 bg-white text-dark placeholder-text-light/50 focus:outline-none focus:border-gold transition-colors" />
@@ -264,6 +274,18 @@ export default function BookingPage() {
               <div>
                 <label className="text-dark text-sm font-medium mb-2 block">聯繫電話</label>
                 <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="請輸入您的電話號碼"
+                  className="w-full px-4 py-3 rounded-xl border border-gold-light/30 bg-white text-dark placeholder-text-light/50 focus:outline-none focus:border-gold transition-colors" />
+              </div>
+              {serviceMode === "home" && (
+                <div>
+                  <label className="text-dark text-sm font-medium mb-2 block">服務地址</label>
+                  <input type="text" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="請輸入到府服務地址"
+                    className="w-full px-4 py-3 rounded-xl border border-gold-light/30 bg-white text-dark placeholder-text-light/50 focus:outline-none focus:border-gold transition-colors" />
+                </div>
+              )}
+              <div>
+                <label className="text-dark text-sm font-medium mb-2 block">推薦人電話（選填）</label>
+                <input type="tel" value={referralPhone} onChange={(e) => setReferralPhone(e.target.value)} placeholder="填寫推薦人電話，雙方享加值升級"
                   className="w-full px-4 py-3 rounded-xl border border-gold-light/30 bg-white text-dark placeholder-text-light/50 focus:outline-none focus:border-gold transition-colors" />
               </div>
             </div>
@@ -276,7 +298,7 @@ export default function BookingPage() {
                 await fetch("/api/bookings", {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ package: pkg?.name, packageTier: pkg?.tier, addons: selectedAddons, date: selectedDate, time: selectedTime, name, phone, total }),
+                  body: JSON.stringify({ package: pkg?.name, packageTier: pkg?.tier, addons: selectedAddons, date: selectedDate, time: selectedTime, name, phone, total, address, serviceMode, referralPhone }),
                 });
                 setSubmitted(true);
               }} disabled={!name || !phone || submitting}
