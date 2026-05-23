@@ -123,9 +123,26 @@ export default function AdminPage() {
                     <p className="text-dark font-medium">{b.time}</p>
                   </div>
                 </div>
-                <p className="text-text-light text-xs">
+                <p className="text-text-light text-xs mb-4">
                   預約時間：{b.created_at ? new Date(b.created_at).toLocaleString("zh-TW") : "剛剛"}
                 </p>
+                <div className="flex justify-center gap-3">
+                  <button onClick={async () => {
+                    const newStatus = b.status === "pending" ? "confirmed" : "pending";
+                    await fetch("/api/bookings", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: b.id, status: newStatus }) });
+                    fetchBookings();
+                  }} className={`text-xs px-4 py-2 rounded-full border transition-colors ${b.status === "pending" ? "border-green-500 text-green-600 hover:bg-green-500 hover:text-white" : "border-gold text-gold hover:bg-gold hover:text-white"}`}>
+                    {b.status === "pending" ? "確認預約" : "改回待確認"}
+                  </button>
+                  <button onClick={async () => {
+                    if (confirm("確定要刪除這筆預約嗎？")) {
+                      await fetch("/api/bookings", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: b.id }) });
+                      fetchBookings();
+                    }
+                  }} className="text-xs px-4 py-2 rounded-full border border-red-300 text-red-400 hover:bg-red-500 hover:text-white transition-colors">
+                    刪除
+                  </button>
+                </div>
               </div>
             ))}
           </div>

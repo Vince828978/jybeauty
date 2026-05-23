@@ -46,3 +46,25 @@ export async function GET() {
     return NextResponse.json({ bookings: [], error: String(e) }, { status: 500 });
   }
 }
+
+export async function DELETE(request: Request) {
+  try {
+    const { id } = await request.json();
+    const sql = getDb();
+    await sql`DELETE FROM bookings WHERE id = ${id}`;
+    return NextResponse.json({ success: true });
+  } catch (e) {
+    return NextResponse.json({ success: false, error: String(e) }, { status: 500 });
+  }
+}
+
+export async function PATCH(request: Request) {
+  try {
+    const { id, status } = await request.json();
+    const sql = getDb();
+    await sql`UPDATE bookings SET status = ${status} WHERE id = ${id}`;
+    return NextResponse.json({ success: true });
+  } catch (e) {
+    return NextResponse.json({ success: false, error: String(e) }, { status: 500 });
+  }
+}
