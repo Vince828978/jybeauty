@@ -1,8 +1,36 @@
 "use client";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect, useCallback, createContext, useContext } from "react";
 
 type Page = "home" | "about" | "services" | "booking" | "contact";
+
+const EditCtx = createContext<{ editing: boolean; content: Record<string, string>; save: (k: string, v: string) => void }>({ editing: false, content: {}, save: () => {} });
+
+function E({ k, fallback, className = "" }: { k: string; fallback: string; className?: string }) {
+  const { editing, content, save } = useContext(EditCtx);
+  const text = content[k] || fallback;
+  const [val, setVal] = useState(text);
+  const [open, setOpen] = useState(false);
+  useEffect(() => { setVal(content[k] || fallback); }, [content, k, fallback]);
+
+  if (!editing) return <span className={className}>{text}</span>;
+
+  if (open) {
+    return (
+      <textarea value={val} onChange={e => setVal(e.target.value)}
+        onBlur={() => { save(k, val); setOpen(false); }}
+        autoFocus rows={Math.max(1, val.split("\n").length)}
+        className={`${className} bg-gold/10 border-2 border-gold rounded-lg px-2 py-1 focus:outline-none resize-none w-full text-center`}
+      />
+    );
+  }
+  return (
+    <span onClick={() => setOpen(true)}
+      className={`${className} cursor-pointer border border-dashed border-gold/40 hover:border-gold hover:bg-gold/5 px-1 rounded transition-all`}>
+      {text}
+    </span>
+  );
+}
 
 function Menu({ open, onClose, onNavigate }: { open: boolean; onClose: () => void; onNavigate: (p: Page) => void }) {
   if (!open) return null;
@@ -71,10 +99,10 @@ function HomePage() {
       <div className="absolute inset-0 bg-gradient-to-t from-dark/60 via-transparent to-dark/20" />
       <div className="absolute inset-x-0 top-[38%] px-8 text-center">
         <h1 className="font-serif-tc text-3xl md:text-5xl font-bold text-white leading-tight mb-3">
-          美麗・放鬆<br />從 JY Beauty 開始
+          <E k="hero_title" fallback={"美麗・放鬆\n從 JY Beauty 開始"} />
         </h1>
         <p className="text-white/70 text-sm">
-          私人到府 SPA，在你最放鬆的空間享受專屬療程
+          <E k="hero_subtitle" fallback="私人到府 SPA，在你最放鬆的空間享受專屬療程" />
         </p>
       </div>
       <div className="absolute inset-x-0 bottom-[18%] text-center">
@@ -94,7 +122,7 @@ function AboutPage() {
       </div>
       <div className="md:max-w-xl mx-auto px-10 py-12 text-center">
         <p className="text-gold text-xs tracking-[0.3em] uppercase mb-4">ABOUT US</p>
-        <h2 className="font-serif-tc text-2xl font-bold text-dark mb-6">不開店，我去找你</h2>
+        <h2 className="font-serif-tc text-2xl font-bold text-dark mb-6"><E k="about_title" fallback="不開店，我去找你" /></h2>
         <div className="text-text-light text-sm leading-loose mb-8 space-y-4">
           <p>做美容這些年，看過太多客人拖著疲憊的身體來到店裡，做完療程整個人放鬆了，結果一出門又要擠捷運、找車位，那份放鬆在回家路上就消失了一半。</p>
           <p>我一直在想，如果做完就能直接躺在自己的床上，蓋著自己最喜歡的被子，那才是真正完整的放鬆。</p>
@@ -135,7 +163,7 @@ function ServicesPage() {
       </div>
       <div className="md:max-w-3xl mx-auto px-10 py-10 text-center">
         <p className="text-gold text-xs tracking-[0.3em] uppercase mb-4">OUR SERVICES</p>
-        <h2 className="font-serif-tc text-2xl font-bold text-dark mb-8">專為你設計的服務</h2>
+        <h2 className="font-serif-tc text-2xl font-bold text-dark mb-8"><E k="services_title" fallback="專為你設計的服務" /></h2>
 
         {/* 服務模式 */}
         <div className="grid grid-cols-2 gap-4 mb-10">
@@ -206,6 +234,21 @@ function ContactPage() {
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [page, setPage] = useState<Page>("home");
+  const [editing, setEditing] = useState(false);
+  const [content, setContent] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.location.search.includes("edit=1")) {
+      const p = prompt("輸入管理密碼進入編輯模式");
+      if (p === "1234") setEditing(true);
+    }
+    fetch("/api/content").then(r => r.json()).then(d => { if (d.content) setContent(d.content); }).catch(() => {});
+  }, []);
+
+  const save = useCallback(async (k: string, v: string) => {
+    setContent(prev => ({ ...prev, [k]: v }));
+    await fetch("/api/content", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ key: k, value: v }) });
+  }, []);
 
   const renderPage = () => {
     switch (page) {
@@ -218,16 +261,23 @@ export default function Home() {
   };
 
   return (
-    <main>
-      <Menu open={menuOpen} onClose={() => setMenuOpen(false)} onNavigate={setPage} />
-      {page === "home" ? (
-        <Navbar onMenuOpen={() => setMenuOpen(true)} />
-      ) : (
-        <NavbarLight onMenuOpen={() => setMenuOpen(true)} />
-      )}
-      <div key={page} className="fade-in">
-        {renderPage()}
-      </div>
-    </main>
+    <EditCtx.Provider value={{ editing, content, save }}>
+      <main>
+        {editing && (
+          <div className="fixed bottom-4 right-4 z-[200] bg-gold text-white px-4 py-2 rounded-full text-sm shadow-lg">
+            編輯模式 ON
+          </div>
+        )}
+        <Menu open={menuOpen} onClose={() => setMenuOpen(false)} onNavigate={setPage} />
+        {page === "home" ? (
+          <Navbar onMenuOpen={() => setMenuOpen(true)} />
+        ) : (
+          <NavbarLight onMenuOpen={() => setMenuOpen(true)} />
+        )}
+        <div key={page} className="fade-in">
+          {renderPage()}
+        </div>
+      </main>
+    </EditCtx.Provider>
   );
 }
