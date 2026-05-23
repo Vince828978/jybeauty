@@ -26,7 +26,6 @@ function Menu({ open, onClose, onNavigate }: { open: boolean; onClose: () => voi
             {item.label}
           </button>
         ))}
-        <div className="mt-14 text-white/30 text-sm tracking-[0.3em]">RELAX · RENEW · RADIATE</div>
       </div>
     </div>
   );
