@@ -5,12 +5,20 @@ import "./globals.css";
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "JY Beauty | 私人到府 SPA",
-  description: "美麗・放鬆・從 JY Beauty 開始。私人到府 SPA 服務，專業精油按摩、臉部保養，在最舒適的空間享受專屬療程。",
-  keywords: "到府按摩, 到府SPA, 私人SPA, 精油按摩, 臉部保養, JY Beauty, 到府美容",
+  title: "JY Beauty | 私人到府 SPA・到府按摩・臉部保養",
+  description: "JY Beauty 私人到府 SPA，15年專業美容師到你家。精油按摩、臉部保養、深層護理，在最舒適的空間享受一對一專屬療程。到府服務或就近工作室，預約制不趕場。",
+  keywords: "到府按摩, 到府SPA, 私人SPA, 精油按摩, 臉部保養, JY Beauty, 到府美容, 到府服務, 居家SPA, 孕婦按摩, 產後保養",
   icons: {
     icon: "/icon-192.png",
     apple: "/apple-touch-icon.png",
+  },
+  openGraph: {
+    title: "JY Beauty | 私人到府 SPA",
+    description: "最好的 SPA，不在華麗的會館裡，而在你最自在的地方。專業美容師到府服務，15年經驗，預約制一對一。",
+    url: "https://jybeauty.tw",
+    siteName: "JY Beauty",
+    locale: "zh_TW",
+    type: "website",
   },
 };
 
