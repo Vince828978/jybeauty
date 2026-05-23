@@ -1,12 +1,14 @@
+"use client";
 import Image from "next/image";
+import { useState, useEffect } from "react";
 
 const BASE = "/jybeauty";
 
 function Navbar() {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-warm-bg/90 backdrop-blur-md border-b border-gold-light/30">
-      <div className="max-w-6xl mx-auto px-8 lg:px-12 py-4 flex items-center justify-between">
-        <a href="#" className="font-serif-tc text-2xl font-bold text-dark tracking-wider">
+      <div className="max-w-6xl mx-auto px-4 md:px-8 lg:px-12 py-4 flex items-center justify-between">
+        <a href="#" className="font-serif-tc text-xl md:text-2xl font-bold text-dark tracking-wider">
           <span className="text-gold">JY</span> Beauty
         </a>
         <div className="hidden md:flex items-center gap-8 text-sm text-text-light">
@@ -23,23 +25,23 @@ function Navbar() {
 
 function Hero() {
   return (
-    <section className="relative min-h-screen flex items-center pt-20">
+    <section className="relative min-h-screen flex items-center pt-24 pb-12">
       <div className="hero-gradient absolute inset-0" />
-      <div className="relative max-w-6xl mx-auto px-8 lg:px-12 grid md:grid-cols-2 gap-12 items-center">
-        <div className="fade-in">
+      <div className="relative max-w-6xl mx-auto px-6 md:px-8 lg:px-12 grid md:grid-cols-2 gap-12 items-center">
+        <div className="fade-in order-2 md:order-1">
           <p className="text-gold text-sm tracking-[0.3em] uppercase mb-4">RELAX · RENEW · RADIATE</p>
-          <h1 className="font-serif-tc text-4xl md:text-5xl lg:text-6xl font-bold text-dark leading-tight mb-6">
+          <h1 className="font-serif-tc text-3xl md:text-5xl lg:text-6xl font-bold text-dark leading-tight mb-6">
             美麗・放鬆<br /><span className="text-gold">從 JY Beauty 開始</span>
           </h1>
-          <p className="text-text-light text-lg leading-relaxed mb-8 max-w-lg">
+          <p className="text-text-light text-base md:text-lg leading-relaxed mb-8 max-w-lg">
             不必出門，專業到家。我們把最好的 SPA 帶到你身邊，在你最放鬆的空間，享受專屬一對一的療癒時光。
           </p>
-          <div className="flex flex-col sm:flex-row gap-4">
-            <a href="#contact" className="bg-gold text-white px-8 py-3.5 text-center tracking-wide hover:bg-dark-light transition-colors">預約到府服務</a>
-            <a href="#services" className="border border-gold text-gold px-8 py-3.5 text-center tracking-wide hover:bg-gold hover:text-white transition-colors">瀏覽療程</a>
+          <div className="flex flex-row gap-4">
+            <a href="#contact" className="bg-gold text-white px-6 py-3.5 text-center text-sm tracking-wide hover:bg-dark-light transition-colors rounded-full">預約到府服務</a>
+            <a href="#services" className="border border-gold text-gold px-6 py-3.5 text-center text-sm tracking-wide hover:bg-gold hover:text-white transition-colors rounded-full">瀏覽療程</a>
           </div>
         </div>
-        <div className="relative h-[500px] md:h-[600px]">
+        <div className="relative h-[300px] md:h-[600px] order-1 md:order-2">
           <Image src={`${BASE}/hero-main.jpg`} alt="JY Beauty" fill className="object-cover object-top" priority />
           <div className="absolute inset-0 bg-gradient-to-t from-warm-bg/30 to-transparent" />
         </div>
@@ -51,8 +53,8 @@ function Hero() {
 function About() {
   return (
     <section id="about" className="py-24 bg-white">
-      <div className="max-w-6xl mx-auto px-8 lg:px-12 grid md:grid-cols-2 gap-16 items-center">
-        <div className="relative h-[500px]">
+      <div className="max-w-6xl mx-auto px-8 lg:px-12 grid md:grid-cols-2 gap-12 md:gap-16 items-center">
+        <div className="relative h-[350px] md:h-[500px]">
           <Image src={`${BASE}/about.jpg`} alt="JY Beauty 美容師" fill className="object-cover object-top" />
         </div>
         <div>
@@ -122,57 +124,33 @@ function Services() {
           <p className="text-text-light max-w-xl mx-auto">3 種精選套餐，打造最美的自己</p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6 mb-16">
-          {packages.map((p) => (
-            <div key={p.name} className={`bg-white p-8 card-hover border relative ${p.popular ? "border-gold shadow-lg" : "border-gold-light/20"}`}>
-              {p.popular && <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gold text-white text-xs px-4 py-1 tracking-wide">人氣推薦</div>}
-              <p className="text-gold text-sm italic mb-1">{p.tier}</p>
-              <h3 className="font-serif-tc text-xl font-bold text-dark mb-1">{p.name}</h3>
-              <p className="text-text-light text-xs mb-6">{p.subtitle}</p>
-              <div className="space-y-2 mb-6">
-                {p.items.map((item) => (
-                  <div key={item} className="flex items-center gap-2 text-sm text-dark">
-                    <span className="w-1.5 h-1.5 bg-gold rounded-full inline-block" />
-                    {item}
-                  </div>
-                ))}
+        <PackageCarousel packages={packages} />
+
+        <div className="mb-10">
+          <h3 className="font-serif-tc text-lg text-dark mb-1 text-center">身體加項</h3>
+          <p className="text-text-light text-sm mb-6 text-center">（任選）</p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {bodyAddons.map((a) => (
+              <div key={a.name} className="bg-white border border-gold-light/20 rounded-xl p-5 text-center card-hover">
+                <p className="text-dark text-sm font-medium mb-1">{a.name}</p>
+                {a.dur && <p className="text-text-light text-xs mb-2">{a.dur}</p>}
+                <p className="font-serif-tc text-gold font-semibold">{a.price}</p>
               </div>
-              <p className="font-serif-tc text-3xl text-gold font-bold mb-3">{p.price}</p>
-              <p className="text-text-light text-xs">{p.desc}</p>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6 mb-8">
-          <div>
-            <h3 className="font-serif-tc text-lg text-dark mb-4 flex items-center gap-3"><span className="w-6 h-px bg-gold inline-block" />身體加項（任選）</h3>
-            <div className="bg-white border border-gold-light/20 divide-y divide-gold-light/10">
-              {bodyAddons.map((a) => (
-                <div key={a.name} className="flex items-center justify-between px-6 py-4 hover:bg-cream/30 transition-colors">
-                  <div className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 bg-gold rounded-full inline-block" />
-                    <span className="text-dark text-sm">{a.name}</span>
-                    {a.dur && <span className="text-text-light text-xs">{a.dur}</span>}
-                  </div>
-                  <span className="font-serif-tc text-gold font-semibold">{a.price}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div>
-            <h3 className="font-serif-tc text-lg text-dark mb-4 flex items-center gap-3"><span className="w-6 h-px bg-gold inline-block" />臉部加項（任選）</h3>
-            <div className="bg-white border border-gold-light/20 divide-y divide-gold-light/10">
-              {faceAddons.map((a) => (
-                <div key={a.name} className="flex items-center justify-between px-6 py-4 hover:bg-cream/30 transition-colors">
-                  <div className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 bg-gold rounded-full inline-block" />
-                    <span className="text-dark text-sm">{a.name}</span>
-                    {a.dur && <span className="text-text-light text-xs">{a.dur}</span>}
-                  </div>
-                  <span className="font-serif-tc text-gold font-semibold">{a.price}</span>
-                </div>
-              ))}
-            </div>
+        <div className="mb-10">
+          <h3 className="font-serif-tc text-lg text-dark mb-1 text-center">臉部加項</h3>
+          <p className="text-text-light text-sm mb-6 text-center">（任選）</p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {faceAddons.map((a) => (
+              <div key={a.name} className="bg-white border border-gold-light/20 rounded-xl p-5 text-center card-hover">
+                <p className="text-dark text-sm font-medium mb-1">{a.name}</p>
+                {a.dur && <p className="text-text-light text-xs mb-2">{a.dur}</p>}
+                <p className="font-serif-tc text-gold font-semibold">{a.price}</p>
+              </div>
+            ))}
           </div>
         </div>
 
@@ -191,30 +169,123 @@ function Services() {
   );
 }
 
+function SvgIcon({ d }: { d: string }) {
+  return (
+    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" className="text-gold mx-auto">
+      <path d={d} />
+    </svg>
+  );
+}
+
+function PackageCarousel({ packages }: { packages: { tier: string; name: string; subtitle: string; price: string; items: string[]; desc: string; popular?: boolean }[] }) {
+  const [active, setActive] = useState(1);
+  const prev = () => setActive((p) => (p - 1 + packages.length) % packages.length);
+  const next = () => setActive((p) => (p + 1) % packages.length);
+
+  return (
+    <>
+      {/* Mobile carousel */}
+      <div className="md:hidden mb-12 mt-4">
+        <div className="relative flex items-center justify-center">
+          <button onClick={prev} className="absolute left-0 z-10 w-10 h-10 flex items-center justify-center text-gold text-2xl">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <div className="w-[75vw] min-h-[380px] relative">
+            {packages.map((p, i) => (
+              <div
+                key={p.name}
+                className={`absolute inset-0 transition-all duration-500 ${i === active ? "opacity-100 scale-100" : "opacity-0 scale-90 pointer-events-none"}`}
+              >
+                <div className={`bg-white p-8 rounded-2xl border text-center h-full flex flex-col justify-between ${p.popular ? "border-gold shadow-lg" : "border-gold-light/20"}`}>
+                  {p.popular && <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gold text-white text-xs px-5 py-1.5 tracking-wide rounded-full">人氣推薦</div>}
+                  <div>
+                    <p className="text-gold text-sm italic mb-2">{p.tier}</p>
+                    <h3 className="font-serif-tc text-2xl font-bold text-dark mb-2">{p.name}</h3>
+                    <p className="text-text-light text-sm mb-5">{p.subtitle}</p>
+                    <div className="space-y-2.5 mb-5 inline-block text-left">
+                      {p.items.map((item) => (
+                        <div key={item} className="flex items-center gap-3 text-sm text-dark">
+                          <span className="w-1.5 h-1.5 bg-gold rounded-full inline-block flex-shrink-0" />
+                          {item}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <p className="font-serif-tc text-4xl text-gold font-bold mb-2">{p.price}</p>
+                    <p className="text-text-light text-xs leading-relaxed">{p.desc}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <button onClick={next} className="absolute right-0 z-10 w-10 h-10 flex items-center justify-center text-gold text-2xl">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </div>
+        <div className="flex justify-center gap-3 mt-6">
+          {packages.map((_, i) => (
+            <button key={i} onClick={() => setActive(i)} className={`h-2.5 rounded-full transition-all ${i === active ? "bg-gold w-8" : "bg-gold-light w-2.5"}`} />
+          ))}
+        </div>
+      </div>
+      {/* Desktop grid */}
+      <div className="hidden md:grid md:grid-cols-3 gap-8 mb-16">
+        {packages.map((p) => (
+          <div key={p.name} className={`bg-white p-10 card-hover border relative rounded-2xl text-center flex flex-col justify-between min-h-[420px] ${p.popular ? "border-gold shadow-lg" : "border-gold-light/20"}`}>
+            {p.popular && <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gold text-white text-xs px-5 py-1.5 tracking-wide rounded-full">人氣推薦</div>}
+            <div>
+              <p className="text-gold text-sm italic mb-2">{p.tier}</p>
+              <h3 className="font-serif-tc text-2xl font-bold text-dark mb-2">{p.name}</h3>
+              <p className="text-text-light text-sm mb-8">{p.subtitle}</p>
+              <div className="space-y-3 mb-8 inline-block text-left">
+                {p.items.map((item) => (
+                  <div key={item} className="flex items-center gap-3 text-sm text-dark">
+                    <span className="w-1.5 h-1.5 bg-gold rounded-full inline-block flex-shrink-0" />
+                    {item}
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div>
+              <p className="font-serif-tc text-3xl text-gold font-bold mb-4">{p.price}</p>
+              <p className="text-text-light text-sm leading-relaxed">{p.desc}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </>
+  );
+}
+
 function WhyUs() {
-  const reasons = [
-    { icon: "🏠", title: "到府服務", desc: "不用出門、不用找停車位，在最放鬆的私人空間享受專業護理" },
-    { icon: "👩‍⚕️", title: "一對一專屬", desc: "預約制服務，時間完全配合你，不趕場、不共用空間" },
-    { icon: "✨", title: "專業品質", desc: "使用高品質精油與專業設備，每一次療程都是頂級享受" },
-    { icon: "💝", title: "完整放鬆", desc: "服務完直接在家休息，讓放鬆延續到入睡，不被通勤打斷" },
-  ];
   return (
     <section id="why" className="py-24 bg-white">
-      <div className="max-w-6xl mx-auto px-8 lg:px-12">
-        <div className="text-center mb-16">
-          <p className="text-gold text-sm tracking-[0.3em] uppercase mb-3">WHY JY BEAUTY</p>
-          <h2 className="font-serif-tc text-3xl md:text-4xl font-bold text-dark mb-4">為什麼選擇我們</h2>
-          <div className="section-divider mb-6" />
-          <p className="text-text-light max-w-xl mx-auto">我們選擇不開店，不是因為還沒準備好，而是我們相信——<br /><span className="font-medium text-dark">最好的 SPA 空間，就是你最放鬆的地方</span></p>
-        </div>
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {reasons.map((r) => (
-            <div key={r.title} className="text-center p-8 bg-cream/30 card-hover border border-gold-light/10">
-              <div className="text-4xl mb-4">{r.icon}</div>
-              <h3 className="font-serif-tc text-lg font-semibold text-dark mb-3">{r.title}</h3>
-              <p className="text-text-light text-sm leading-relaxed">{r.desc}</p>
-            </div>
-          ))}
+      <div className="max-w-3xl mx-auto px-8 lg:px-12 text-center">
+        <p className="text-gold text-sm tracking-[0.3em] uppercase mb-3">WHY JY BEAUTY</p>
+        <h2 className="font-serif-tc text-3xl md:text-4xl font-bold text-dark mb-6">為什麼選擇我們</h2>
+        <div className="section-divider mb-10" />
+        <p className="text-text-light text-base md:text-lg leading-loose mb-10">
+          我們選擇不開店，不是因為還沒準備好，而是我們相信——<br />
+          <span className="font-medium text-dark font-serif-tc text-lg md:text-xl">最好的 SPA 空間，就是你最放鬆的地方。</span>
+        </p>
+        <div className="space-y-8 text-left max-w-2xl mx-auto">
+          <div className="flex items-start gap-5">
+            <span className="w-10 h-10 flex-shrink-0 border border-gold rounded-full flex items-center justify-center mt-0.5"><SvgIcon d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z M9 22V12h6v10" /></span>
+            <div><h3 className="font-serif-tc text-lg font-semibold text-dark mb-1">到府服務</h3><p className="text-text-light text-sm leading-relaxed">不用出門、不用找停車位，在最放鬆的私人空間享受專業護理</p></div>
+          </div>
+          <div className="flex items-start gap-5">
+            <span className="w-10 h-10 flex-shrink-0 border border-gold rounded-full flex items-center justify-center mt-0.5"><SvgIcon d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2 M12 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8z" /></span>
+            <div><h3 className="font-serif-tc text-lg font-semibold text-dark mb-1">一對一專屬</h3><p className="text-text-light text-sm leading-relaxed">預約制服務，時間完全配合你，不趕場、不共用空間</p></div>
+          </div>
+          <div className="flex items-start gap-5">
+            <span className="w-10 h-10 flex-shrink-0 border border-gold rounded-full flex items-center justify-center mt-0.5"><SvgIcon d="M12 2L15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2z" /></span>
+            <div><h3 className="font-serif-tc text-lg font-semibold text-dark mb-1">專業品質</h3><p className="text-text-light text-sm leading-relaxed">使用高品質精油與專業設備，每一次療程都是頂級享受</p></div>
+          </div>
+          <div className="flex items-start gap-5">
+            <span className="w-10 h-10 flex-shrink-0 border border-gold rounded-full flex items-center justify-center mt-0.5"><SvgIcon d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z" /></span>
+            <div><h3 className="font-serif-tc text-lg font-semibold text-dark mb-1">完整放鬆</h3><p className="text-text-light text-sm leading-relaxed">服務完直接在家休息，讓放鬆延續到入睡，不被通勤打斷</p></div>
+          </div>
         </div>
       </div>
     </section>
@@ -222,29 +293,21 @@ function WhyUs() {
 }
 
 function TargetAudience() {
-  const audiences = [
-    { icon: "👶", label: "新手媽媽", desc: "帶小孩不方便出門，在家就能享受放鬆" },
-    { icon: "🤰", label: "孕婦產後", desc: "孕期舒緩、產後修復，不必舟車勞頓" },
-    { icon: "💼", label: "忙碌上班族", desc: "下班回家就是 SPA，時間最高效利用" },
-    { icon: "👰", label: "準新娘", desc: "婚前密集保養，在家輕鬆變美" },
-    { icon: "👨‍👩‍👧", label: "孝親禮物", desc: "送給爸媽最貼心的到府按摩體驗" },
-    { icon: "💻", label: "居家工作者", desc: "會議結束關螢幕，美容師已到門口" },
-  ];
+  const tags = ["新手媽媽", "孕婦產後", "忙碌上班族", "準新娘", "孝親禮物", "居家工作者", "輪班工作者", "銀髮族"];
   return (
     <section className="py-24 bg-cream/50">
-      <div className="max-w-6xl mx-auto px-8 lg:px-12">
-        <div className="text-center mb-16">
-          <p className="text-gold text-sm tracking-[0.3em] uppercase mb-3">FOR YOU</p>
-          <h2 className="font-serif-tc text-3xl md:text-4xl font-bold text-dark mb-4">專為你設計的服務</h2>
-          <div className="section-divider mb-6" />
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-          {audiences.map((a) => (
-            <div key={a.label} className="bg-white p-6 text-center card-hover border border-gold-light/10">
-              <div className="text-3xl mb-3">{a.icon}</div>
-              <h4 className="font-serif-tc font-semibold text-dark mb-2">{a.label}</h4>
-              <p className="text-text-light text-sm">{a.desc}</p>
-            </div>
+      <div className="max-w-3xl mx-auto px-8 lg:px-12 text-center">
+        <p className="text-gold text-sm tracking-[0.3em] uppercase mb-3">FOR YOU</p>
+        <h2 className="font-serif-tc text-3xl md:text-4xl font-bold text-dark mb-6">專為你設計的服務</h2>
+        <div className="section-divider mb-10" />
+        <p className="text-text-light text-base md:text-lg leading-loose mb-10">
+          不方便出門的新手媽媽、需要孕期舒緩的準媽咪、<br className="hidden md:inline" />
+          下班只想回家的上班族、婚前想密集保養的準新娘⋯⋯<br className="hidden md:inline" />
+          <span className="font-medium text-dark">不管你是誰，放鬆這件事，我們帶到你身邊。</span>
+        </p>
+        <div className="flex flex-wrap justify-center gap-3">
+          {tags.map((t) => (
+            <span key={t} className="px-5 py-2.5 bg-white border border-gold-light/30 text-dark text-sm font-medium tracking-wide">{t}</span>
           ))}
         </div>
       </div>
@@ -262,9 +325,18 @@ function SpecialOffers() {
           <div className="w-16 h-0.5 bg-gold mx-auto" />
         </div>
         <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-          <div className="text-center p-8 border border-gold/30"><div className="text-3xl mb-4">🎁</div><h4 className="font-serif-tc text-lg font-semibold mb-2">首次來店禮</h4><p className="text-white/70 text-sm">首次預約任一主療程享 85 折優惠</p></div>
-          <div className="text-center p-8 border border-gold/30"><div className="text-3xl mb-4">🕐</div><h4 className="font-serif-tc text-lg font-semibold mb-2">預約制服務</h4><p className="text-white/70 text-sm">給您專屬的寧靜時光，不趕場不等待</p></div>
-          <div className="text-center p-8 border border-gold/30"><div className="text-3xl mb-4">💕</div><h4 className="font-serif-tc text-lg font-semibold mb-2">推薦好友</h4><p className="text-white/70 text-sm">雙方皆享一次加值項目免費升級</p></div>
+          <div className="text-center p-8 border border-gold/30">
+            <div className="mb-5"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" className="text-gold-light mx-auto"><path d="M20 12v10H4V12 M2 7h20v5H2z M12 22V7 M12 7H7.5a2.5 2.5 0 1 1 0-5C11 2 12 7 12 7z M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z" /></svg></div>
+            <h4 className="font-serif-tc text-lg font-semibold mb-2">首次來店禮</h4><p className="text-white/70 text-sm">首次預約任一主療程享 85 折優惠</p>
+          </div>
+          <div className="text-center p-8 border border-gold/30">
+            <div className="mb-5"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" className="text-gold-light mx-auto"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg></div>
+            <h4 className="font-serif-tc text-lg font-semibold mb-2">預約制服務</h4><p className="text-white/70 text-sm">給您專屬的寧靜時光，不趕場不等待</p>
+          </div>
+          <div className="text-center p-8 border border-gold/30">
+            <div className="mb-5"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" className="text-gold-light mx-auto"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2 M9 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8z M23 21v-2a4 4 0 0 0-3-3.87 M16 3.13a4 4 0 0 1 0 7.75" /></svg></div>
+            <h4 className="font-serif-tc text-lg font-semibold mb-2">推薦好友</h4><p className="text-white/70 text-sm">雙方皆享一次加值項目免費升級</p>
+          </div>
         </div>
       </div>
     </section>
@@ -274,7 +346,7 @@ function SpecialOffers() {
 function Contact() {
   return (
     <section id="contact" className="py-24 bg-white">
-      <div className="max-w-6xl mx-auto px-8 lg:px-12 grid md:grid-cols-2 gap-16 items-center">
+      <div className="max-w-6xl mx-auto px-8 lg:px-12 grid md:grid-cols-2 gap-12 md:gap-16 items-center">
         <div>
           <p className="text-gold text-sm tracking-[0.3em] uppercase mb-3">BOOKING</p>
           <h2 className="font-serif-tc text-3xl md:text-4xl font-bold text-dark mb-6">預約你的放鬆時光</h2>
@@ -287,7 +359,7 @@ function Contact() {
           </div>
           <a href="#" className="inline-block bg-gold text-white px-10 py-4 text-lg tracking-wide hover:bg-dark-light transition-colors">LINE 立即預約</a>
         </div>
-        <div className="relative h-[500px]">
+        <div className="relative h-[350px] md:h-[500px]">
           <Image src={`${BASE}/hero-2.jpg`} alt="JY Beauty 預約" fill className="object-cover object-top" />
         </div>
       </div>
