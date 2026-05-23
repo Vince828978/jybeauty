@@ -167,14 +167,6 @@ function Services() {
 
         <p className="text-center text-text-light text-xs mt-6">服務皆含：舒壓放鬆・促進循環・深層釋放疲勞 ／ 依個人狀況調整手法與產品</p>
 
-        <div className="mt-8 bg-white border border-gold-light/20 p-6">
-          <h4 className="font-serif-tc text-dark font-semibold mb-3">到府服務費</h4>
-          <div className="grid grid-cols-3 gap-4 text-sm text-text-light">
-            <div className="text-center p-3 bg-cream/50"><p className="font-medium text-dark">市區 10km 內</p><p className="text-gold font-semibold mt-1">免收</p></div>
-            <div className="text-center p-3 bg-cream/50"><p className="font-medium text-dark">郊區 10-20km</p><p className="text-gold font-semibold mt-1">+$200</p></div>
-            <div className="text-center p-3 bg-cream/50"><p className="font-medium text-dark">遠程 20km+</p><p className="text-gold font-semibold mt-1">另議</p></div>
-          </div>
-        </div>
       </div>
     </section>
   );
@@ -367,7 +359,7 @@ function Contact() {
           <a href="#" className="inline-block bg-gold text-white px-10 py-4 text-lg tracking-wide hover:bg-dark-light transition-colors">LINE 立即預約</a>
         </div>
         <div className="relative h-[450px] md:h-[500px]">
-          <Image src="/about-2.jpg" alt="JY Beauty 預約" fill className="object-cover object-top" />
+          <Image src="/hero-1.jpg" alt="JY Beauty 預約" fill className="object-cover object-top" />
         </div>
       </div>
     </section>
