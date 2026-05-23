@@ -1,9 +1,11 @@
 import Image from "next/image";
 
+const BASE = "/jybeauty";
+
 function Navbar() {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-warm-bg/90 backdrop-blur-md border-b border-gold-light/30">
-      <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div className="max-w-6xl mx-auto px-8 lg:px-12 py-4 flex items-center justify-between">
         <a href="#" className="font-serif-tc text-2xl font-bold text-dark tracking-wider">
           <span className="text-gold">JY</span> Beauty
         </a>
@@ -23,7 +25,7 @@ function Hero() {
   return (
     <section className="relative min-h-screen flex items-center pt-20">
       <div className="hero-gradient absolute inset-0" />
-      <div className="relative max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
+      <div className="relative max-w-6xl mx-auto px-8 lg:px-12 grid md:grid-cols-2 gap-12 items-center">
         <div className="fade-in">
           <p className="text-gold text-sm tracking-[0.3em] uppercase mb-4">RELAX · RENEW · RADIATE</p>
           <h1 className="font-serif-tc text-4xl md:text-5xl lg:text-6xl font-bold text-dark leading-tight mb-6">
@@ -38,7 +40,7 @@ function Hero() {
           </div>
         </div>
         <div className="relative h-[500px] md:h-[600px]">
-          <Image src="/hero-main.jpg" alt="JY Beauty" fill className="object-cover object-top" priority />
+          <Image src={`${BASE}/hero-main.jpg`} alt="JY Beauty" fill className="object-cover object-top" priority />
           <div className="absolute inset-0 bg-gradient-to-t from-warm-bg/30 to-transparent" />
         </div>
       </div>
@@ -49,9 +51,9 @@ function Hero() {
 function About() {
   return (
     <section id="about" className="py-24 bg-white">
-      <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-center">
+      <div className="max-w-6xl mx-auto px-8 lg:px-12 grid md:grid-cols-2 gap-16 items-center">
         <div className="relative h-[500px]">
-          <Image src="/about.jpg" alt="JY Beauty 美容師" fill className="object-cover object-top" />
+          <Image src={`${BASE}/about.jpg`} alt="JY Beauty 美容師" fill className="object-cover object-top" />
         </div>
         <div>
           <p className="text-gold text-sm tracking-[0.3em] uppercase mb-3">ABOUT US</p>
@@ -70,74 +72,112 @@ function About() {
 }
 
 function Services() {
-  const body = [
-    { name: "經典舒壓精油療程", en: "Classic Oil Massage", dur: "90 分鐘", price: "$2,000", desc: "以溫熱精油搭配深層撥筋手法，釋放肌肉緊繃，促進循環代謝，由內而外找回放鬆節奏。" },
-    { name: "深層修護精油療程", en: "Deep Repair Oil Massage", dur: "120 分鐘", price: "$2,800", desc: "延長版全身護理，針對肩頸、腰背重點加強，適合長期久坐、壓力大的你。" },
+  const packages = [
+    {
+      tier: "Basic",
+      name: "舒壓放鬆套餐",
+      subtitle: "放鬆身心・深層釋放",
+      price: "$2,280",
+      items: ["精油按摩 60 min", "臉部保養 基礎護理"],
+      desc: "適合想要放鬆減壓、保養入門的你",
+    },
+    {
+      tier: "Popular",
+      name: "能量煥膚套餐",
+      subtitle: "深層保養・由內而外透亮",
+      price: "$3,480",
+      items: ["精油按摩 90 min", "臉部保養 深層護理", "身體加項 任選 1 項"],
+      desc: "適合想要深層保養、找回自信光采的你",
+      popular: true,
+    },
+    {
+      tier: "Luxury",
+      name: "極致寵愛套餐",
+      subtitle: "全方位呵護・極致寵愛",
+      price: "$4,880",
+      items: ["精油按摩 120 min", "臉部保養 深層護理", "身體加項 任選 2 項", "臉部加項 任選 1 項"],
+      desc: "適合想要全方位寵愛自己、享受極致呵護的你",
+    },
   ];
-  const facial = [
-    { name: "煥膚亮白管理", en: "Brightening Facial", price: "$1,680", desc: "杏仁酸/藻針溫和代謝老廢角質，改善暗沉與色素不均，還原肌膚透亮光澤。" },
-    { name: "極潤水光修護療程", en: "Hydra Glow Facial", price: "$1,680", desc: "深層補水鎖水，修護乾燥敏感肌，打造由內透出的水潤質感。" },
+  const bodyAddons = [
+    { name: "熱石", dur: "30min", price: "+$200" },
+    { name: "刮痧/筋膜放鬆", dur: "30min", price: "+$300" },
+    { name: "頭療（含耳燭）", dur: "30min", price: "+$400" },
+    { name: "加乘體驗放鬆 UP", dur: "15min", price: "+$300" },
   ];
-  const addons = [
-    { name: "熱石深層舒緩", dur: "30min", price: "+$300" },
-    { name: "刮痧筋膜釋放", dur: "30min", price: "+$400" },
-    { name: "頭皮舒壓療程（含耳燭）", dur: "", price: "+$500" },
-    { name: "Lulu SPA 煥顏護理", dur: "40min", price: "+$800" },
-    { name: "小顏緊緻拉提", dur: "20min", price: "+$600" },
+  const faceAddons = [
+    { name: "Lulu SPA 美白去角質+敷體", dur: "40min", price: "+$600" },
+    { name: "臉部瘦小臉", dur: "20min", price: "+$500" },
+    { name: "細緻護理 緊緻拉提", dur: "", price: "+$500" },
+    { name: "導入亮光 由內而外透亮", dur: "", price: "+$500" },
   ];
 
   return (
     <section id="services" className="py-24 bg-cream/50">
-      <div className="max-w-6xl mx-auto px-6">
+      <div className="max-w-6xl mx-auto px-8 lg:px-12">
         <div className="text-center mb-16">
           <p className="text-gold text-sm tracking-[0.3em] uppercase mb-3">TREATMENTS</p>
-          <h2 className="font-serif-tc text-3xl md:text-4xl font-bold text-dark mb-4">療程服務</h2>
+          <h2 className="font-serif-tc text-3xl md:text-4xl font-bold text-dark mb-4">療癒時光・專屬於你</h2>
           <div className="section-divider mb-6" />
-          <p className="text-text-light max-w-xl mx-auto">每一次療程都是專屬於你的 Me Time，讓身心在最舒適的環境中被溫柔對待</p>
+          <p className="text-text-light max-w-xl mx-auto">3 種精選套餐，打造最美的自己</p>
         </div>
-        <div className="mb-16">
-          <h3 className="font-serif-tc text-xl text-dark mb-8 flex items-center gap-3"><span className="w-8 h-px bg-gold inline-block" />身體療程 Body Treatment</h3>
-          <div className="grid md:grid-cols-2 gap-6">
-            {body.map((t) => (
-              <div key={t.name} className="bg-white p-8 card-hover border border-gold-light/20">
-                <div className="flex justify-between items-start mb-4">
-                  <div><h4 className="font-serif-tc text-lg font-semibold text-dark">{t.name}</h4><p className="text-text-light text-sm">{t.en}</p></div>
-                  <div className="text-right"><p className="font-serif-tc text-2xl text-gold font-bold">{t.price}</p><p className="text-text-light text-sm">{t.dur}</p></div>
-                </div>
-                <p className="text-text-light text-sm leading-relaxed">{t.desc}</p>
+
+        <div className="grid md:grid-cols-3 gap-6 mb-16">
+          {packages.map((p) => (
+            <div key={p.name} className={`bg-white p-8 card-hover border relative ${p.popular ? "border-gold shadow-lg" : "border-gold-light/20"}`}>
+              {p.popular && <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gold text-white text-xs px-4 py-1 tracking-wide">人氣推薦</div>}
+              <p className="text-gold text-sm italic mb-1">{p.tier}</p>
+              <h3 className="font-serif-tc text-xl font-bold text-dark mb-1">{p.name}</h3>
+              <p className="text-text-light text-xs mb-6">{p.subtitle}</p>
+              <div className="space-y-2 mb-6">
+                {p.items.map((item) => (
+                  <div key={item} className="flex items-center gap-2 text-sm text-dark">
+                    <span className="w-1.5 h-1.5 bg-gold rounded-full inline-block" />
+                    {item}
+                  </div>
+                ))}
               </div>
-            ))}
+              <p className="font-serif-tc text-3xl text-gold font-bold mb-3">{p.price}</p>
+              <p className="text-text-light text-xs">{p.desc}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-6 mb-8">
+          <div>
+            <h3 className="font-serif-tc text-lg text-dark mb-4 flex items-center gap-3"><span className="w-6 h-px bg-gold inline-block" />身體加項（任選）</h3>
+            <div className="bg-white border border-gold-light/20 divide-y divide-gold-light/10">
+              {bodyAddons.map((a) => (
+                <div key={a.name} className="flex items-center justify-between px-6 py-4 hover:bg-cream/30 transition-colors">
+                  <div className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 bg-gold rounded-full inline-block" />
+                    <span className="text-dark text-sm">{a.name}</span>
+                    {a.dur && <span className="text-text-light text-xs">{a.dur}</span>}
+                  </div>
+                  <span className="font-serif-tc text-gold font-semibold">{a.price}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div>
+            <h3 className="font-serif-tc text-lg text-dark mb-4 flex items-center gap-3"><span className="w-6 h-px bg-gold inline-block" />臉部加項（任選）</h3>
+            <div className="bg-white border border-gold-light/20 divide-y divide-gold-light/10">
+              {faceAddons.map((a) => (
+                <div key={a.name} className="flex items-center justify-between px-6 py-4 hover:bg-cream/30 transition-colors">
+                  <div className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 bg-gold rounded-full inline-block" />
+                    <span className="text-dark text-sm">{a.name}</span>
+                    {a.dur && <span className="text-text-light text-xs">{a.dur}</span>}
+                  </div>
+                  <span className="font-serif-tc text-gold font-semibold">{a.price}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-        <div className="mb-16">
-          <h3 className="font-serif-tc text-xl text-dark mb-8 flex items-center gap-3"><span className="w-8 h-px bg-gold inline-block" />臉部管理 Facial Management</h3>
-          <div className="grid md:grid-cols-2 gap-6">
-            {facial.map((t) => (
-              <div key={t.name} className="bg-white p-8 card-hover border border-gold-light/20">
-                <div className="flex justify-between items-start mb-4">
-                  <div><h4 className="font-serif-tc text-lg font-semibold text-dark">{t.name}</h4><p className="text-text-light text-sm">{t.en}</p></div>
-                  <p className="font-serif-tc text-2xl text-gold font-bold">{t.price}</p>
-                </div>
-                <p className="text-text-light text-sm leading-relaxed">{t.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div>
-          <h3 className="font-serif-tc text-xl text-dark mb-8 flex items-center gap-3"><span className="w-8 h-px bg-gold inline-block" />加值項目 Add-on</h3>
-          <div className="bg-white border border-gold-light/20 divide-y divide-gold-light/10">
-            {addons.map((a) => (
-              <div key={a.name} className="flex items-center justify-between px-8 py-5 hover:bg-cream/30 transition-colors">
-                <div className="flex items-center gap-3">
-                  <span className="w-1.5 h-1.5 bg-gold rounded-full inline-block" />
-                  <span className="text-dark">{a.name}</span>
-                  {a.dur && <span className="text-text-light text-sm">{a.dur}</span>}
-                </div>
-                <span className="font-serif-tc text-lg text-gold font-semibold">{a.price}</span>
-              </div>
-            ))}
-          </div>
-        </div>
+
+        <p className="text-center text-text-light text-xs mt-6">服務皆含：舒壓放鬆・促進循環・深層釋放疲勞 ／ 依個人狀況調整手法與產品</p>
+
         <div className="mt-8 bg-white border border-gold-light/20 p-6">
           <h4 className="font-serif-tc text-dark font-semibold mb-3">到府服務費</h4>
           <div className="grid grid-cols-3 gap-4 text-sm text-text-light">
@@ -160,7 +200,7 @@ function WhyUs() {
   ];
   return (
     <section id="why" className="py-24 bg-white">
-      <div className="max-w-6xl mx-auto px-6">
+      <div className="max-w-6xl mx-auto px-8 lg:px-12">
         <div className="text-center mb-16">
           <p className="text-gold text-sm tracking-[0.3em] uppercase mb-3">WHY JY BEAUTY</p>
           <h2 className="font-serif-tc text-3xl md:text-4xl font-bold text-dark mb-4">為什麼選擇我們</h2>
@@ -192,7 +232,7 @@ function TargetAudience() {
   ];
   return (
     <section className="py-24 bg-cream/50">
-      <div className="max-w-6xl mx-auto px-6">
+      <div className="max-w-6xl mx-auto px-8 lg:px-12">
         <div className="text-center mb-16">
           <p className="text-gold text-sm tracking-[0.3em] uppercase mb-3">FOR YOU</p>
           <h2 className="font-serif-tc text-3xl md:text-4xl font-bold text-dark mb-4">專為你設計的服務</h2>
@@ -215,7 +255,7 @@ function TargetAudience() {
 function SpecialOffers() {
   return (
     <section className="py-24 bg-dark text-white">
-      <div className="max-w-6xl mx-auto px-6">
+      <div className="max-w-6xl mx-auto px-8 lg:px-12">
         <div className="text-center mb-12">
           <p className="text-gold-light text-sm tracking-[0.3em] uppercase mb-3">SPECIAL OFFER</p>
           <h2 className="font-serif-tc text-3xl md:text-4xl font-bold mb-4">首次體驗優惠</h2>
@@ -234,7 +274,7 @@ function SpecialOffers() {
 function Contact() {
   return (
     <section id="contact" className="py-24 bg-white">
-      <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-center">
+      <div className="max-w-6xl mx-auto px-8 lg:px-12 grid md:grid-cols-2 gap-16 items-center">
         <div>
           <p className="text-gold text-sm tracking-[0.3em] uppercase mb-3">BOOKING</p>
           <h2 className="font-serif-tc text-3xl md:text-4xl font-bold text-dark mb-6">預約你的放鬆時光</h2>
@@ -248,7 +288,7 @@ function Contact() {
           <a href="#" className="inline-block bg-gold text-white px-10 py-4 text-lg tracking-wide hover:bg-dark-light transition-colors">LINE 立即預約</a>
         </div>
         <div className="relative h-[500px]">
-          <Image src="/hero-2.jpg" alt="JY Beauty 預約" fill className="object-cover object-top" />
+          <Image src={`${BASE}/hero-2.jpg`} alt="JY Beauty 預約" fill className="object-cover object-top" />
         </div>
       </div>
     </section>
@@ -258,7 +298,7 @@ function Contact() {
 function Footer() {
   return (
     <footer className="bg-dark text-white/60 py-12">
-      <div className="max-w-6xl mx-auto px-6 text-center">
+      <div className="max-w-6xl mx-auto px-8 lg:px-12 text-center">
         <p className="font-serif-tc text-2xl font-bold text-white mb-2"><span className="text-gold">JY</span> Beauty</p>
         <p className="text-sm mb-1">RELAX · RENEW · RADIATE</p>
         <p className="text-sm">美麗・放鬆・從 JY Beauty 開始</p>
