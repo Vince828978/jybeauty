@@ -27,6 +27,9 @@ function Menu({ open, onClose, onNavigate }: { open: boolean; onClose: () => voi
             {item.label}
           </button>
         ))}
+        <a href="/member" className="block font-serif-tc text-3xl text-white/80 hover:text-gold py-5 tracking-wider transition-colors">
+          會員中心
+        </a>
       </div>
     </div>
   );
