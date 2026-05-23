@@ -14,9 +14,9 @@ function Navbar() {
           <a href="#about" className="hover:text-gold transition-colors">關於我們</a>
           <a href="#services" className="hover:text-gold transition-colors">療程服務</a>
           <a href="#why" className="hover:text-gold transition-colors">為什麼選擇我們</a>
-          <a href="#contact" className="hover:text-gold transition-colors">聯繫預約</a>
+          <a href="/booking" className="hover:text-gold transition-colors">聯繫預約</a>
         </div>
-        <a href="#contact" className="bg-gold text-white px-5 py-2 text-sm tracking-wide hover:bg-dark-light transition-colors">立即預約</a>
+        <a href="/booking" className="bg-gold text-white px-5 py-2 text-sm tracking-wide hover:bg-dark-light transition-colors">立即預約</a>
       </div>
     </nav>
   );
@@ -36,7 +36,7 @@ function Hero() {
             不必出門，專業到家。我們把最好的 SPA 帶到你身邊，在你最放鬆的空間，享受專屬一對一的療癒時光。
           </p>
           <div className="flex flex-row gap-4">
-            <a href="#contact" className="bg-gold text-white px-6 py-3.5 text-center text-sm tracking-wide hover:bg-dark-light transition-colors rounded-full">預約到府服務</a>
+            <a href="/booking" className="bg-gold text-white px-6 py-3.5 text-center text-sm tracking-wide hover:bg-dark-light transition-colors rounded-full">預約到府服務</a>
             <a href="#services" className="border border-gold text-gold px-6 py-3.5 text-center text-sm tracking-wide hover:bg-gold hover:text-white transition-colors rounded-full">瀏覽療程</a>
           </div>
         </div>
@@ -367,7 +367,7 @@ function Contact() {
           <a href="#" className="inline-block bg-gold text-white px-10 py-4 text-lg tracking-wide hover:bg-dark-light transition-colors">LINE 立即預約</a>
         </div>
         <div className="relative h-[450px] md:h-[500px]">
-          <Image src="/hero-2.jpg" alt="JY Beauty 預約" fill className="object-cover object-center" />
+          <Image src="/about-2.jpg" alt="JY Beauty 預約" fill className="object-cover object-top" />
         </div>
       </div>
     </section>
