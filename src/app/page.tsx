@@ -19,7 +19,6 @@ function Menu({ open, onClose, onNavigate }: { open: boolean; onClose: () => voi
           { key: "home" as Page, label: "首頁" },
           { key: "about" as Page, label: "關於我們" },
           { key: "services" as Page, label: "療程方案" },
-          { key: "booking" as Page, label: "線上預約" },
           { key: "contact" as Page, label: "聯繫我們" },
         ].map((item) => (
           <button key={item.key} onClick={() => { onNavigate(item.key); onClose(); }}
