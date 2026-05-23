@@ -6,17 +6,16 @@ import { useState, useEffect } from "react";
 function Navbar() {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-warm-bg/90 backdrop-blur-md border-b border-gold-light/30">
-      <div className="max-w-6xl mx-auto px-6 md:px-8 lg:px-12 py-4 flex items-center justify-between">
+      <div className="max-w-6xl mx-auto px-6 py-3 flex items-center justify-center">
         <a href="#" className="flex items-center">
-          <Image src="/logo.svg" alt="JY Beauty" width={120} height={60} className="h-10 w-auto" />
+          <Image src="/logo.svg" alt="JY Beauty" width={160} height={80} className="h-14 w-auto" />
         </a>
-        <div className="hidden md:flex items-center gap-8 text-sm text-text-light">
-          <a href="#about" className="hover:text-gold transition-colors">關於我們</a>
-          <a href="#services" className="hover:text-gold transition-colors">療程服務</a>
-          <a href="#why" className="hover:text-gold transition-colors">為什麼選擇我們</a>
-          <a href="/booking" className="hover:text-gold transition-colors">聯繫預約</a>
-        </div>
-        <a href="/booking" className="bg-gold text-white px-5 py-2 text-sm tracking-wide hover:bg-dark-light transition-colors">立即預約</a>
+      </div>
+      <div className="hidden md:flex items-center justify-center gap-8 text-sm text-text-light pb-3">
+        <a href="#about" className="hover:text-gold transition-colors">關於我們</a>
+        <a href="#services" className="hover:text-gold transition-colors">療程服務</a>
+        <a href="#why" className="hover:text-gold transition-colors">為什麼選擇我們</a>
+        <a href="/booking" className="hover:text-gold transition-colors">聯繫預約</a>
       </div>
     </nav>
   );
@@ -51,24 +50,26 @@ function Hero() {
 
 function About() {
   return (
-    <section id="about" className="py-24 bg-white">
-      <div className="max-w-6xl mx-auto px-16 md:px-20 lg:px-24 grid md:grid-cols-2 gap-12 md:gap-16 items-center">
-        <div className="relative h-[350px] md:h-[500px]">
-          <Image src="/about.jpg" alt="JY Beauty 美容師" fill className="object-cover object-top" />
+    <section id="about" className="bg-white">
+      <div className="relative h-[350px] md:h-[500px]">
+        <Image src="/about.jpg" alt="JY Beauty 美容師" fill className="object-cover object-top" />
+      </div>
+      <div className="max-w-md md:max-w-3xl mx-auto px-10 py-10">
+        <div className="text-center mb-6">
+          <p className="text-gold text-sm tracking-[0.3em] uppercase mb-2">ABOUT US</p>
+          <h2 className="font-serif-tc text-2xl md:text-4xl font-bold text-dark">把 SPA 帶到你身邊</h2>
         </div>
-        <div className="text-center max-w-md mx-auto">
-          <p className="text-gold text-sm tracking-[0.3em] uppercase mb-3">ABOUT US</p>
-          <h2 className="font-serif-tc text-3xl md:text-4xl font-bold text-dark mb-6">把 SPA 帶到你身邊</h2>
-          <div className="section-divider mb-8" />
-          <div className="space-y-4 text-text-light leading-relaxed text-sm">
-            <p>做美容這些年，看過太多客人拖著疲憊的身體來到店裡，做完療程整個人放鬆了，結果一出門又要擠捷運、找車位，那份放鬆在回家路上就消失了一半。</p>
-            <p>我一直在想，如果做完就能直接躺在自己的床上，蓋著自己最喜歡的被子，那才是真正完整的放鬆。</p>
-            <p className="font-medium text-dark">所以我決定，不開店，我去找你。</p>
-            <p>專業設備帶在身上——精油、美容床、毛巾、音樂，到你家佈置一個專屬的 SPA 空間。你不用出門、不用趕時間、不用跟別人共用空間。這段時間，完全是你的。</p>
-          </div>
-          <div className="mt-8 pt-8 border-t border-gold-light/30">
-            <p className="text-gold text-sm tracking-wide mb-4 font-medium">專業資歷</p>
-            <div className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm text-text-light">
+        {/* Mobile: expandable / Desktop: always show */}
+        <div className="md:hidden">
+          <Expandable title="品牌故事">
+            <div className="space-y-3 text-text-light leading-relaxed text-sm text-center">
+              <p>做美容這些年，看過太多客人做完療程一出門，那份放鬆在回家路上就消失了一半。</p>
+              <p className="font-medium text-dark">所以我決定，不開店，我去找你。</p>
+              <p>專業設備帶在身上，到你家佈置一個專屬的 SPA 空間。這段時間，完全是你的。</p>
+            </div>
+          </Expandable>
+          <Expandable title="專業資歷">
+            <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm text-text-light text-center">
               <span>美容丙乙級證照</span>
               <span>美容 SPA 經驗 15 年</span>
               <span>資深美容顧問</span>
@@ -76,6 +77,22 @@ function About() {
               <span>漂眉 / 韓式霧唇培訓</span>
               <span>手腳深層護理</span>
               <span>火罐 / 運動拉筋放鬆</span>
+            </div>
+          </Expandable>
+        </div>
+        <div className="hidden md:block text-center">
+          <div className="section-divider mb-8" />
+          <div className="space-y-4 text-text-light leading-relaxed">
+            <p>做美容這些年，看過太多客人拖著疲憊的身體來到店裡，做完療程整個人放鬆了，結果一出門又要擠捷運、找車位，那份放鬆在回家路上就消失了一半。</p>
+            <p>我一直在想，如果做完就能直接躺在自己的床上，蓋著自己最喜歡的被子，那才是真正完整的放鬆。</p>
+            <p className="font-medium text-dark">所以我決定，不開店，我去找你。</p>
+            <p>專業設備帶在身上——精油、美容床、毛巾、音樂，到你家佈置一個專屬的 SPA 空間。你不用出門、不用趕時間、不用跟別人共用空間。這段時間，完全是你的。</p>
+          </div>
+          <div className="mt-8 pt-8 border-t border-gold-light/30">
+            <p className="text-gold text-sm tracking-wide mb-4 font-medium">專業資歷</p>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-3 text-sm text-text-light">
+              <span>美容丙乙級證照</span><span>美容 SPA 經驗 15 年</span><span>資深美容顧問</span><span>孕婦按摩培訓</span>
+              <span>漂眉 / 韓式霧唇培訓</span><span>手腳深層護理</span><span>火罐 / 運動拉筋放鬆</span>
             </div>
           </div>
         </div>
@@ -172,6 +189,24 @@ function Services() {
   );
 }
 
+function Expandable({ title, children, defaultOpen = false }: { title: string; children: React.ReactNode; defaultOpen?: boolean }) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className="border-b border-gold-light/20">
+      <button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between py-5 text-left">
+        <h3 className="font-serif-tc text-lg font-semibold text-dark">{title}</h3>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+          className={`text-gold transition-transform duration-300 flex-shrink-0 ${open ? "rotate-180" : ""}`}>
+          <path d="M6 9l6 6 6-6"/>
+        </svg>
+      </button>
+      <div className={`overflow-hidden transition-all duration-500 ${open ? "max-h-[2000px] opacity-100 pb-6" : "max-h-0 opacity-0"}`}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
 function SvgIcon({ d }: { d: string }) {
   return (
     <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" className="text-gold mx-auto">
@@ -258,33 +293,36 @@ function PackageCarousel({ packages }: { packages: { tier: string; name: string;
 }
 
 function WhyUs() {
+  const items = [
+    { title: "到府服務", desc: "不用出門、不用找停車位，在最放鬆的私人空間享受專業護理" },
+    { title: "一對一專屬", desc: "預約制服務，時間完全配合你，不趕場、不共用空間" },
+    { title: "專業品質", desc: "使用高品質精油與專業設備，每一次療程都是頂級享受" },
+    { title: "完整放鬆", desc: "服務完直接在家休息，讓放鬆延續到入睡，不被通勤打斷" },
+  ];
   return (
-    <section id="why" className="py-24 bg-white">
+    <section id="why" className="py-16 md:py-24 bg-white">
       <div className="max-w-md md:max-w-3xl mx-auto px-10 lg:px-12 text-center">
         <p className="text-gold text-sm tracking-[0.3em] uppercase mb-3">WHY JY BEAUTY</p>
-        <h2 className="font-serif-tc text-3xl md:text-4xl font-bold text-dark mb-6">為什麼選擇我們</h2>
-        <div className="section-divider mb-10" />
-        <p className="text-text-light text-base md:text-lg leading-loose mb-10">
-          我們選擇不開店，不是因為還沒準備好，而是我們相信——<br />
-          <span className="font-medium text-dark font-serif-tc text-lg md:text-xl">最好的 SPA 空間，就是你最放鬆的地方。</span>
+        <h2 className="font-serif-tc text-2xl md:text-4xl font-bold text-dark mb-4">為什麼選擇我們</h2>
+        <p className="text-text-light text-sm md:text-base leading-relaxed mb-6">
+          最好的 SPA 空間，就是你最放鬆的地方。
         </p>
-        <div className="space-y-8 text-left max-w-2xl mx-auto">
-          <div className="flex items-start gap-5">
-            <span className="w-10 h-10 flex-shrink-0 border border-gold rounded-full flex items-center justify-center mt-0.5"><SvgIcon d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z M9 22V12h6v10" /></span>
-            <div><h3 className="font-serif-tc text-lg font-semibold text-dark mb-1">到府服務</h3><p className="text-text-light text-sm leading-relaxed">不用出門、不用找停車位，在最放鬆的私人空間享受專業護理</p></div>
-          </div>
-          <div className="flex items-start gap-5">
-            <span className="w-10 h-10 flex-shrink-0 border border-gold rounded-full flex items-center justify-center mt-0.5"><SvgIcon d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2 M12 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8z" /></span>
-            <div><h3 className="font-serif-tc text-lg font-semibold text-dark mb-1">一對一專屬</h3><p className="text-text-light text-sm leading-relaxed">預約制服務，時間完全配合你，不趕場、不共用空間</p></div>
-          </div>
-          <div className="flex items-start gap-5">
-            <span className="w-10 h-10 flex-shrink-0 border border-gold rounded-full flex items-center justify-center mt-0.5"><SvgIcon d="M12 2L15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2z" /></span>
-            <div><h3 className="font-serif-tc text-lg font-semibold text-dark mb-1">專業品質</h3><p className="text-text-light text-sm leading-relaxed">使用高品質精油與專業設備，每一次療程都是頂級享受</p></div>
-          </div>
-          <div className="flex items-start gap-5">
-            <span className="w-10 h-10 flex-shrink-0 border border-gold rounded-full flex items-center justify-center mt-0.5"><SvgIcon d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z" /></span>
-            <div><h3 className="font-serif-tc text-lg font-semibold text-dark mb-1">完整放鬆</h3><p className="text-text-light text-sm leading-relaxed">服務完直接在家休息，讓放鬆延續到入睡，不被通勤打斷</p></div>
-          </div>
+        {/* Mobile: expandable items */}
+        <div className="md:hidden text-left">
+          {items.map((item) => (
+            <Expandable key={item.title} title={item.title}>
+              <p className="text-text-light text-sm leading-relaxed text-center">{item.desc}</p>
+            </Expandable>
+          ))}
+        </div>
+        {/* Desktop: show all */}
+        <div className="hidden md:grid md:grid-cols-4 gap-8 mt-10">
+          {items.map((item) => (
+            <div key={item.title} className="text-center">
+              <h3 className="font-serif-tc text-lg font-semibold text-dark mb-2">{item.title}</h3>
+              <p className="text-text-light text-sm leading-relaxed">{item.desc}</p>
+            </div>
+          ))}
         </div>
       </div>
     </section>
