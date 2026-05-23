@@ -13,7 +13,7 @@ function Menu({ open, onClose, onNavigate }: { open: boolean; onClose: () => voi
         <button onClick={onClose} className="absolute top-6 right-6 text-white/60">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
         </button>
-        <Image src="/logo.svg" alt="JY Beauty" width={280} height={140} className="h-24 w-auto mb-12" />
+        <Image src="/logo.svg" alt="JY Beauty" width={360} height={180} className="h-32 w-auto mb-14" />
         {[
           { key: "home" as Page, label: "首頁" },
           { key: "about" as Page, label: "關於我們" },
@@ -22,11 +22,11 @@ function Menu({ open, onClose, onNavigate }: { open: boolean; onClose: () => voi
           { key: "contact" as Page, label: "聯繫我們" },
         ].map((item) => (
           <button key={item.key} onClick={() => { onNavigate(item.key); onClose(); }}
-            className="block font-serif-tc text-2xl text-white/80 hover:text-gold py-7 tracking-wider transition-colors">
+            className="block font-serif-tc text-3xl text-white/80 hover:text-gold py-5 tracking-wider transition-colors">
             {item.label}
           </button>
         ))}
-        <div className="mt-10 text-white/30 text-xs tracking-widest">RELAX · RENEW · RADIATE</div>
+        <div className="mt-14 text-white/30 text-sm tracking-[0.3em]">RELAX · RENEW · RADIATE</div>
       </div>
     </div>
   );
