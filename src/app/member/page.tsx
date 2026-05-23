@@ -108,43 +108,43 @@ export default function MemberPage() {
   }
 
   return (
-    <div className="min-h-screen bg-warm-bg flex items-center justify-center px-6">
-      <div className="bg-white rounded-2xl p-8 max-w-sm w-full text-center">
-        <p className="font-serif-tc text-2xl font-bold text-dark mb-1"><span className="text-gold">JY</span> Beauty</p>
-        <p className="text-text-light text-sm mb-8">會員{mode === "login" ? "登入" : "註冊"}</p>
+    <div className="min-h-screen bg-warm-bg flex items-center justify-center px-8">
+      <div className="max-w-sm w-full text-center">
+        <p className="font-serif-tc text-3xl font-bold text-dark mb-2"><span className="text-gold">JY</span> Beauty</p>
+        <p className="text-text-light text-lg mb-12">會員{mode === "login" ? "登入" : "註冊"}</p>
 
-        {error && <p className="text-red-500 text-sm mb-4 bg-red-50 rounded-xl py-2">{error}</p>}
+        {error && <p className="text-red-500 text-base mb-6 bg-red-50 rounded-2xl py-3">{error}</p>}
 
-        <div className="space-y-4 mb-6">
+        <div className="space-y-6 mb-10">
           {mode === "register" && (
             <input value={name} onChange={e => setName(e.target.value)} placeholder="姓名"
-              className="w-full px-5 py-4 rounded-2xl border border-gold-light/30 text-base text-center focus:outline-none focus:border-gold" />
+              className="w-full px-5 py-5 rounded-2xl border-2 border-gold-light/30 text-lg text-center focus:outline-none focus:border-gold" />
           )}
           <input value={phone} onChange={e => setPhone(e.target.value)} placeholder="手機號碼" type="tel"
-            className="w-full px-5 py-4 rounded-2xl border border-gold-light/30 text-base text-center focus:outline-none focus:border-gold" />
+            className="w-full px-5 py-5 rounded-2xl border-2 border-gold-light/30 text-lg text-center focus:outline-none focus:border-gold" />
           <input value={password} onChange={e => setPassword(e.target.value)} placeholder="密碼" type="password"
-            className="w-full px-5 py-4 rounded-2xl border border-gold-light/30 text-base text-center focus:outline-none focus:border-gold" />
+            className="w-full px-5 py-5 rounded-2xl border-2 border-gold-light/30 text-lg text-center focus:outline-none focus:border-gold" />
           {mode === "register" && (
             <>
               <input value={address} onChange={e => setAddress(e.target.value)} placeholder="地址（選填）"
-                className="w-full px-5 py-4 rounded-2xl border border-gold-light/30 text-base text-center focus:outline-none focus:border-gold" />
+                className="w-full px-5 py-5 rounded-2xl border-2 border-gold-light/30 text-lg text-center focus:outline-none focus:border-gold" />
               <input value={referralPhone} onChange={e => setReferralPhone(e.target.value)} placeholder="推薦人電話（選填）"
-                className="w-full px-5 py-4 rounded-2xl border border-gold-light/30 text-base text-center focus:outline-none focus:border-gold" />
+                className="w-full px-5 py-5 rounded-2xl border-2 border-gold-light/30 text-lg text-center focus:outline-none focus:border-gold" />
             </>
           )}
         </div>
 
         <button onClick={mode === "login" ? handleLogin : handleRegister}
-          className="w-full bg-gold text-white py-5 rounded-2xl text-lg font-medium active:bg-dark-light mb-4">
+          className="w-full bg-gold text-white py-6 rounded-2xl text-xl font-medium active:bg-dark-light mb-6">
           {mode === "login" ? "登入" : "註冊"}
         </button>
 
         <button onClick={() => { setMode(mode === "login" ? "register" : "login"); setError(""); }}
-          className="text-gold text-base">
+          className="text-gold text-lg py-3">
           {mode === "login" ? "還沒有帳號？立即註冊" : "已有帳號？登入"}
         </button>
 
-        <a href="/" className="block text-text-light text-sm mt-6">回首頁</a>
+        <a href="/" className="block text-text-light text-base mt-8">回首頁</a>
       </div>
     </div>
   );
