@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" width="400" height="200">
+  <defs>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#d4af6a"/>
+      <stop offset="50%" style="stop-color:#c9a96e"/>
+      <stop offset="100%" style="stop-color:#b8944f"/>
+    </linearGradient>
+    <linearGradient id="goldLight" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:transparent"/>
+      <stop offset="50%" style="stop-color:#c9a96e"/>
+      <stop offset="100%" style="stop-color:transparent"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Decorative star -->
+  <circle cx="148" cy="28" r="2" fill="#c9a96e" opacity="0.8"/>
+  <line x1="148" y1="22" x2="148" y2="34" stroke="#c9a96e" stroke-width="0.5" opacity="0.6"/>
+  <line x1="142" y1="28" x2="154" y2="28" stroke="#c9a96e" stroke-width="0.5" opacity="0.6"/>
+  <line x1="144" y1="24" x2="152" y2="32" stroke="#c9a96e" stroke-width="0.3" opacity="0.4"/>
+  <line x1="152" y1="24" x2="144" y2="32" stroke="#c9a96e" stroke-width="0.3" opacity="0.4"/>
+
+  <!-- JY script text -->
+  <text x="200" y="105" text-anchor="middle" font-family="Georgia, 'Noto Serif TC', serif" font-size="90" font-style="italic" font-weight="400" fill="url(#gold)" letter-spacing="5">
+    jy
+  </text>
+
+  <!-- BEAUTY text -->
+  <text x="200" y="148" text-anchor="middle" font-family="'Noto Sans TC', Arial, sans-serif" font-size="28" font-weight="300" fill="#2c2420" letter-spacing="18">
+    BEAUTY
+  </text>
+
+  <!-- Divider line -->
+  <line x1="120" y1="158" x2="280" y2="158" stroke="url(#goldLight)" stroke-width="0.8"/>
+
+  <!-- Tagline -->
+  <text x="200" y="178" text-anchor="middle" font-family="'Noto Sans TC', Arial, sans-serif" font-size="9" font-weight="300" fill="#7a6e65" letter-spacing="8">
+    RELAX · RENEW · RADIATE
+  </text>
+</svg>

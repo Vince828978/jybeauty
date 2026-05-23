@@ -7,8 +7,8 @@ function Navbar() {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-warm-bg/90 backdrop-blur-md border-b border-gold-light/30">
       <div className="max-w-6xl mx-auto px-6 md:px-8 lg:px-12 py-4 flex items-center justify-between">
-        <a href="#" className="font-serif-tc text-xl md:text-2xl font-bold text-dark tracking-wider">
-          <span className="text-gold">JY</span> Beauty
+        <a href="#" className="flex items-center">
+          <Image src="/logo.svg" alt="JY Beauty" width={120} height={60} className="h-10 w-auto" />
         </a>
         <div className="hidden md:flex items-center gap-8 text-sm text-text-light">
           <a href="#about" className="hover:text-gold transition-colors">關於我們</a>
@@ -65,6 +65,18 @@ function About() {
             <p>我一直在想，如果做完就能直接躺在自己的床上，蓋著自己最喜歡的被子，那才是真正完整的放鬆。</p>
             <p className="font-medium text-dark">所以我決定，不開店，我去找你。</p>
             <p>專業設備帶在身上——精油、美容床、毛巾、音樂，到你家佈置一個專屬的 SPA 空間。你不用出門、不用趕時間、不用跟別人共用空間。這段時間，完全是你的。</p>
+          </div>
+          <div className="mt-8 pt-8 border-t border-gold-light/30">
+            <p className="text-gold text-sm tracking-wide mb-4 font-medium">專業資歷</p>
+            <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm text-text-light">
+              <span>美容丙乙級證照</span>
+              <span>美容 SPA 經驗 15 年</span>
+              <span>資深美容顧問</span>
+              <span>孕婦按摩培訓</span>
+              <span>漂眉 / 韓式霧唇培訓</span>
+              <span>手腳深層護理</span>
+              <span>火罐 / 運動拉筋放鬆</span>
+            </div>
           </div>
         </div>
       </div>
