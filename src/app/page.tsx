@@ -141,11 +141,11 @@ function ServicesPage() {
         <div className="grid grid-cols-2 gap-4 mb-10">
           <div className="bg-cream/50 rounded-2xl p-5 text-center">
             <p className="font-serif-tc text-lg font-bold text-dark mb-2">到府服務</p>
-            <p className="text-text-light text-xs">美容師到你家<br />最熟悉的空間放鬆</p>
+            <p className="text-text-light text-sm">美容師到你家<br />最熟悉的空間放鬆</p>
           </div>
           <div className="bg-cream/50 rounded-2xl p-5 text-center">
             <p className="font-serif-tc text-lg font-bold text-dark mb-2">工作室服務</p>
-            <p className="text-text-light text-xs">就近配合工作室<br />專業環境同樣享受</p>
+            <p className="text-text-light text-sm">就近配合工作室<br />專業環境同樣享受</p>
           </div>
         </div>
 
@@ -193,10 +193,10 @@ function ContactPage() {
               <p className="text-white font-medium">專業到府服務</p>
             </div>
           </div>
-          <a href="/booking" className="inline-block bg-gold text-white px-10 py-3.5 text-sm tracking-wide rounded-full hover:bg-gold-light transition-colors">
+          <a href="/booking" className="inline-block bg-gold text-white px-14 py-5 text-xl tracking-wide rounded-2xl font-medium active:bg-gold-light transition-colors">
             立即預約
           </a>
-          <p className="text-white/20 text-xs mt-8">&copy; 2026 JY Beauty</p>
+          <p className="text-white/20 text-sm mt-10">&copy; 2026 JY Beauty</p>
         </div>
       </div>
     </section>
