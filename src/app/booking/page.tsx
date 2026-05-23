@@ -91,7 +91,7 @@ export default function BookingPage() {
       <div className="bg-white/80 backdrop-blur-md border-b border-gold-light/30 px-6 py-4 sticky top-0 z-50">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           <a href="/" className="font-serif-tc text-lg font-bold text-dark"><span className="text-gold">JY</span> Beauty</a>
-          <span className="text-text-light text-sm">線上預約</span>
+          <div className="w-10" />
         </div>
       </div>
 
