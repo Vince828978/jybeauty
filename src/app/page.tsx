@@ -359,15 +359,15 @@ function Contact() {
           <h2 className="font-serif-tc text-3xl md:text-4xl font-bold text-dark mb-6">預約你的放鬆時光</h2>
           <div className="section-divider mb-8 !ml-0" />
           <p className="text-text-light leading-relaxed mb-8">透過 LINE 預約，我們會在確認後與你聯繫，了解你的需求，為你安排最適合的療程。</p>
-          <div className="space-y-4 mb-8">
-            <div className="flex items-center gap-4"><span className="w-10 h-10 bg-cream flex items-center justify-center text-gold">📱</span><div><p className="text-sm text-text-light">LINE 預約</p><p className="font-medium text-dark">點擊下方按鈕加入好友</p></div></div>
-            <div className="flex items-center gap-4"><span className="w-10 h-10 bg-cream flex items-center justify-center text-gold">⏰</span><div><p className="text-sm text-text-light">服務時間</p><p className="font-medium text-dark">預約制，配合您的時間</p></div></div>
-            <div className="flex items-center gap-4"><span className="w-10 h-10 bg-cream flex items-center justify-center text-gold">📍</span><div><p className="text-sm text-text-light">服務方式</p><p className="font-medium text-dark">專業到府服務</p></div></div>
+          <div className="space-y-5 mb-8">
+            <div className="flex items-center gap-4"><span className="w-10 h-10 bg-cream flex items-center justify-center rounded-full flex-shrink-0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-gold"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span><div><p className="text-sm text-text-light">LINE 預約</p><p className="font-medium text-dark">點擊下方按鈕加入好友</p></div></div>
+            <div className="flex items-center gap-4"><span className="w-10 h-10 bg-cream flex items-center justify-center rounded-full flex-shrink-0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-gold"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></span><div><p className="text-sm text-text-light">服務時間</p><p className="font-medium text-dark">預約制，配合您的時間</p></div></div>
+            <div className="flex items-center gap-4"><span className="w-10 h-10 bg-cream flex items-center justify-center rounded-full flex-shrink-0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-gold"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span><div><p className="text-sm text-text-light">服務方式</p><p className="font-medium text-dark">專業到府服務</p></div></div>
           </div>
           <a href="#" className="inline-block bg-gold text-white px-10 py-4 text-lg tracking-wide hover:bg-dark-light transition-colors">LINE 立即預約</a>
         </div>
-        <div className="relative h-[350px] md:h-[500px]">
-          <Image src="/hero-2.jpg" alt="JY Beauty 預約" fill className="object-cover object-top" />
+        <div className="relative h-[450px] md:h-[500px]">
+          <Image src="/hero-2.jpg" alt="JY Beauty 預約" fill className="object-cover object-center" />
         </div>
       </div>
     </section>
