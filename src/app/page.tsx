@@ -133,7 +133,7 @@ function ServicesPage() {
       <div className="relative h-[40vh]">
         <Image src="/hero-2.jpg" alt="JY Beauty 服務" fill className="object-cover object-[center_30%]" />
       </div>
-      <div className="max-w-[300px] md:max-w-3xl mx-auto px-4 py-10 text-center">
+      <div className="md:max-w-3xl mx-auto px-10 py-10 text-center">
         <p className="text-gold text-xs tracking-[0.3em] uppercase mb-4">OUR SERVICES</p>
         <h2 className="font-serif-tc text-2xl font-bold text-dark mb-8">專為你設計的服務</h2>
 
