@@ -196,38 +196,38 @@ function PackageCarousel({ packages }: { packages: { tier: string; name: string;
   return (
     <>
       {/* Mobile carousel */}
-      <div className="md:hidden mb-12 mt-8">
-        <div className="relative flex items-center justify-center">
-          <button onClick={prev} className="absolute left-0 z-10 w-10 h-10 flex items-center justify-center text-gold text-2xl">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-          </button>
-          <div className="w-[72vw] min-h-[340px] relative">
+      <div className="md:hidden mb-12 mt-10">
+        <div className="relative px-2">
+          <div className="relative min-h-[280px]">
             {packages.map((p, i) => (
               <div
                 key={p.name}
                 className={`absolute inset-0 transition-all duration-500 ${i === active ? "opacity-100 scale-100" : "opacity-0 scale-90 pointer-events-none"}`}
               >
-                <div className={`bg-white p-7 rounded-2xl border text-center h-full flex flex-col justify-center items-center ${p.popular ? "border-gold shadow-lg" : "border-gold-light/20"}`}>
-                  {p.popular && <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gold text-white text-xs px-5 py-1.5 tracking-wide rounded-full">人氣推薦</div>}
+                <div className={`bg-white px-6 py-6 rounded-2xl border text-center ${p.popular ? "border-gold shadow-lg" : "border-gold-light/20"}`}>
+                  {p.popular && <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gold text-white text-xs px-5 py-1.5 tracking-wide rounded-full z-10">人氣推薦</div>}
                   <p className="text-gold text-sm italic mb-1">{p.tier}</p>
-                  <h3 className="font-serif-tc text-2xl font-bold text-dark mb-1">{p.name}</h3>
-                  <p className="text-text-light text-sm mb-4">{p.subtitle}</p>
-                  <div className="space-y-2 mb-4 text-left">
+                  <h3 className="font-serif-tc text-xl font-bold text-dark mb-1">{p.name}</h3>
+                  <p className="text-text-light text-xs mb-3">{p.subtitle}</p>
+                  <div className="space-y-1.5 mb-3 inline-block text-left">
                     {p.items.map((item) => (
-                      <div key={item} className="flex items-center gap-3 text-sm text-dark">
+                      <div key={item} className="flex items-center gap-2 text-sm text-dark">
                         <span className="w-1.5 h-1.5 bg-gold rounded-full inline-block flex-shrink-0" />
                         {item}
                       </div>
                     ))}
                   </div>
-                  <p className="font-serif-tc text-4xl text-gold font-bold mb-2">{p.price}</p>
-                  <p className="text-text-light text-xs leading-relaxed">{p.desc}</p>
+                  <p className="font-serif-tc text-3xl text-gold font-bold mb-1">{p.price}</p>
+                  <p className="text-text-light text-xs">{p.desc}</p>
                 </div>
               </div>
             ))}
           </div>
-          <button onClick={next} className="absolute right-0 z-10 w-10 h-10 flex items-center justify-center text-gold text-2xl">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+          <button onClick={prev} className="absolute -left-1 top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center bg-white/80 rounded-full shadow-md border border-gold-light/30">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gold"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <button onClick={next} className="absolute -right-1 top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center bg-white/80 rounded-full shadow-md border border-gold-light/30">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gold"><path d="M9 18l6-6-6-6"/></svg>
           </button>
         </div>
         <div className="flex justify-center gap-3 mt-6">
