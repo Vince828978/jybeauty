@@ -1,4 +1,4 @@
-:HL["/jybeauty/_next/static/chunks/09fbqj1wmwngr.css","style"]
+:HL["/jybeauty/_next/static/chunks/0291l5x.3__~5.css","style"]
 :HL["/jybeauty/_next/static/media/caa3a2e1cccd8315-s.p.09~u27dqhyhd6.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
 :HL["https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Serif+TC:wght@400;600;700&display=swap","style"]
-0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}},"staleTime":300,"buildId":"9eAuqHHI0wNi8LW2LnAij"}
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}},"staleTime":300,"buildId":"fQMcteOeZ6DWgrQ9Cj4AY"}
