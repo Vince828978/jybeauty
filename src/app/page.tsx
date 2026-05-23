@@ -26,7 +26,7 @@ function Hero() {
   return (
     <section className="relative min-h-screen flex items-center pt-24 pb-12">
       <div className="hero-gradient absolute inset-0" />
-      <div className="relative max-w-6xl mx-auto px-10 md:px-12 lg:px-16 grid md:grid-cols-2 gap-12 items-center">
+      <div className="relative max-w-6xl mx-auto px-14 md:px-16 lg:px-20 grid md:grid-cols-2 gap-12 items-center">
         <div className="fade-in order-2 md:order-1">
           <p className="text-gold text-sm tracking-[0.3em] uppercase mb-4">RELAX · RENEW · RADIATE</p>
           <h1 className="font-serif-tc text-3xl md:text-5xl lg:text-6xl font-bold text-dark leading-tight mb-6">
@@ -52,14 +52,14 @@ function Hero() {
 function About() {
   return (
     <section id="about" className="py-24 bg-white">
-      <div className="max-w-6xl mx-auto px-10 md:px-12 lg:px-16 grid md:grid-cols-2 gap-12 md:gap-16 items-center">
+      <div className="max-w-6xl mx-auto px-14 md:px-16 lg:px-20 grid md:grid-cols-2 gap-12 md:gap-16 items-center">
         <div className="relative h-[350px] md:h-[500px]">
           <Image src="/about.jpg" alt="JY Beauty 美容師" fill className="object-cover object-top" />
         </div>
-        <div>
+        <div className="text-center">
           <p className="text-gold text-sm tracking-[0.3em] uppercase mb-3">ABOUT US</p>
           <h2 className="font-serif-tc text-3xl md:text-4xl font-bold text-dark mb-6">把 SPA 帶到你身邊</h2>
-          <div className="section-divider mb-8 !ml-0" />
+          <div className="section-divider mb-8" />
           <div className="space-y-4 text-text-light leading-relaxed">
             <p>做美容這些年，看過太多客人拖著疲憊的身體來到店裡，做完療程整個人放鬆了，結果一出門又要擠捷運、找車位，那份放鬆在回家路上就消失了一半。</p>
             <p>我一直在想，如果做完就能直接躺在自己的床上，蓋著自己最喜歡的被子，那才是真正完整的放鬆。</p>
@@ -68,7 +68,7 @@ function About() {
           </div>
           <div className="mt-8 pt-8 border-t border-gold-light/30">
             <p className="text-gold text-sm tracking-wide mb-4 font-medium">專業資歷</p>
-            <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm text-text-light">
+            <div className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm text-text-light">
               <span>美容丙乙級證照</span>
               <span>美容 SPA 經驗 15 年</span>
               <span>資深美容顧問</span>
@@ -127,7 +127,7 @@ function Services() {
 
   return (
     <section id="services" className="py-24 bg-cream/50">
-      <div className="max-w-6xl mx-auto px-10 md:px-12 lg:px-16">
+      <div className="max-w-6xl mx-auto px-14 md:px-16 lg:px-20">
         <div className="text-center mb-16">
           <p className="text-gold text-sm tracking-[0.3em] uppercase mb-3">TREATMENTS</p>
           <h2 className="font-serif-tc text-3xl md:text-4xl font-bold text-dark mb-4">療癒時光・專屬於你</h2>
@@ -325,7 +325,7 @@ function TargetAudience() {
 function SpecialOffers() {
   return (
     <section className="py-24 bg-dark text-white">
-      <div className="max-w-6xl mx-auto px-10 md:px-12 lg:px-16">
+      <div className="max-w-6xl mx-auto px-14 md:px-16 lg:px-20">
         <div className="text-center mb-12">
           <p className="text-gold-light text-sm tracking-[0.3em] uppercase mb-3">SPECIAL OFFER</p>
           <h2 className="font-serif-tc text-3xl md:text-4xl font-bold mb-4">首次體驗優惠</h2>
@@ -353,11 +353,11 @@ function SpecialOffers() {
 function Contact() {
   return (
     <section id="contact" className="py-24 bg-white">
-      <div className="max-w-6xl mx-auto px-10 md:px-12 lg:px-16 grid md:grid-cols-2 gap-12 md:gap-16 items-center">
-        <div>
+      <div className="max-w-6xl mx-auto px-14 md:px-16 lg:px-20 grid md:grid-cols-2 gap-12 md:gap-16 items-center">
+        <div className="text-center md:text-left">
           <p className="text-gold text-sm tracking-[0.3em] uppercase mb-3">BOOKING</p>
           <h2 className="font-serif-tc text-3xl md:text-4xl font-bold text-dark mb-6">預約你的放鬆時光</h2>
-          <div className="section-divider mb-8 !ml-0" />
+          <div className="section-divider mb-8" />
           <p className="text-text-light leading-relaxed mb-8">透過 LINE 預約，我們會在確認後與你聯繫，了解你的需求，為你安排最適合的療程。</p>
           <div className="space-y-5 mb-8">
             <div className="flex items-center gap-4"><span className="w-10 h-10 bg-cream flex items-center justify-center rounded-full flex-shrink-0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-gold"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span><div><p className="text-sm text-text-light">LINE 預約</p><p className="font-medium text-dark">點擊下方按鈕加入好友</p></div></div>
@@ -377,7 +377,7 @@ function Contact() {
 function Footer() {
   return (
     <footer className="bg-dark text-white/60 py-12">
-      <div className="max-w-6xl mx-auto px-10 md:px-12 lg:px-16 text-center">
+      <div className="max-w-6xl mx-auto px-14 md:px-16 lg:px-20 text-center">
         <p className="font-serif-tc text-2xl font-bold text-white mb-2"><span className="text-gold">JY</span> Beauty</p>
         <p className="text-sm mb-1">RELAX · RENEW · RADIATE</p>
         <p className="text-sm">美麗・放鬆・從 JY Beauty 開始</p>
