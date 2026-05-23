@@ -67,15 +67,17 @@ function HomePage() {
     <section className="relative h-screen">
       <Image src="/hero-main.jpg" alt="JY Beauty" fill className="object-cover object-top" priority />
       <div className="absolute inset-0 bg-gradient-to-t from-dark/60 via-transparent to-dark/20" />
-      <div className="absolute inset-x-0 top-1/2 px-8 text-center">
+      <div className="absolute inset-x-0 top-[42%] px-8 text-center">
         <p className="text-gold-light text-xs tracking-[0.4em] uppercase mb-4">RELAX · RENEW · RADIATE</p>
-        <h1 className="font-serif-tc text-3xl md:text-5xl font-bold text-white leading-tight mb-5">
+        <h1 className="font-serif-tc text-3xl md:text-5xl font-bold text-white leading-tight mb-4">
           美麗・放鬆<br />從 JY Beauty 開始
         </h1>
-        <p className="text-white/70 text-sm mb-8">
+        <p className="text-white/70 text-sm">
           私人到府 SPA，在你最放鬆的空間享受專屬療程
         </p>
-        <a href="/booking" className="inline-block bg-gold text-white px-12 py-4 text-lg tracking-widest rounded-full hover:bg-dark-light transition-colors font-medium">
+      </div>
+      <div className="absolute inset-x-0 bottom-[22%] text-center">
+        <a href="/booking" className="inline-block border border-white/50 text-white px-16 py-4 text-base tracking-[0.5em] hover:bg-white/10 hover:border-white transition-all">
           預約體驗
         </a>
       </div>
