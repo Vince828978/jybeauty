@@ -1,39 +1,48 @@
 import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
+import { neon } from "@neondatabase/serverless";
 
-const DATA_FILE = "/tmp/jybeauty-bookings.json";
-
-function readBookings() {
-  try {
-    if (fs.existsSync(DATA_FILE)) {
-      return JSON.parse(fs.readFileSync(DATA_FILE, "utf-8"));
-    }
-  } catch {}
-  return [];
+function getDb() {
+  const url = process.env.STORAGE_URL || process.env.DATABASE_URL || "";
+  return neon(url);
 }
 
-function writeBookings(bookings: unknown[]) {
-  fs.writeFileSync(DATA_FILE, JSON.stringify(bookings, null, 2));
+async function ensureTable() {
+  const sql = getDb();
+  await sql`CREATE TABLE IF NOT EXISTS bookings (
+    id SERIAL PRIMARY KEY,
+    package TEXT,
+    package_tier TEXT,
+    addons TEXT,
+    date TEXT,
+    time TEXT,
+    name TEXT,
+    phone TEXT,
+    total INTEGER,
+    status TEXT DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT NOW()
+  )`;
 }
 
 export async function POST(request: Request) {
-  const body = await request.json();
-  const booking = {
-    id: Date.now().toString(),
-    ...body,
-    createdAt: new Date().toISOString(),
-    status: "pending",
-  };
-
-  const bookings = readBookings();
-  bookings.push(booking);
-  writeBookings(bookings);
-
-  return NextResponse.json({ success: true, booking });
+  try {
+    await ensureTable();
+    const body = await request.json();
+    const sql = getDb();
+    await sql`INSERT INTO bookings (package, package_tier, addons, date, time, name, phone, total)
+      VALUES (${body.package}, ${body.packageTier}, ${JSON.stringify(body.addons || [])}, ${body.date}, ${body.time}, ${body.name}, ${body.phone}, ${body.total})`;
+    return NextResponse.json({ success: true });
+  } catch (e) {
+    return NextResponse.json({ success: false, error: String(e) }, { status: 500 });
+  }
 }
 
 export async function GET() {
-  const bookings = readBookings();
-  return NextResponse.json({ bookings });
+  try {
+    await ensureTable();
+    const sql = getDb();
+    const bookings = await sql`SELECT * FROM bookings ORDER BY created_at DESC`;
+    return NextResponse.json({ bookings });
+  } catch (e) {
+    return NextResponse.json({ bookings: [], error: String(e) }, { status: 500 });
+  }
 }
