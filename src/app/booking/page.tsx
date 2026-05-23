@@ -169,43 +169,15 @@ export default function BookingPage() {
               ))}
             </div>
 
-            {selectedPkg && (
-              <div className="fade-in">
-                <h3 className="font-serif-tc text-lg font-bold text-dark text-center mb-4">加值項目（可選）</h3>
-                <p className="text-text-light text-center text-xs mb-4">身體加項</p>
-                <div className="grid grid-cols-2 gap-3 mb-4">
-                  {bodyAddons.map((a) => (
-                    <button key={a.id} onClick={() => toggleAddon(a.id)}
-                      className={`p-4 rounded-xl border text-center transition-all text-sm ${selectedAddons.includes(a.id) ? "border-gold bg-gold/5" : "border-gold-light/20 bg-white"}`}>
-                      <p className="text-dark font-medium">{a.name}</p>
-                      {a.dur && <p className="text-text-light text-xs">{a.dur}</p>}
-                      <p className="text-gold font-semibold mt-1">+${a.price}</p>
-                    </button>
-                  ))}
-                </div>
-                <p className="text-text-light text-center text-xs mb-4">臉部加項</p>
-                <div className="grid grid-cols-2 gap-3 mb-6">
-                  {faceAddons.map((a) => (
-                    <button key={a.id} onClick={() => toggleAddon(a.id)}
-                      className={`p-4 rounded-xl border text-center transition-all text-sm ${selectedAddons.includes(a.id) ? "border-gold bg-gold/5" : "border-gold-light/20 bg-white"}`}>
-                      <p className="text-dark font-medium">{a.name}</p>
-                      {a.dur && <p className="text-text-light text-xs">{a.dur}</p>}
-                      <p className="text-gold font-semibold mt-1">+${a.price}</p>
-                    </button>
-                  ))}
-                </div>
+            <div className="sticky bottom-0 bg-warm-bg pt-4 pb-8">
+              <div className="flex justify-between items-center mb-4">
+                <span className="text-dark text-lg font-medium">預估金額</span>
+                <span className="font-serif-tc text-3xl text-gold font-bold">${total.toLocaleString()}</span>
               </div>
-            )}
-
-            {selectedPkg && (
-              <div className="sticky bottom-0 bg-warm-bg pt-4 pb-6 border-t border-gold-light/20">
-                <div className="flex justify-between items-center mb-4">
-                  <span className="text-dark font-medium">預估金額</span>
-                  <span className="font-serif-tc text-2xl text-gold font-bold">${total.toLocaleString()}</span>
-                </div>
-                <button onClick={() => setStep(1)} className="w-full bg-gold text-white py-4 rounded-full text-sm tracking-wide hover:bg-dark-light transition-colors">下一步：選擇時間</button>
-              </div>
-            )}
+              <button onClick={() => setStep(1)} className="w-full bg-gold text-white py-5 rounded-2xl text-lg font-medium tracking-wide active:bg-dark-light transition-colors">
+                下一步：選擇時間
+              </button>
+            </div>
           </div>
         )}
 
@@ -252,9 +224,9 @@ export default function BookingPage() {
             )}
 
             <div className="flex gap-4 mt-6">
-              <button onClick={() => setStep(0)} className="flex-1 py-4 rounded-full border border-gold text-gold text-sm tracking-wide hover:bg-gold hover:text-white transition-colors">上一步</button>
+              <button onClick={() => setStep(0)} className="flex-1 py-5 rounded-2xl border-2 border-gold text-gold text-base font-medium tracking-wide active:bg-gold active:text-white transition-colors">上一步</button>
               <button onClick={() => selectedDate && selectedTime && setStep(2)} disabled={!selectedDate || !selectedTime}
-                className={`flex-1 py-4 rounded-full text-sm tracking-wide transition-colors ${selectedDate && selectedTime ? "bg-gold text-white hover:bg-dark-light" : "bg-gray-200 text-gray-400 cursor-not-allowed"}`}>下一步：填寫資料</button>
+                className={`flex-1 py-5 rounded-2xl text-base font-medium tracking-wide transition-colors ${selectedDate && selectedTime ? "bg-gold text-white active:bg-dark-light" : "bg-gray-200 text-gray-400 cursor-not-allowed"}`}>下一步：填寫資料</button>
             </div>
           </div>
         )}
@@ -314,7 +286,7 @@ export default function BookingPage() {
             </div>
 
             <div className="flex gap-4">
-              <button onClick={() => setStep(1)} className="flex-1 py-4 rounded-full border border-gold text-gold text-sm tracking-wide hover:bg-gold hover:text-white transition-colors">上一步</button>
+              <button onClick={() => setStep(1)} className="flex-1 py-5 rounded-2xl border-2 border-gold text-gold text-base font-medium tracking-wide active:bg-gold active:text-white transition-colors">上一步</button>
               <button onClick={async () => {
                 if (!name || !phone || submitting) return;
                 setSubmitting(true);
@@ -325,7 +297,7 @@ export default function BookingPage() {
                 });
                 setSubmitted(true);
               }} disabled={!name || !phone || submitting}
-                className={`flex-1 py-4 rounded-full text-sm tracking-wide transition-colors ${name && phone ? "bg-gold text-white hover:bg-dark-light" : "bg-gray-200 text-gray-400 cursor-not-allowed"}`}>確認預約</button>
+                className={`flex-1 py-5 rounded-2xl text-base font-medium tracking-wide transition-colors ${name && phone ? "bg-gold text-white active:bg-dark-light" : "bg-gray-200 text-gray-400 cursor-not-allowed"}`}>確認預約</button>
             </div>
           </div>
         )}
