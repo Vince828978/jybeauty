@@ -94,11 +94,13 @@ function AboutPage() {
       <div className="max-w-sm md:max-w-xl mx-auto px-10 py-12 text-center">
         <p className="text-gold text-xs tracking-[0.3em] uppercase mb-4">ABOUT US</p>
         <h2 className="font-serif-tc text-2xl font-bold text-dark mb-6">不開店，我去找你</h2>
-        <p className="text-text-light text-sm leading-loose mb-8">
-          我們相信，最好的 SPA 空間就是你最放鬆的地方。<br /><br />
-          專業設備帶在身上——精油、美容床、毛巾、音樂，到你家佈置一個專屬的 SPA 空間。<br /><br />
-          你不用出門、不用趕時間。<br />這段時間，完全是你的。
-        </p>
+        <div className="text-text-light text-sm leading-loose mb-8 space-y-4">
+          <p>做美容這些年，看過太多客人拖著疲憊的身體來到店裡，做完療程整個人放鬆了，結果一出門又要擠捷運、找車位，那份放鬆在回家路上就消失了一半。</p>
+          <p>我一直在想，如果做完就能直接躺在自己的床上，蓋著自己最喜歡的被子，那才是真正完整的放鬆。</p>
+          <p className="font-medium text-dark font-serif-tc text-base">所以我決定，不開店，我去找你。</p>
+          <p>我把所有專業設備都帶在身上——精油、美容床、毛巾、音樂，到你家幫你佈置一個專屬的 SPA 空間。你不用出門、不用趕時間、不用跟別人共用空間。</p>
+          <p className="font-medium text-dark">這段時間，完全是你的。</p>
+        </div>
         <div className="border-t border-gold-light/30 pt-6">
           <p className="text-gold text-xs tracking-wide mb-4">專業資歷</p>
           <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 text-xs text-text-light">
