@@ -120,78 +120,48 @@ function AboutPage() {
 }
 
 function ServicesPage() {
-  const packages = [
-    { tier: "Basic", name: "舒壓放鬆套餐", price: "$2,280", items: ["精油按摩 60 min", "臉部保養 基礎護理"] },
-    { tier: "Popular", name: "能量煥膚套餐", price: "$3,480", items: ["精油按摩 90 min", "臉部保養 深層護理", "身體加項 任選 1 項"], popular: true },
-    { tier: "Luxury", name: "極致寵愛套餐", price: "$4,880", items: ["精油按摩 120 min", "臉部保養 深層護理", "身體加項 任選 2 項", "臉部加項 任選 1 項"] },
+  const audiences = [
+    { label: "新手媽媽", desc: "帶小孩不方便出門，在家就能享受放鬆" },
+    { label: "孕婦產後", desc: "孕期舒緩、產後修復，不必舟車勞頓" },
+    { label: "忙碌上班族", desc: "下班回家就是 SPA，時間最高效利用" },
+    { label: "準新娘", desc: "婚前密集保養，在家輕鬆變美" },
+    { label: "銀髮長輩", desc: "子女送禮，到府按摩最貼心" },
+    { label: "居家工作者", desc: "關上螢幕，美容師已到門口" },
   ];
-  const [active, setActive] = useState(1);
-  const prev = () => setActive((p) => (p - 1 + packages.length) % packages.length);
-  const next = () => setActive((p) => (p + 1) % packages.length);
 
   return (
-    <section className="min-h-screen pt-20 bg-cream/50">
-      <div className="relative h-[35vh]">
-        <Image src="/hero-2.jpg" alt="JY Beauty 療程" fill className="object-cover object-[center_30%]" />
+    <section className="min-h-screen pt-20 bg-white">
+      <div className="relative h-[40vh]">
+        <Image src="/hero-2.jpg" alt="JY Beauty 服務" fill className="object-cover object-[center_30%]" />
       </div>
-      <div className="max-w-sm md:max-w-4xl mx-auto px-8 py-12 text-center">
-        <p className="text-gold text-xs tracking-[0.3em] uppercase mb-4">TREATMENTS</p>
-        <h2 className="font-serif-tc text-2xl font-bold text-dark mb-10">療程方案</h2>
+      <div className="max-w-xs md:max-w-3xl mx-auto px-6 py-10 text-center">
+        <p className="text-gold text-xs tracking-[0.3em] uppercase mb-4">OUR SERVICES</p>
+        <h2 className="font-serif-tc text-2xl font-bold text-dark mb-6">專為你設計的服務</h2>
 
-        {/* Mobile carousel */}
-        <div className="md:hidden relative">
-          <div className="relative min-h-[260px] mx-8">
-            {packages.map((p, i) => (
-              <div key={p.name} className={`absolute inset-0 transition-all duration-500 ${i === active ? "opacity-100 scale-100" : "opacity-0 scale-90 pointer-events-none"}`}>
-                <div className={`bg-white px-6 py-8 rounded-2xl border text-center ${p.popular ? "border-gold shadow-lg" : "border-gold-light/20"}`}>
-                  {p.popular && <span className="inline-block bg-gold text-white text-xs px-4 py-1 rounded-full mb-3">人氣推薦</span>}
-                  <p className="text-gold text-xs italic">{p.tier}</p>
-                  <h3 className="font-serif-tc text-xl font-bold text-dark mt-1 mb-3">{p.name}</h3>
-                  <div className="space-y-1.5 mb-4 inline-block text-left">
-                    {p.items.map((item) => (
-                      <div key={item} className="flex items-center gap-2 text-xs text-text-light">
-                        <span className="w-1 h-1 bg-gold rounded-full inline-block flex-shrink-0" />{item}
-                      </div>
-                    ))}
-                  </div>
-                  <p className="font-serif-tc text-3xl text-gold font-bold">{p.price}</p>
-                </div>
-              </div>
-            ))}
+        {/* 服務模式 */}
+        <div className="grid grid-cols-2 gap-4 mb-10">
+          <div className="bg-cream/50 rounded-2xl p-6">
+            <p className="font-serif-tc text-lg font-bold text-dark mb-2">到府服務</p>
+            <p className="text-text-light text-sm">美容師到你家<br />在最熟悉的空間放鬆</p>
           </div>
-          <button onClick={prev} className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 flex items-center justify-center bg-white/80 rounded-full shadow border border-gold-light/30">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gold"><path d="M15 18l-6-6 6-6"/></svg>
-          </button>
-          <button onClick={next} className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 flex items-center justify-center bg-white/80 rounded-full shadow border border-gold-light/30">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gold"><path d="M9 18l6-6-6-6"/></svg>
-          </button>
-          <div className="flex justify-center gap-2 mt-6">
-            {packages.map((_, i) => (
-              <button key={i} onClick={() => setActive(i)} className={`h-2 rounded-full transition-all ${i === active ? "bg-gold w-6" : "bg-gold-light/40 w-2"}`} />
-            ))}
+          <div className="bg-cream/50 rounded-2xl p-6">
+            <p className="font-serif-tc text-lg font-bold text-dark mb-2">工作室服務</p>
+            <p className="text-text-light text-sm">就近配合工作室<br />專業環境同樣享受</p>
           </div>
         </div>
 
-        {/* Desktop grid */}
-        <div className="hidden md:grid md:grid-cols-3 gap-6">
-          {packages.map((p) => (
-            <div key={p.name} className={`bg-white p-8 rounded-2xl border text-center card-hover ${p.popular ? "border-gold shadow-lg" : "border-gold-light/20"}`}>
-              {p.popular && <span className="inline-block bg-gold text-white text-xs px-4 py-1 rounded-full mb-3">人氣推薦</span>}
-              <p className="text-gold text-xs italic">{p.tier}</p>
-              <h3 className="font-serif-tc text-xl font-bold text-dark mt-1 mb-3">{p.name}</h3>
-              <div className="space-y-2 mb-4 inline-block text-left">
-                {p.items.map((item) => (
-                  <div key={item} className="flex items-center gap-2 text-sm text-text-light">
-                    <span className="w-1 h-1 bg-gold rounded-full inline-block flex-shrink-0" />{item}
-                  </div>
-                ))}
-              </div>
-              <p className="font-serif-tc text-3xl text-gold font-bold">{p.price}</p>
+        {/* 服務對象 */}
+        <p className="text-text-light text-sm mb-6">不管你是誰，放鬆這件事，我們帶到你身邊</p>
+        <div className="space-y-3 mb-10">
+          {audiences.map((a) => (
+            <div key={a.label} className="bg-cream/30 rounded-2xl p-4 flex items-center gap-4">
+              <p className="font-serif-tc text-dark font-semibold text-base w-24 text-right flex-shrink-0">{a.label}</p>
+              <p className="text-text-light text-sm text-left">{a.desc}</p>
             </div>
           ))}
         </div>
 
-        <a href="/booking" className="inline-block mt-10 bg-gold text-white px-8 py-3 text-sm tracking-wide rounded-full hover:bg-dark-light transition-colors">
+        <a href="/booking" className="inline-block bg-gold text-white px-12 py-4 text-lg tracking-wide rounded-2xl font-medium active:bg-dark-light transition-colors">
           立即預約
         </a>
       </div>
