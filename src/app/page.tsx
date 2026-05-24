@@ -209,7 +209,7 @@ function ServicesPage() {
 
 function PackagesPage() {
   const pkgs = [
-    { tag: "小資方案", name: "Daily Relax", desc: "適合忙碌生活中的短暫充電", items: ["精油按摩 90 分鐘", "快速補水護理"], label: "優惠價", price: 1880 },
+    { tag: "輕享放鬆", name: "Daily Relax", desc: "適合忙碌生活中的短暫充電", items: ["精油按摩 90 分鐘", "快速補水護理"], label: "優惠價", price: 1880 },
     { tag: "放鬆舒壓", name: "沉浸式放鬆", desc: "", items: ["全身精油按摩 120 分鐘", "熱石深層舒壓", "頭部釋壓療程"], label: "優惠價", price: 2880 },
     { tag: "纖體瘦身", name: "Body Line", desc: "線條感與輕盈感同步提升", items: ["循環代謝按摩", "筋膜放鬆", "小臉拉提護理"], label: "優惠價", price: 3280 },
     { tag: "頂級奢華", name: "Luxury Glow", desc: "專屬放鬆儀式感", items: ["頂級精油按摩 120 分鐘", "臉部亮白嫩膚課程", "熱石＋頭療雙重享受"], label: "尊寵價", price: 4280 },
@@ -226,10 +226,10 @@ function PackagesPage() {
           </div>
         </div>
       </div>
-      <div className="max-w-sm md:max-w-3xl mx-auto px-6 py-8">
+      <div className="md:max-w-3xl mx-auto px-10 py-8 text-center">
         <div className="space-y-6 md:grid md:grid-cols-2 md:gap-6 md:space-y-0">
           {pkgs.map((p) => (
-            <div key={p.name} className="border border-gold/30 rounded-2xl p-6 text-center">
+            <div key={p.name} className="border border-gold/30 rounded-2xl p-6 text-center mx-auto max-w-xs md:max-w-none">
               <p className="text-gold text-xs tracking-wider mb-1">{p.tag}</p>
               <h3 className="text-white font-serif-tc text-xl font-bold mb-2">{p.name}</h3>
               {p.desc && <p className="text-white/50 text-xs mb-3">{p.desc}</p>}
