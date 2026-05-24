@@ -286,16 +286,18 @@ export default function Home() {
         {/* 懸浮按鈕 */}
         <div className="fixed bottom-6 right-5 z-[150] flex flex-col gap-3">
           <a href="https://line.me/R/ti/p/@jy.beauty" target="_blank"
-            className="w-14 h-14 bg-white/80 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center border border-gold-light/30 active:scale-95 transition-transform">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-gold">
+            className="bg-white/85 backdrop-blur-sm rounded-full shadow-lg flex items-center gap-2 px-5 py-3 border border-gold-light/30 active:scale-95 transition-transform">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-gold flex-shrink-0">
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
             </svg>
+            <span className="text-dark text-sm font-medium">與我聊聊</span>
           </a>
           <a href="/experience"
-            className="w-14 h-14 bg-gold/90 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center active:scale-95 transition-transform">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            className="bg-gold/90 backdrop-blur-sm rounded-full shadow-lg flex items-center gap-2 px-5 py-3 active:scale-95 transition-transform">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
               <path d="M12 2L15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2z"/>
             </svg>
+            <span className="text-white text-sm font-medium">立即體驗</span>
           </a>
         </div>
         <Menu open={menuOpen} onClose={() => setMenuOpen(false)} onNavigate={setPage} />
