@@ -56,43 +56,26 @@ body {
 
 .float-btn {
   position: relative;
-  border: 1px solid rgba(201,169,110,0.5);
-  box-shadow: 0 0 16px rgba(201,169,110,0.2), inset 0 0 8px rgba(201,169,110,0.05);
-  background: rgba(44,36,32,0.35);
-  backdrop-filter: blur(8px);
-  transition: transform 0.2s, box-shadow 0.2s;
+  border-radius: 50%;
+  border: 1.5px solid rgba(201,169,110,0.5);
+  box-shadow: 0 0 20px rgba(201,169,110,0.25), 0 0 6px rgba(201,169,110,0.1), inset 0 0 10px rgba(201,169,110,0.05);
+  background: rgba(44,36,32,0.4);
+  backdrop-filter: blur(10px);
+  transition: transform 0.2s, box-shadow 0.3s;
 }
-.float-btn:active { transform: scale(0.93); }
-.float-btn::before,
+.float-btn:active { transform: scale(0.9); box-shadow: 0 0 30px rgba(201,169,110,0.4); }
+.float-btn::before {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  border: 0.5px solid rgba(201,169,110,0.3);
+}
 .float-btn::after {
   content: '';
   position: absolute;
-  width: 10px;
-  height: 10px;
-  border-color: rgba(201,169,110,0.6);
-  border-style: solid;
+  inset: -3px;
+  border-radius: 50%;
+  border: 0.5px solid rgba(201,169,110,0.15);
 }
-.float-btn::before {
-  top: 3px; left: 3px;
-  border-width: 1px 0 0 1px;
-}
-.float-btn::after {
-  bottom: 3px; right: 3px;
-  border-width: 0 1px 1px 0;
-}
-.float-btn .corner-tr,
-.float-btn .corner-bl {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  border-color: rgba(201,169,110,0.6);
-  border-style: solid;
-}
-.float-btn .corner-tr {
-  top: 3px; right: 3px;
-  border-width: 1px 1px 0 0;
-}
-.float-btn .corner-bl {
-  bottom: 3px; left: 3px;
-  border-width: 0 0 1px 1px;
-}
+.float-btn .corner-tr, .float-btn .corner-bl { display: none; }
