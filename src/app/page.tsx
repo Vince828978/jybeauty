@@ -334,7 +334,7 @@ export default function Home() {
             className="w-[68px] h-[68px] float-btn flex flex-col items-center justify-center">
             <span className="corner-tr" /><span className="corner-bl" />
             <span className="text-gold/90 text-xs font-medium leading-tight">認識</span>
-            <span className="text-gold/90 text-xs font-medium leading-tight">嘉韻</span>
+            <span className="text-gold/90 text-xs font-medium leading-tight">JY</span>
           </button>
           <button onClick={() => { setPage("home"); window.location.href = "/member"; }}
             className="w-[68px] h-[68px] float-btn flex flex-col items-center justify-center">

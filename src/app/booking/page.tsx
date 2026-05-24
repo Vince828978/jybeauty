@@ -22,15 +22,20 @@ const faceAddons = [
   { id: "glow", name: "導入亮光 由內而外透亮", dur: "", price: 500 },
 ];
 
-const timeSlots = ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00"];
+const timeSlots = ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"];
 
 function getNextDays(count: number) {
   const days = [];
   const now = new Date();
-  for (let i = 1; i <= count; i++) {
+  let added = 0;
+  let offset = 1;
+  while (added < count) {
     const d = new Date(now);
-    d.setDate(now.getDate() + i);
+    d.setDate(now.getDate() + offset);
+    offset++;
+    if (d.getDay() === 0) continue; // skip Sunday
     days.push(d);
+    added++;
   }
   return days;
 }
