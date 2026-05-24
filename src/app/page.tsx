@@ -141,56 +141,71 @@ function AboutPage() {
 
 function ServicesPage() {
   return (
-    <section className="min-h-screen pt-20 bg-dark">
-      <div className="relative h-[45vh]">
-        <Image src="/about-2.jpg" alt="JY Beauty 療程" fill className="object-cover object-top" />
+    <section className="min-h-screen pt-20 bg-white">
+      <div className="relative h-[40vh]">
+        <Image src="/about-2.jpg" alt="JY Beauty" fill className="object-cover object-top" />
         <div className="absolute inset-0 bg-dark/30" />
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center">
-            <h2 className="font-serif-tc text-3xl font-bold text-white mb-2">療程品項菜單</h2>
-            <p className="text-white/60 text-sm tracking-wider">TREATMENT MENU</p>
-            <p className="text-white/50 text-xs mt-3">慢下來，感受身心的平衡，<br />從此刻開始。</p>
+            <h2 className="font-serif-tc text-3xl font-bold text-white mb-2">專屬為你</h2>
+            <p className="text-white/60 text-sm tracking-wider">EXCLUSIVE FOR YOU</p>
           </div>
         </div>
       </div>
-      <div className="max-w-sm mx-auto px-8 py-10 text-center">
-        {/* 療程 1 */}
-        <div className="border border-gold/30 rounded-2xl p-6 mb-6">
-          <p className="text-white font-serif-tc text-xl font-bold mb-2">精油按摩 90 分鐘</p>
-          <div className="w-12 h-px bg-gold mx-auto my-3" />
-          <p className="text-white/60 text-sm mb-3">贈送 筋膜放鬆 or 頭療（含耳燭）</p>
-          <p className="text-gold font-serif-tc text-3xl font-bold">$1,380</p>
+      <div className="md:max-w-3xl mx-auto px-10 py-10 text-center">
+        <p className="text-text-light text-sm leading-loose mb-8">
+          每個人的身體狀況不同，<br />
+          我們不做固定流程，<br />
+          而是根據您的需求客製化每一次療程。<br /><br />
+          <span className="font-medium text-dark">告訴我們哪裡不舒服，<br />我們就專注替您改善哪裡。</span>
+        </p>
+
+        <div className="section-divider mb-8" />
+
+        <p className="text-gold text-xs tracking-[0.3em] uppercase mb-4">服務對象</p>
+        <div className="space-y-3 mb-10">
+          {[
+            { label: "新手媽媽", desc: "帶小孩不方便出門，在家就能享受放鬆" },
+            { label: "孕婦產後", desc: "孕期舒緩、產後修復，不必舟車勞頓" },
+            { label: "忙碌上班族", desc: "下班回家就是 SPA，時間最高效利用" },
+            { label: "術後修護", desc: "醫美術後在家安心保養，不必再跑診所" },
+            { label: "銀髮長輩", desc: "子女送禮，到府按摩最貼心" },
+            { label: "居家工作者", desc: "關上螢幕，美容師已到門口" },
+          ].map((a) => (
+            <div key={a.label} className="text-center">
+              <p className="font-serif-tc text-dark font-semibold text-lg">{a.label}</p>
+              <p className="text-text-light text-sm">{a.desc}</p>
+            </div>
+          ))}
         </div>
 
-        {/* 療程 2 */}
-        <div className="border border-gold/30 rounded-2xl p-6 mb-6">
-          <p className="text-white font-serif-tc text-xl font-bold mb-2">精油按摩 120 分鐘 + 熱石</p>
-          <div className="w-12 h-px bg-gold mx-auto my-3" />
-          <p className="text-white/60 text-sm mb-3">贈送 筋膜放鬆 or 頭療（含耳燭）</p>
-          <p className="text-gold font-serif-tc text-3xl font-bold">$2,300</p>
+        <div className="section-divider mb-8" />
+
+        <p className="text-gold text-xs tracking-[0.3em] uppercase mb-4">專業資歷</p>
+        <div className="space-y-2 mb-10 text-sm text-text-light">
+          <p>美容丙乙級證照 · 15 年經驗</p>
+          <p>資深美容顧問 · 孕婦按摩培訓</p>
+          <p>韓式霧唇培訓 · 火罐拉筋放鬆</p>
         </div>
 
-        {/* 85折 */}
-        <div className="border border-gold/30 rounded-2xl p-6 mb-10">
-          <p className="text-white/80 text-sm mb-2">任意身體品項 + 任意臉部品項</p>
-          <p className="text-gold font-serif-tc text-2xl font-bold">即可享受 85 折優惠</p>
-        </div>
+        <div className="section-divider mb-8" />
 
-        {/* 服務模式 */}
+        <p className="text-gold text-xs tracking-[0.3em] uppercase mb-4">服務方式</p>
         <div className="grid grid-cols-2 gap-4 mb-8">
-          <div className="border border-gold/20 rounded-2xl p-5 text-center">
-            <p className="font-serif-tc text-base font-bold text-white mb-1">到府服務</p>
-            <p className="text-white/50 text-xs">美容師到你家</p>
+          <div className="bg-cream/50 rounded-2xl p-5 text-center">
+            <p className="font-serif-tc text-lg font-bold text-dark mb-1">到府服務</p>
+            <p className="text-text-light text-sm">美容師到你家</p>
           </div>
-          <div className="border border-gold/20 rounded-2xl p-5 text-center">
-            <p className="font-serif-tc text-base font-bold text-white mb-1">工作室服務</p>
-            <p className="text-white/50 text-xs">就近配合工作室</p>
+          <div className="bg-cream/50 rounded-2xl p-5 text-center">
+            <p className="font-serif-tc text-lg font-bold text-dark mb-1">工作室服務</p>
+            <p className="text-text-light text-sm">就近配合工作室</p>
           </div>
         </div>
 
-        <a href="/booking" className="inline-block bg-gold text-white px-12 py-5 text-lg tracking-wide rounded-2xl font-medium active:bg-dark-light transition-colors">
-          立即預約
-        </a>
+        <p className="text-text-light text-sm leading-loose">
+          每個舒壓療程都可依照您的需求調整，<br />
+          時長我們都可以配合。
+        </p>
       </div>
     </section>
   );
@@ -268,6 +283,21 @@ export default function Home() {
             編輯模式 ON
           </div>
         )}
+        {/* 懸浮按鈕 */}
+        <div className="fixed bottom-6 right-5 z-[150] flex flex-col gap-3">
+          <a href="https://line.me/R/ti/p/@jy.beauty" target="_blank"
+            className="w-14 h-14 bg-white/80 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center border border-gold-light/30 active:scale-95 transition-transform">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-gold">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            </svg>
+          </a>
+          <a href="/experience"
+            className="w-14 h-14 bg-gold/90 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center active:scale-95 transition-transform">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 2L15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2z"/>
+            </svg>
+          </a>
+        </div>
         <Menu open={menuOpen} onClose={() => setMenuOpen(false)} onNavigate={setPage} />
         {page === "home" ? (
           <Navbar onMenuOpen={() => setMenuOpen(true)} />
