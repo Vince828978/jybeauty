@@ -112,23 +112,24 @@ function HomePage() {
 
 function AboutPage() {
   return (
-    <section className="min-h-screen pt-20 bg-white">
+    <section className="min-h-screen pt-20" style={{background: "linear-gradient(180deg, #2c2420 0%, #3d2e24 30%, #4a3828 60%, #3d2e24 100%)"}}>
       <div className="relative h-[45vh]">
         <Image src="/about.jpg" alt="JY Beauty 美容師" fill className="object-cover object-top" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#3d2e24] to-transparent" />
       </div>
       <div className="md:max-w-xl mx-auto px-10 py-12 text-center">
         <p className="text-gold text-xs tracking-[0.3em] uppercase mb-4">ABOUT US</p>
-        <h2 className="font-serif-tc text-2xl font-bold text-dark mb-6"><E k="about_title" fallback="不開店，我去找你" /></h2>
-        <div className="text-text-light text-sm leading-loose space-y-4">
+        <h2 className="font-serif-tc text-2xl font-bold text-white mb-6"><E k="about_title" fallback="不開店，我去找你" /></h2>
+        <div className="text-white/70 text-sm leading-loose space-y-4">
           <p>15年的美容經驗，<br />讓我接觸過無數不同的人。</p>
           <p>每個人都有不同的故事、生活與壓力。<br />而唯一始終不變的，<br />就是現代人長期累積的疲憊感。</p>
           <p>工作、情緒、人際、生活節奏——<br />那些有形與無形的壓力，<br />早已悄悄消耗著我們。</p>
           <p>很多人下班後，<br />只是想好好放鬆一下，<br />卻還得花時間搜尋、比較、擔心踩雷。</p>
-          <p className="font-medium text-dark">因此，我們希望把「療癒」這件事，<br />變得更簡單。</p>
+          <p className="font-medium text-white">因此，我們希望把「療癒」這件事，<br />變得更簡單。</p>
           <p>您可以在回家途中直接線上預約，<br />選擇到府服務，或前往工作室。<br />省去等待與不確定感，<br />讓每一次放鬆，都能真正安心。</p>
           <p>我們堅持客製化服務。<br />不只是固定流程，<br />而是真正了解您的疲勞來源與身體狀態。</p>
           <p>哪裡不舒服，<br />我們就專注替您改善哪裡。</p>
-          <p className="font-medium text-dark">因為好的療程，<br />不只是當下舒服。<br />而是讓身心都慢慢回到平衡。</p>
+          <p className="font-medium text-white">因為好的療程，<br />不只是當下舒服。<br />而是讓身心都慢慢回到平衡。</p>
         </div>
       </div>
     </section>
@@ -137,7 +138,7 @@ function AboutPage() {
 
 function ServicesPage() {
   return (
-    <section className="min-h-screen pt-20 bg-white">
+    <section className="min-h-screen pt-20 bg-dark">
       <div className="relative h-[40vh]">
         <Image src="/about-2.jpg" alt="JY Beauty" fill className="object-cover object-top" />
         <div className="absolute inset-0 bg-dark/30" />
@@ -149,14 +150,14 @@ function ServicesPage() {
         </div>
       </div>
       <div className="md:max-w-3xl mx-auto px-10 py-10 text-center">
-        <p className="text-text-light text-sm leading-loose mb-8">
+        <p className="text-white/70 text-sm leading-loose mb-8">
           每個人的身體狀況不同，<br />
           我們不做固定流程，<br />
           而是根據您的需求客製化每一次療程。<br /><br />
-          <span className="font-medium text-dark">告訴我們哪裡不舒服，<br />我們就專注替您改善哪裡。</span>
+          <span className="font-medium text-white">告訴我們哪裡不舒服，<br />我們就專注替您改善哪裡。</span>
         </p>
 
-        <div className="section-divider mb-8" />
+        <div className="w-16 h-px bg-gold/40 mx-auto mb-8" />
 
         <p className="text-gold text-xs tracking-[0.3em] uppercase mb-4">服務對象</p>
         <div className="space-y-3 mb-10">
@@ -169,36 +170,36 @@ function ServicesPage() {
             { label: "居家工作者", desc: "關上螢幕，美容師已到門口" },
           ].map((a) => (
             <div key={a.label} className="text-center">
-              <p className="font-serif-tc text-dark font-semibold text-lg">{a.label}</p>
-              <p className="text-text-light text-sm">{a.desc}</p>
+              <p className="font-serif-tc text-white font-semibold text-lg">{a.label}</p>
+              <p className="text-white/50 text-sm">{a.desc}</p>
             </div>
           ))}
         </div>
 
-        <div className="section-divider mb-8" />
+        <div className="w-16 h-px bg-gold/40 mx-auto mb-8" />
 
         <p className="text-gold text-xs tracking-[0.3em] uppercase mb-4">專業資歷</p>
-        <div className="space-y-2 mb-10 text-sm text-text-light">
+        <div className="space-y-2 mb-10 text-sm text-white/50">
           <p>美容丙乙級證照 · 15 年經驗</p>
           <p>資深美容顧問 · 孕婦按摩培訓</p>
           <p>韓式霧唇培訓 · 火罐拉筋放鬆</p>
         </div>
 
-        <div className="section-divider mb-8" />
+        <div className="w-16 h-px bg-gold/40 mx-auto mb-8" />
 
         <p className="text-gold text-xs tracking-[0.3em] uppercase mb-4">服務方式</p>
         <div className="grid grid-cols-2 gap-4 mb-8">
-          <div className="bg-cream/50 rounded-2xl p-5 text-center">
-            <p className="font-serif-tc text-lg font-bold text-dark mb-1">到府服務</p>
-            <p className="text-text-light text-sm">美容師到你家</p>
+          <div className="border border-gold/20 rounded-2xl p-5 text-center">
+            <p className="font-serif-tc text-lg font-bold text-white mb-1">到府服務</p>
+            <p className="text-white/50 text-sm">美容師到你家</p>
           </div>
-          <div className="bg-cream/50 rounded-2xl p-5 text-center">
-            <p className="font-serif-tc text-lg font-bold text-dark mb-1">工作室服務</p>
-            <p className="text-text-light text-sm">就近配合工作室</p>
+          <div className="border border-gold/20 rounded-2xl p-5 text-center">
+            <p className="font-serif-tc text-lg font-bold text-white mb-1">工作室服務</p>
+            <p className="text-white/50 text-sm">就近配合工作室</p>
           </div>
         </div>
 
-        <p className="text-text-light text-sm leading-loose">
+        <p className="text-white/50 text-sm leading-loose">
           每個舒壓療程都可依照您的需求調整，<br />
           時長我們都可以配合。
         </p>
