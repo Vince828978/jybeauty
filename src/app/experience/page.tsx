@@ -4,7 +4,7 @@ import Image from "next/image";
 const packages = [
   {
     id: "daily",
-    tag: "小資方案",
+    tag: "輕享放鬆",
     name: "Daily Relax",
     desc: "適合忙碌生活中的短暫充電",
     items: ["精油按摩 90 分鐘", "快速補水護理"],
