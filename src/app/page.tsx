@@ -147,45 +147,52 @@ function AboutPage() {
 }
 
 function ServicesPage() {
-  const audiences = [
-    { label: "新手媽媽", desc: "帶小孩不方便出門，在家就能享受放鬆" },
-    { label: "孕婦產後", desc: "孕期舒緩、產後修復，不必舟車勞頓" },
-    { label: "忙碌上班族", desc: "下班回家就是 SPA，時間最高效利用" },
-    { label: "術後修護", desc: "醫美術後在家安心保養，不必再跑診所" },
-    { label: "銀髮長輩", desc: "子女送禮，到府按摩最貼心" },
-    { label: "居家工作者", desc: "關上螢幕，美容師已到門口" },
-  ];
-
   return (
-    <section className="min-h-screen pt-20 bg-white">
-      <div className="relative h-[40vh]">
-        <Image src="/hero-2.jpg" alt="JY Beauty 服務" fill className="object-cover object-[center_30%]" />
-      </div>
-      <div className="md:max-w-3xl mx-auto px-10 py-10 text-center">
-        <p className="text-gold text-xs tracking-[0.3em] uppercase mb-4">OUR SERVICES</p>
-        <h2 className="font-serif-tc text-2xl font-bold text-dark mb-8"><E k="services_title" fallback="專為你設計的服務" /></h2>
-
-        {/* 服務模式 */}
-        <div className="grid grid-cols-2 gap-4 mb-10">
-          <div className="bg-cream/50 rounded-2xl p-5 text-center">
-            <p className="font-serif-tc text-lg font-bold text-dark mb-2">到府服務</p>
-            <p className="text-text-light text-sm">美容師到你家<br />最熟悉的空間放鬆</p>
-          </div>
-          <div className="bg-cream/50 rounded-2xl p-5 text-center">
-            <p className="font-serif-tc text-lg font-bold text-dark mb-2">工作室服務</p>
-            <p className="text-text-light text-sm">就近配合工作室<br />專業環境同樣享受</p>
+    <section className="min-h-screen pt-20 bg-dark">
+      <div className="relative h-[45vh]">
+        <Image src="/about-2.jpg" alt="JY Beauty 療程" fill className="object-cover object-top" />
+        <div className="absolute inset-0 bg-dark/30" />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="text-center">
+            <h2 className="font-serif-tc text-3xl font-bold text-white mb-2">療程品項菜單</h2>
+            <p className="text-white/60 text-sm tracking-wider">TREATMENT MENU</p>
+            <p className="text-white/50 text-xs mt-3">慢下來，感受身心的平衡，<br />從此刻開始。</p>
           </div>
         </div>
+      </div>
+      <div className="max-w-sm mx-auto px-8 py-10 text-center">
+        {/* 療程 1 */}
+        <div className="border border-gold/30 rounded-2xl p-6 mb-6">
+          <p className="text-white font-serif-tc text-xl font-bold mb-2">精油按摩 90 分鐘</p>
+          <div className="w-12 h-px bg-gold mx-auto my-3" />
+          <p className="text-white/60 text-sm mb-3">贈送 筋膜放鬆 or 頭療（含耳燭）</p>
+          <p className="text-gold font-serif-tc text-3xl font-bold">$1,380</p>
+        </div>
 
-        {/* 服務對象 */}
-        <p className="text-text-light text-sm mb-6">不管你是誰<br />放鬆這件事，我們帶到你身邊</p>
-        <div className="space-y-4 mb-10">
-          {audiences.map((a) => (
-            <div key={a.label} className="text-center">
-              <p className="font-serif-tc text-dark font-semibold text-lg">{a.label}</p>
-              <p className="text-text-light text-sm">{a.desc}</p>
-            </div>
-          ))}
+        {/* 療程 2 */}
+        <div className="border border-gold/30 rounded-2xl p-6 mb-6">
+          <p className="text-white font-serif-tc text-xl font-bold mb-2">精油按摩 120 分鐘 + 熱石</p>
+          <div className="w-12 h-px bg-gold mx-auto my-3" />
+          <p className="text-white/60 text-sm mb-3">贈送 筋膜放鬆 or 頭療（含耳燭）</p>
+          <p className="text-gold font-serif-tc text-3xl font-bold">$2,300</p>
+        </div>
+
+        {/* 85折 */}
+        <div className="border border-gold/30 rounded-2xl p-6 mb-10">
+          <p className="text-white/80 text-sm mb-2">任意身體品項 + 任意臉部品項</p>
+          <p className="text-gold font-serif-tc text-2xl font-bold">即可享受 85 折優惠</p>
+        </div>
+
+        {/* 服務模式 */}
+        <div className="grid grid-cols-2 gap-4 mb-8">
+          <div className="border border-gold/20 rounded-2xl p-5 text-center">
+            <p className="font-serif-tc text-base font-bold text-white mb-1">到府服務</p>
+            <p className="text-white/50 text-xs">美容師到你家</p>
+          </div>
+          <div className="border border-gold/20 rounded-2xl p-5 text-center">
+            <p className="font-serif-tc text-base font-bold text-white mb-1">工作室服務</p>
+            <p className="text-white/50 text-xs">就近配合工作室</p>
+          </div>
         </div>
 
         <a href="/booking" className="inline-block bg-gold text-white px-12 py-5 text-lg tracking-wide rounded-2xl font-medium active:bg-dark-light transition-colors">
