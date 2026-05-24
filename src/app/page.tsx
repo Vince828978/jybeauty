@@ -278,9 +278,10 @@ export default function Home() {
             編輯模式 ON
           </div>
         )}
+        <Menu open={menuOpen} onClose={() => setMenuOpen(false)} onNavigate={setPage} />
         {/* 左上懸浮按鈕 */}
         <div className="fixed top-6 left-5 z-[150] flex flex-col gap-3">
-          <button onClick={() => setPage("about")}
+          <button onClick={() => setMenuOpen(true)}
             className="w-16 h-16 rounded-lg float-btn flex flex-col items-center justify-center">
             <span className="corner-tr" /><span className="corner-bl" />
             <span className="text-gold/90 text-xs font-medium leading-tight">認識</span>
