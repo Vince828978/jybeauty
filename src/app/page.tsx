@@ -105,11 +105,6 @@ function HomePage() {
           <E k="hero_subtitle" fallback="私人到府 SPA，在你最放鬆的空間享受專屬療程" />
         </p>
       </div>
-      <div className="absolute inset-x-0 bottom-[18%] text-center">
-        <a href="/member" className="inline-block border-2 border-gold text-gold px-20 py-5 text-xl tracking-[0.5em] hover:bg-gold hover:text-white transition-all font-serif-tc">
-          會員預約
-        </a>
-      </div>
     </section>
   );
 }
@@ -283,23 +278,36 @@ export default function Home() {
             編輯模式 ON
           </div>
         )}
-        {/* 懸浮按鈕 */}
-        <div className="fixed bottom-6 right-5 z-[150] flex flex-col gap-2 items-end">
-          <a href="https://lin.ee/PeB8CkE" target="_blank"
-            className="text-sm font-medium active:opacity-30 transition-opacity" style={{color: "rgba(6,199,85,0.5)"}}>
-            與我聊聊
-          </a>
+        {/* 左上懸浮按鈕 */}
+        <div className="fixed top-6 left-5 z-[150] flex flex-col gap-3">
+          <button onClick={() => setPage("about")}
+            className="w-16 h-16 rounded-lg border border-gold/40 bg-dark/30 backdrop-blur-sm flex flex-col items-center justify-center active:scale-95 transition-transform"
+            style={{boxShadow: "0 0 12px rgba(201,169,110,0.15)"}}>
+            <span className="text-gold/80 text-xs font-medium leading-tight">認識</span>
+            <span className="text-gold/80 text-xs font-medium leading-tight">嘉韻</span>
+          </button>
+          <button onClick={() => { setPage("home"); window.location.href = "/member"; }}
+            className="w-16 h-16 rounded-lg border border-gold/40 bg-dark/30 backdrop-blur-sm flex flex-col items-center justify-center active:scale-95 transition-transform"
+            style={{boxShadow: "0 0 12px rgba(201,169,110,0.15)"}}>
+            <span className="text-gold/80 text-xs font-medium leading-tight">會員</span>
+            <span className="text-gold/80 text-xs font-medium leading-tight">預約</span>
+          </button>
+        </div>
+        {/* 右下懸浮按鈕 */}
+        <div className="fixed bottom-6 right-5 z-[150] flex flex-col gap-3">
           <a href="/experience"
-            className="text-sm font-medium text-gold/50 active:opacity-30 transition-opacity">
-            立即體驗
+            className="w-16 h-16 rounded-lg border border-gold/40 bg-dark/30 backdrop-blur-sm flex flex-col items-center justify-center active:scale-95 transition-transform"
+            style={{boxShadow: "0 0 12px rgba(201,169,110,0.15)"}}>
+            <span className="text-gold/80 text-xs font-medium leading-tight">立即</span>
+            <span className="text-gold/80 text-xs font-medium leading-tight">體驗</span>
+          </a>
+          <a href="https://lin.ee/PeB8CkE" target="_blank"
+            className="w-16 h-16 rounded-lg border border-gold/40 bg-dark/30 backdrop-blur-sm flex flex-col items-center justify-center active:scale-95 transition-transform"
+            style={{boxShadow: "0 0 12px rgba(201,169,110,0.15)"}}>
+            <span className="text-gold/80 text-xs font-medium leading-tight">與我</span>
+            <span className="text-gold/80 text-xs font-medium leading-tight">聊聊</span>
           </a>
         </div>
-        <Menu open={menuOpen} onClose={() => setMenuOpen(false)} onNavigate={setPage} />
-        {page === "home" ? (
-          <Navbar onMenuOpen={() => setMenuOpen(true)} />
-        ) : (
-          <NavbarLight onMenuOpen={() => setMenuOpen(true)} />
-        )}
         <div key={page} className="fade-in">
           {renderPage()}
         </div>
