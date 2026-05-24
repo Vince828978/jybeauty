@@ -286,11 +286,11 @@ export default function Home() {
         {/* 懸浮按鈕 */}
         <div className="fixed bottom-6 right-5 z-[150] flex flex-col gap-3">
           <a href="https://line.me/R/ti/p/@jy.beauty" target="_blank"
-            className="bg-white/85 backdrop-blur-sm rounded-full shadow-lg flex items-center gap-2 px-5 py-3 border border-gold-light/30 active:scale-95 transition-transform">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-gold flex-shrink-0">
+            className="rounded-full shadow-lg flex items-center gap-2 px-5 py-3 active:scale-95 transition-transform" style={{background: "#06C755"}}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
             </svg>
-            <span className="text-dark text-sm font-medium">與我聊聊</span>
+            <span className="text-white text-sm font-medium">與我聊聊</span>
           </a>
           <a href="/experience"
             className="bg-gold/90 backdrop-blur-sm rounded-full shadow-lg flex items-center gap-2 px-5 py-3 active:scale-95 transition-transform">
