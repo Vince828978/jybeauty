@@ -281,31 +281,31 @@ export default function Home() {
         {/* 左上懸浮按鈕 */}
         <div className="fixed top-6 left-5 z-[150] flex flex-col gap-3">
           <button onClick={() => setPage("about")}
-            className="w-16 h-16 rounded-lg border border-gold/40 bg-dark/30 backdrop-blur-sm flex flex-col items-center justify-center active:scale-95 transition-transform"
-            style={{boxShadow: "0 0 12px rgba(201,169,110,0.15)"}}>
-            <span className="text-gold/80 text-xs font-medium leading-tight">認識</span>
-            <span className="text-gold/80 text-xs font-medium leading-tight">嘉韻</span>
+            className="w-16 h-16 rounded-lg float-btn flex flex-col items-center justify-center">
+            <span className="corner-tr" /><span className="corner-bl" />
+            <span className="text-gold/90 text-xs font-medium leading-tight">認識</span>
+            <span className="text-gold/90 text-xs font-medium leading-tight">嘉韻</span>
           </button>
           <button onClick={() => { setPage("home"); window.location.href = "/member"; }}
-            className="w-16 h-16 rounded-lg border border-gold/40 bg-dark/30 backdrop-blur-sm flex flex-col items-center justify-center active:scale-95 transition-transform"
-            style={{boxShadow: "0 0 12px rgba(201,169,110,0.15)"}}>
-            <span className="text-gold/80 text-xs font-medium leading-tight">會員</span>
-            <span className="text-gold/80 text-xs font-medium leading-tight">預約</span>
+            className="w-16 h-16 rounded-lg float-btn flex flex-col items-center justify-center">
+            <span className="corner-tr" /><span className="corner-bl" />
+            <span className="text-gold/90 text-xs font-medium leading-tight">會員</span>
+            <span className="text-gold/90 text-xs font-medium leading-tight">預約</span>
           </button>
         </div>
         {/* 右下懸浮按鈕 */}
         <div className="fixed bottom-6 right-5 z-[150] flex flex-col gap-3">
           <a href="/experience"
-            className="w-16 h-16 rounded-lg border border-gold/40 bg-dark/30 backdrop-blur-sm flex flex-col items-center justify-center active:scale-95 transition-transform"
-            style={{boxShadow: "0 0 12px rgba(201,169,110,0.15)"}}>
-            <span className="text-gold/80 text-xs font-medium leading-tight">立即</span>
-            <span className="text-gold/80 text-xs font-medium leading-tight">體驗</span>
+            className="w-16 h-16 rounded-lg float-btn flex flex-col items-center justify-center">
+            <span className="corner-tr" /><span className="corner-bl" />
+            <span className="text-gold/90 text-xs font-medium leading-tight">立即</span>
+            <span className="text-gold/90 text-xs font-medium leading-tight">體驗</span>
           </a>
           <a href="https://lin.ee/PeB8CkE" target="_blank"
-            className="w-16 h-16 rounded-lg border border-gold/40 bg-dark/30 backdrop-blur-sm flex flex-col items-center justify-center active:scale-95 transition-transform"
-            style={{boxShadow: "0 0 12px rgba(201,169,110,0.15)"}}>
-            <span className="text-gold/80 text-xs font-medium leading-tight">與我</span>
-            <span className="text-gold/80 text-xs font-medium leading-tight">聊聊</span>
+            className="w-16 h-16 rounded-lg float-btn flex flex-col items-center justify-center">
+            <span className="corner-tr" /><span className="corner-bl" />
+            <span className="text-gold/90 text-xs font-medium leading-tight">與我</span>
+            <span className="text-gold/90 text-xs font-medium leading-tight">聊聊</span>
           </a>
         </div>
         <div key={page} className="fade-in">
