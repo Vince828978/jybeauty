@@ -286,11 +286,11 @@ export default function Home() {
         {/* 懸浮按鈕 */}
         <div className="fixed bottom-6 right-5 z-[150] flex flex-col gap-2 items-end">
           <a href="https://line.me/R/ti/p/@jy.beauty" target="_blank"
-            className="text-sm font-medium active:opacity-50 transition-opacity" style={{color: "rgba(6,199,85,0.7)"}}>
+            className="text-sm font-medium active:opacity-30 transition-opacity" style={{color: "rgba(6,199,85,0.5)"}}>
             與我聊聊
           </a>
           <a href="/experience"
-            className="text-sm font-medium text-gold/70 active:opacity-50 transition-opacity">
+            className="text-sm font-medium text-gold/50 active:opacity-30 transition-opacity">
             立即體驗
           </a>
         </div>
