@@ -106,8 +106,8 @@ function HomePage() {
         </p>
       </div>
       <div className="absolute inset-x-0 bottom-[18%] text-center">
-        <a href="/booking" className="inline-block border-2 border-gold text-gold px-20 py-5 text-xl tracking-[0.5em] hover:bg-gold hover:text-white transition-all font-serif-tc">
-          預約體驗
+        <a href="/member" className="inline-block border-2 border-gold text-gold px-20 py-5 text-xl tracking-[0.5em] hover:bg-gold hover:text-white transition-all font-serif-tc">
+          會員預約
         </a>
       </div>
     </section>
