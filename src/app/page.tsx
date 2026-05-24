@@ -226,10 +226,10 @@ function PackagesPage() {
           </div>
         </div>
       </div>
-      <div className="md:max-w-3xl mx-auto px-10 py-8 text-center">
+      <div className="md:max-w-3xl mx-auto px-16 py-8 text-center">
         <div className="space-y-6 md:grid md:grid-cols-2 md:gap-6 md:space-y-0">
           {pkgs.map((p) => (
-            <div key={p.name} className="border border-gold/30 rounded-2xl p-6 text-center mx-auto max-w-xs md:max-w-none">
+            <div key={p.name} className="border border-gold/30 rounded-2xl p-6 text-center">
               <p className="text-gold text-xs tracking-wider mb-1">{p.tag}</p>
               <h3 className="text-white font-serif-tc text-xl font-bold mb-2">{p.name}</h3>
               {p.desc && <p className="text-white/50 text-xs mb-3">{p.desc}</p>}
