@@ -124,11 +124,11 @@ function AboutPage() {
         <p className="text-gold text-xs tracking-[0.3em] uppercase mb-4">ABOUT US</p>
         <h2 className="font-serif-tc text-2xl font-bold text-dark mb-6"><E k="about_title" fallback="不開店，我去找你" /></h2>
         <div className="text-text-light text-sm leading-loose mb-8 space-y-4">
-          <p>做美容這些年，看過太多客人拖著疲憊的身體來到店裡，做完療程整個人放鬆了，結果一出門又要擠捷運、找車位，那份放鬆在回家路上就消失了一半。</p>
-          <p>我一直在想，如果做完就能直接躺在自己的床上，蓋著自己最喜歡的被子，那才是真正完整的放鬆。</p>
-          <p className="font-medium text-dark font-serif-tc text-base">所以我決定，不開店，我去找你。</p>
-          <p>我把所有專業設備都帶在身上——精油、美容床、毛巾、音樂，到你家幫你佈置一個專屬的 SPA 空間。你不用出門、不用趕時間、不用跟別人共用空間。</p>
-          <p className="font-medium text-dark">這段時間，完全是你的。</p>
+          <p>每次看到客人做完療程，拎著包包匆匆忙忙趕回家，臉上剛剛的放鬆已經消失一半——捷運好擠、車位好難找、路上好曬。</p>
+          <p>我就在想，為什麼放鬆完還要這麼累？</p>
+          <p className="font-medium text-dark font-serif-tc text-base">所以我把 SPA 搬到你家。</p>
+          <p>你做完翻個身就能睡著，不用趕路、不用在意任何人。醒來的時候，你會發現這才叫真正休息過。</p>
+          <p className="font-medium text-dark">不用出門、不用找停車位。<br />生活已經忙碌了，只為了讓你多一點休息。</p>
         </div>
         <div className="border-t border-gold-light/30 pt-6">
           <p className="text-gold text-xs tracking-wide mb-4">專業資歷</p>
