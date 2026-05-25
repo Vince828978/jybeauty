@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 
 const packages = [
@@ -40,7 +40,6 @@ function getNextDays(count: number) {
   return days;
 }
 
-const bookedSlots: Record<string, string[]> = {};
 
 export default function BookingPage() {
   const [step, setStep] = useState(0);
@@ -55,6 +54,15 @@ export default function BookingPage() {
   const [referralPhone, setReferralPhone] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [busySlots, setBusySlots] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (!selectedDate) { setBusySlots([]); return; }
+    fetch(`/api/calendar?date=${selectedDate}`)
+      .then(r => r.json())
+      .then(d => setBusySlots(d.busySlots || []))
+      .catch(() => setBusySlots([]));
+  }, [selectedDate]);
 
   const days = getNextDays(14);
   const weekdays = ["日", "一", "二", "三", "四", "五", "六"];
@@ -70,7 +78,7 @@ export default function BookingPage() {
     setSelectedAddons((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]);
   };
 
-  const booked = bookedSlots[selectedDate] || [];
+  const booked = busySlots;
 
   if (submitted) {
     return (
