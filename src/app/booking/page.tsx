@@ -208,9 +208,9 @@ export default function BookingPage() {
                   const isSelected = selectedDate === key;
                   return (
                     <button key={key} onClick={() => { setSelectedDate(key); setSelectedTime(""); }}
-                      className={`flex-shrink-0 w-16 py-3 rounded-xl text-center transition-all snap-center ${isSelected ? "bg-gold text-white" : "bg-white border border-gold-light/20 hover:border-gold/50"}`}>
-                      <p className={`text-xs ${isSelected ? "text-white/80" : "text-text-light"}`}>{weekdays[d.getDay()]}</p>
-                      <p className={`text-lg font-bold ${isSelected ? "text-white" : "text-dark"}`}>{d.getDate()}</p>
+                      className={`flex-shrink-0 w-20 py-4 rounded-2xl text-center transition-all snap-center ${isSelected ? "bg-gold text-white shadow-lg scale-105" : "bg-white border-2 border-gold-light/20 hover:border-gold/50 active:scale-95"}`}>
+                      <p className={`text-sm font-medium ${isSelected ? "text-white/80" : "text-text-light"}`}>{weekdays[d.getDay()]}</p>
+                      <p className={`text-2xl font-bold ${isSelected ? "text-white" : "text-dark"}`}>{d.getDate()}</p>
                       <p className={`text-xs ${isSelected ? "text-white/80" : "text-text-light"}`}>{d.getMonth() + 1}月</p>
                     </button>
                   );
@@ -221,14 +221,14 @@ export default function BookingPage() {
             {selectedDate && (
               <div className="fade-in mb-8">
                 <p className="text-dark font-medium mb-4 text-sm">選擇時段</p>
-                <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
+                <div className="grid grid-cols-3 gap-3">
                   {timeSlots.map((t) => {
                     const isBooked = booked.includes(t);
                     const isSelected = selectedTime === t;
                     return (
                       <button key={t} onClick={() => !isBooked && setSelectedTime(t)} disabled={isBooked}
-                        className={`py-3 rounded-xl text-sm font-medium transition-all ${isBooked ? "bg-gray-100 text-gray-300 cursor-not-allowed line-through" : isSelected ? "bg-gold text-white" : "bg-white border border-gold-light/20 text-dark hover:border-gold/50"}`}>
-                        {t}
+                        className={`py-5 rounded-2xl text-base font-semibold tracking-wide transition-all ${isBooked ? "bg-gray-100 text-gray-300 cursor-not-allowed opacity-40" : isSelected ? "bg-gold text-white shadow-lg scale-105" : "bg-white border-2 border-gold-light/30 text-dark hover:border-gold/60 active:scale-95"}`}>
+                        {isBooked ? <span className="flex flex-col items-center"><span className="line-through">{t}</span><span className="text-xs font-normal mt-1">已約</span></span> : t}
                       </button>
                     );
                   })}
