@@ -13,7 +13,7 @@ interface Customer {
   booking_count: number; total_spent: number; last_visit: string; created_at: string;
 }
 
-type View = "home"|"bookings"|"customers"|"new-booking"|"new-customer"|"stats"|"coupons"|"referrals"|"service-record";
+type View = "home"|"bookings"|"customers"|"new-booking"|"new-customer"|"stats"|"coupons"|"referrals"|"service-record"|"schedule"|"notifications";
 
 export default function AdminPage() {
   const [authed, setAuthed] = useState(false);
@@ -29,15 +29,22 @@ export default function AdminPage() {
   const [newRecord, setNewRecord] = useState({ customer_phone: "", customer_name: "", service_date: "", package: "", products_used: "", techniques: "", skin_condition: "", notes: "" });
   const [nb, setNb] = useState({ name: "", phone: "", address: "", package: "舒壓放鬆套餐", date: "", time: "10:00", total: 2280 });
   const [nc, setNc] = useState({ name: "", phone: "", address: "", notes: "" });
+  const [notifCount, setNotifCount] = useState(0);
+  const [notifications, setNotifications] = useState<Record<string, unknown>[]>([]);
+  const [blockedDates, setBlockedDates] = useState<Record<string, unknown>[]>([]);
+  const [blockForm, setBlockForm] = useState({ startDate: "", endDate: "", time: "all", reason: "" });
 
   const fetchBookings = async () => { const r = await fetch("/api/bookings"); const d = await r.json(); setBookings(d.bookings || []); setLoading(false); };
   const fetchCustomers = async () => { const r = await fetch("/api/customers"); const d = await r.json(); setCustomers(d.customers || []); };
   const fetchStats = async () => { const r = await fetch("/api/stats"); const d = await r.json(); setStats(d); };
   const fetchCoupons = async () => { const r = await fetch("/api/coupons"); const d = await r.json(); setCoupons(d.coupons || []); };
   const fetchReferrals = async () => { const r = await fetch("/api/referrals"); const d = await r.json(); setReferrals(d.referrals || []); };
+  const fetchNotifications = async () => { const r = await fetch("/api/notifications"); const d = await r.json(); setNotifCount(d.unreadCount || 0); setNotifications(d.notifications || []); };
+  const fetchBlockedDates = async () => { const r = await fetch("/api/blocked-dates"); const d = await r.json(); setBlockedDates(d.blockedDates || []); };
 
   useEffect(() => { if (typeof window !== "undefined" && sessionStorage.getItem("jyb-admin") === "1") setAuthed(true); }, []);
-  useEffect(() => { if (authed) { fetchBookings(); fetchCustomers(); fetchStats(); fetchCoupons(); fetchReferrals(); } }, [authed]);
+  useEffect(() => { if (authed) { fetchBookings(); fetchCustomers(); fetchStats(); fetchCoupons(); fetchReferrals(); fetchNotifications(); fetchBlockedDates(); } }, [authed]);
+  useEffect(() => { if (authed) { const iv = setInterval(fetchNotifications, 30000); return () => clearInterval(iv); } }, [authed]);
 
   if (!authed) {
     return (
@@ -103,6 +110,8 @@ export default function AdminPage() {
               { key: "new-booking" as View, label: "手動建立預約", desc: "LINE / 電話預約用", icon: "➕" },
               { key: "new-customer" as View, label: "新增客戶", desc: "建立客戶檔案", icon: "➕" },
               { key: "service-record" as View, label: "新增服務紀錄", desc: "記錄產品/手法/膚況", icon: "📝" },
+              { key: "schedule" as View, label: "排程管理", desc: "關閉時段/整天/多天", icon: "📅" },
+              { key: "notifications" as View, label: `通知中心${notifCount > 0 ? ` (${notifCount})` : ""}`, desc: notifCount > 0 ? `${notifCount} 則未讀通知` : "暫無新通知", icon: notifCount > 0 ? "🔴" : "🔔" },
             ].map((item) => (
               <button key={item.key} onClick={() => setView(item.key)}
                 className="w-full bg-white rounded-2xl p-5 border border-gold-light/20 flex items-center gap-4 text-left active:bg-gold/5 active:border-gold transition-all">
@@ -323,6 +332,95 @@ export default function AdminPage() {
                 alert("紀錄已建立！"); setNewRecord({ customer_phone: "", customer_name: "", service_date: "", package: "", products_used: "", techniques: "", skin_condition: "", notes: "" });
               }} className="w-full bg-gold text-white py-5 rounded-2xl text-lg font-medium active:bg-dark-light">建立紀錄</button>
             </div>
+          </div>
+        </>
+      )}
+
+      {view === "schedule" && (
+        <>
+          <button onClick={() => setView("home")} className="text-gold text-sm mb-4">&larr; 返回</button>
+          <div className="bg-white rounded-2xl p-6 space-y-4">
+            <h2 className="text-xl font-bold text-dark">排程管理</h2>
+            <p className="text-text-light text-sm">關閉預約時段。行事曆的私人行程也會自動封鎖對應時段。</p>
+            <div className="border border-gold-light/30 rounded-xl p-4 space-y-3">
+              <p className="font-medium text-dark">新增封鎖</p>
+              <div className="flex gap-2">
+                <input type="date" value={blockForm.startDate} onChange={e => setBlockForm({...blockForm, startDate: e.target.value})} className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm" />
+                <span className="self-center text-text-light">~</span>
+                <input type="date" value={blockForm.endDate} onChange={e => setBlockForm({...blockForm, endDate: e.target.value})} className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm" />
+              </div>
+              <select value={blockForm.time} onChange={e => setBlockForm({...blockForm, time: e.target.value})} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm">
+                <option value="all">整天關閉</option>
+                {["10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00","20:00"].map(t => <option key={t} value={t}>{t} 該時段</option>)}
+              </select>
+              <input value={blockForm.reason} onChange={e => setBlockForm({...blockForm, reason: e.target.value})} placeholder="原因（選填）" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm" />
+              <button onClick={async () => {
+                if (!blockForm.startDate) return alert("請選擇日期");
+                const dates: string[] = [];
+                const start = new Date(blockForm.startDate);
+                const end = blockForm.endDate ? new Date(blockForm.endDate) : start;
+                for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+                  dates.push(d.toISOString().slice(0, 10));
+                }
+                await fetch("/api/calendar", { method: "POST", headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ action: "block_dates", dates, time: blockForm.time, reason: blockForm.reason }) });
+                setBlockForm({ startDate: "", endDate: "", time: "all", reason: "" });
+                fetchBlockedDates();
+                alert("已封鎖！");
+              }} className="w-full bg-red-500 text-white py-3 rounded-xl font-medium">封鎖時段</button>
+            </div>
+            <div>
+              <p className="font-medium text-dark mb-2">已封鎖的時段</p>
+              {blockedDates.length === 0 ? <p className="text-text-light text-sm">目前沒有手動封鎖的時段</p> : (
+                <div className="space-y-2">
+                  {blockedDates.map((bd: Record<string, unknown>) => (
+                    <div key={String(bd.id)} className="flex items-center justify-between bg-red-50 px-4 py-3 rounded-xl">
+                      <div>
+                        <span className="font-medium text-dark">{String(bd.date)}</span>
+                        <span className="text-text-light ml-2">{bd.time === "all" ? "整天" : String(bd.time)}</span>
+                        {bd.reason ? <span className="text-text-light ml-2 text-sm">({String(bd.reason)})</span> : null}
+                      </div>
+                      <button onClick={async () => {
+                        await fetch("/api/calendar", { method: "POST", headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ action: "unblock_date", id: bd.id }) });
+                        fetchBlockedDates();
+                      }} className="text-red-500 text-sm font-medium">解除</button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </>
+      )}
+
+      {view === "notifications" && (
+        <>
+          <button onClick={() => setView("home")} className="text-gold text-sm mb-4">&larr; 返回</button>
+          <div className="bg-white rounded-2xl p-6 space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-bold text-dark">通知中心</h2>
+              {notifCount > 0 && <button onClick={async () => {
+                await fetch("/api/notifications", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ readAll: true }) });
+                fetchNotifications();
+              }} className="text-gold text-sm">全部已讀</button>}
+            </div>
+            {notifications.length === 0 ? <p className="text-text-light text-sm text-center py-8">暫無通知</p> : (
+              <div className="space-y-2">
+                {notifications.map((n: Record<string, unknown>) => (
+                  <div key={String(n.id)} className={`px-4 py-3 rounded-xl border ${n.read ? "bg-gray-50 border-gray-100" : "bg-amber-50 border-amber-200"}`}>
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${n.type === "conflict" ? "bg-red-100 text-red-700" : "bg-blue-100 text-blue-700"}`}>{n.type === "conflict" ? "衝突" : String(n.type)}</span>
+                        <p className="text-dark text-sm mt-1">{String(n.message)}</p>
+                        <p className="text-text-light text-xs mt-1">{String(n.created_at).slice(0, 16)}</p>
+                      </div>
+                      {!n.read && <span className="w-2 h-2 bg-red-500 rounded-full mt-1 flex-shrink-0"></span>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </>
       )}

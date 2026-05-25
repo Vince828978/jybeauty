@@ -30,8 +30,28 @@ export async function POST(request: Request) {
     await ensureTable();
     const body = await request.json();
     const sql = getDb();
-    await sql`INSERT INTO bookings (package, package_tier, addons, date, time, name, phone, total)
-      VALUES (${body.package}, ${body.packageTier}, ${JSON.stringify(body.addons || [])}, ${body.date}, ${body.time}, ${body.name}, ${body.phone}, ${body.total})`;
+    await sql`INSERT INTO bookings (package, package_tier, addons, date, time, name, phone, total, address)
+      VALUES (${body.package}, ${body.packageTier}, ${JSON.stringify(body.addons || [])}, ${body.date}, ${body.time}, ${body.name}, ${body.phone}, ${body.total}, ${body.address || ""})`;
+    // sync to Google Calendar
+    try {
+      const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://www.jybeauty.tw";
+      await fetch(`${baseUrl}/api/calendar`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "create_event",
+          name: body.name,
+          phone: body.phone,
+          package: body.package,
+          date: body.date,
+          time: body.time,
+          total: body.total,
+          address: body.address || "",
+        }),
+      });
+    } catch (calErr) {
+      console.error("Calendar sync error (non-blocking):", calErr);
+    }
     return NextResponse.json({ success: true });
   } catch (e) {
     return NextResponse.json({ success: false, error: String(e) }, { status: 500 });
