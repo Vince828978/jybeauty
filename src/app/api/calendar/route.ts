@@ -7,10 +7,27 @@ function getDb() {
   return neon(url);
 }
 
-function getAuth() {
+async function ensureSettingsTable() {
+  const sql = getDb();
+  await sql`CREATE TABLE IF NOT EXISTS settings (
+    key TEXT PRIMARY KEY,
+    value TEXT NOT NULL,
+    updated_at TIMESTAMP DEFAULT NOW()
+  )`;
+}
+
+async function getAuth() {
   const clientId = process.env.GOOGLE_CLIENT_ID || "";
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET || "";
-  const refreshToken = process.env.GOOGLE_REFRESH_TOKEN || "";
+  let refreshToken = process.env.GOOGLE_REFRESH_TOKEN || "";
+  if (!refreshToken) {
+    try {
+      await ensureSettingsTable();
+      const sql = getDb();
+      const row = await sql`SELECT value FROM settings WHERE key = 'google_refresh_token'`;
+      if (row.length > 0) refreshToken = row[0].value;
+    } catch (e) { console.error("Settings query error:", e); }
+  }
   if (!clientId || !clientSecret || !refreshToken) return null;
   const oauth2 = new google.auth.OAuth2(clientId, clientSecret);
   oauth2.setCredentials({ refresh_token: refreshToken });
@@ -47,7 +64,7 @@ export async function GET(request: Request) {
   const busySlots: string[] = [];
   const slots = ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"];
 
-  const auth = getAuth();
+  const auth = await getAuth();
   if (auth) {
     try {
       const calendar = google.calendar({ version: "v3", auth });
@@ -97,7 +114,7 @@ export async function POST(request: Request) {
   const { action } = body;
 
   if (action === "create_event") {
-    const auth = getAuth();
+    const auth = await getAuth();
     if (!auth) return NextResponse.json({ error: "Calendar not configured" }, { status: 500 });
     const calendarId = process.env.GOOGLE_CALENDAR_ID || "primary";
     const calendar = google.calendar({ version: "v3", auth });
@@ -120,7 +137,7 @@ export async function POST(request: Request) {
   }
 
   if (action === "check_conflicts") {
-    const auth = getAuth();
+    const auth = await getAuth();
     if (!auth) return NextResponse.json({ conflicts: [] });
     const calendarId = process.env.GOOGLE_CALENDAR_ID || "primary";
     const calendar = google.calendar({ version: "v3", auth });
