@@ -27,6 +27,24 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="zh-TW" className={`${geistSans.variable} h-full antialiased`}>
       <head>
         <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Serif+TC:wght@400;600;700&display=swap" rel="stylesheet" />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "BeautySalon",
+          "name": "JY Beauty",
+          "description": "私人到府 SPA・精油按摩・臉部保養，15年專業美容師一對一到府服務",
+          "url": "https://jybeauty.tw",
+          "telephone": "+886",
+          "priceRange": "$1,380 - $4,280",
+          "openingHoursSpecification": {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
+            "opens": "10:00",
+            "closes": "20:00"
+          },
+          "areaServed": { "@type": "Country", "name": "Taiwan" },
+          "serviceType": ["到府按摩", "臉部保養", "精油SPA", "深層護理"],
+          "sameAs": ["https://www.instagram.com/jaryun_wang", "https://lin.ee/PeB8CkE"]
+        })}} />
       </head>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

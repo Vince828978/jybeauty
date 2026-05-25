@@ -155,6 +155,17 @@ export default function AdminPage() {
             </div>
             <div className="bg-white rounded-2xl p-5 border border-gold-light/20"><p className="text-text-light text-sm mb-1">熱門套餐</p><p className="text-dark font-bold text-lg">{String((stats as Record<string, string>).popularPackage || "—")}</p></div>
             <div className="bg-white rounded-2xl p-5 border border-gold-light/20"><p className="text-text-light text-sm mb-1">需回訪提醒</p><p className="text-dark font-bold text-2xl">{Number((stats as Record<string, number>).needFollowUp || 0)} 位客戶</p><p className="text-text-light text-xs">超過 30 天未到訪</p></div>
+            <div className="bg-white rounded-2xl p-5 border border-gold-light/20 text-left mt-4">
+              <p className="text-text-light text-sm mb-3 text-center">客戶分析</p>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between"><span className="text-text-light">總客戶數</span><span className="text-dark font-bold">{customers.length} 位</span></div>
+                <div className="flex justify-between"><span className="text-text-light">本月新客</span><span className="text-dark font-bold">{customers.filter(c => c.created_at && c.created_at.startsWith(new Date().toISOString().slice(0,7))).length} 位</span></div>
+                <div className="flex justify-between"><span className="text-text-light">本月預約數</span><span className="text-dark font-bold">{Number(s.month?.count || 0)} 筆</span></div>
+                <div className="flex justify-between"><span className="text-text-light">平均客單價</span><span className="text-gold font-bold">${Number(s.month?.count || 0) > 0 ? Math.round(Number(s.month?.revenue || 0) / Number(s.month?.count || 1)).toLocaleString() : "—"}</span></div>
+                <div className="flex justify-between"><span className="text-text-light">優惠券使用</span><span className="text-dark font-bold">{coupons.filter((c: Record<string, unknown>) => Number(c.used_count || 0) > 0).length} / {coupons.length} 張</span></div>
+                <div className="flex justify-between"><span className="text-text-light">推薦紀錄</span><span className="text-dark font-bold">{referrals.length} 筆</span></div>
+              </div>
+            </div>
             <button onClick={fetchStats} className="w-full py-4 rounded-2xl border-2 border-gold text-gold text-base font-medium active:bg-gold active:text-white">重新整理</button>
           </div>
         </>

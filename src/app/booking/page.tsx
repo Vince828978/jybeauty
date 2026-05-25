@@ -115,11 +115,11 @@ export default function BookingPage() {
       <div className="max-w-2xl mx-auto px-6 py-8">
         {/* Progress */}
         <div className="flex items-center justify-center gap-2 mb-10">
-          {["選擇套餐", "選擇時間", "填寫資料"].map((label, i) => (
-            <div key={label} className="flex items-center gap-2">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all ${step >= i ? "bg-gold text-white" : "bg-gold-light/30 text-text-light"}`}>{i + 1}</div>
-              <span className={`text-xs hidden sm:inline ${step >= i ? "text-dark" : "text-text-light"}`}>{label}</span>
-              {i < 2 && <div className={`w-8 h-px ${step > i ? "bg-gold" : "bg-gold-light/30"}`} />}
+          {["套餐", "時間", "資料", "確認"].map((label, i) => (
+            <div key={label} className="flex items-center gap-1">
+              <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium transition-all ${step >= i ? "bg-gold text-white" : "bg-gold-light/30 text-text-light"}`}>{i + 1}</div>
+              <span className={`text-xs ${step >= i ? "text-dark" : "text-text-light"}`}>{label}</span>
+              {i < 3 && <div className={`w-5 h-px ${step > i ? "bg-gold" : "bg-gold-light/30"}`} />}
             </div>
           ))}
         </div>
@@ -300,8 +300,48 @@ export default function BookingPage() {
 
             <div className="flex gap-4">
               <button onClick={() => setStep(1)} className="flex-1 py-5 rounded-2xl border-2 border-gold text-gold text-base font-medium tracking-wide active:bg-gold active:text-white transition-colors">上一步</button>
+              <button onClick={() => { if (name && phone) setStep(3); }} disabled={!name || !phone}
+                className={`flex-1 py-5 rounded-2xl text-base font-medium tracking-wide transition-colors ${name && phone ? "bg-gold text-white active:bg-dark-light" : "bg-gray-200 text-gray-400 cursor-not-allowed"}`}>下一步：確認預約</button>
+            </div>
+          </div>
+        )}
+
+        {/* Step 3: Confirmation */}
+        {step === 3 && (
+          <div className="fade-in">
+            <h2 className="font-serif-tc text-2xl font-bold text-dark text-center mb-2">確認預約資訊</h2>
+            <p className="text-text-light text-center text-sm mb-8">請確認以下資訊無誤後送出</p>
+
+            <div className="bg-white rounded-2xl p-6 mb-6 border-2 border-gold/30 shadow-lg">
+              <div className="space-y-4 text-sm">
+                <div className="flex justify-between py-2 border-b border-gold-light/10"><span className="text-text-light">套餐</span><span className="text-dark font-semibold">{pkg?.name}</span></div>
+                {selectedAddons.length > 0 && (
+                  <div className="flex justify-between py-2 border-b border-gold-light/10"><span className="text-text-light">加項</span><span className="text-dark font-medium text-right">{selectedAddons.map((id) => allAddons.find((a) => a.id === id)?.name).join("、")}</span></div>
+                )}
+                <div className="flex justify-between py-2 border-b border-gold-light/10"><span className="text-text-light">日期</span><span className="text-dark font-semibold">{selectedDate}</span></div>
+                <div className="flex justify-between py-2 border-b border-gold-light/10"><span className="text-text-light">時段</span><span className="text-dark font-semibold">{selectedTime}</span></div>
+                <div className="flex justify-between py-2 border-b border-gold-light/10"><span className="text-text-light">服務方式</span><span className="text-dark font-medium">{serviceMode === "home" ? "到府服務" : "工作室服務"}</span></div>
+                <div className="flex justify-between py-2 border-b border-gold-light/10"><span className="text-text-light">姓名</span><span className="text-dark font-semibold">{name}</span></div>
+                <div className="flex justify-between py-2 border-b border-gold-light/10"><span className="text-text-light">電話</span><span className="text-dark font-medium">{phone}</span></div>
+                {serviceMode === "home" && address && (
+                  <div className="flex justify-between py-2 border-b border-gold-light/10"><span className="text-text-light">地址</span><span className="text-dark font-medium text-right max-w-[60%]">{address}</span></div>
+                )}
+                {referralPhone && (
+                  <div className="flex justify-between py-2 border-b border-gold-light/10"><span className="text-text-light">推薦人</span><span className="text-dark font-medium">{referralPhone}</span></div>
+                )}
+                <div className="flex justify-between pt-4 mt-2 border-t-2 border-gold/20">
+                  <span className="text-dark font-bold text-lg">預估金額</span>
+                  <span className="text-gold font-bold font-serif-tc text-2xl">${total.toLocaleString()}</span>
+                </div>
+              </div>
+            </div>
+
+            <p className="text-text-light text-xs text-center mb-6">送出後我們會透過 LINE 與您確認詳細時間</p>
+
+            <div className="flex gap-4">
+              <button onClick={() => setStep(2)} className="flex-1 py-5 rounded-2xl border-2 border-gold text-gold text-base font-medium tracking-wide active:bg-gold active:text-white transition-colors">修改資料</button>
               <button onClick={async () => {
-                if (!name || !phone || submitting) return;
+                if (submitting) return;
                 setSubmitting(true);
                 await fetch("/api/bookings", {
                   method: "POST",
@@ -315,8 +355,8 @@ export default function BookingPage() {
                 await fetch("/api/customers", { method: "POST", headers: { "Content-Type": "application/json" },
                   body: JSON.stringify({ name, phone, address }) });
                 setSubmitted(true);
-              }} disabled={!name || !phone || submitting}
-                className={`flex-1 py-5 rounded-2xl text-base font-medium tracking-wide transition-colors ${name && phone ? "bg-gold text-white active:bg-dark-light" : "bg-gray-200 text-gray-400 cursor-not-allowed"}`}>確認預約</button>
+              }} disabled={submitting}
+                className="flex-1 py-5 rounded-2xl bg-gold text-white text-base font-bold tracking-wide active:bg-dark-light transition-colors">{submitting ? "送出中..." : "確認送出預約"}</button>
             </div>
           </div>
         )}
