@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 
-const ADMIN_PASS = "1234";
+const ADMIN_PASS = process.env.NEXT_PUBLIC_ADMIN_PASS || "1234";
 
 interface Booking {
   id: number; package: string; package_tier: string; date: string; time: string;
