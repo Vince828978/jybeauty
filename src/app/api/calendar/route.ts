@@ -19,15 +19,14 @@ async function ensureSettingsTable() {
 async function getAuth() {
   const clientId = process.env.GOOGLE_CLIENT_ID || "";
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET || "";
-  let refreshToken = process.env.GOOGLE_REFRESH_TOKEN || "";
-  if (!refreshToken) {
-    try {
-      await ensureSettingsTable();
-      const sql = getDb();
-      const row = await sql`SELECT value FROM settings WHERE key = 'google_refresh_token'`;
-      if (row.length > 0) refreshToken = row[0].value;
-    } catch (e) { console.error("Settings query error:", e); }
-  }
+  let refreshToken = "";
+  try {
+    await ensureSettingsTable();
+    const sql = getDb();
+    const row = await sql`SELECT value FROM settings WHERE key = 'google_refresh_token'`;
+    if (row.length > 0) refreshToken = row[0].value;
+  } catch (e) { console.error("Settings query error:", e); }
+  if (!refreshToken) refreshToken = process.env.GOOGLE_REFRESH_TOKEN || "";
   if (!clientId || !clientSecret || !refreshToken) return null;
   const oauth2 = new google.auth.OAuth2(clientId, clientSecret);
   oauth2.setCredentials({ refresh_token: refreshToken });
