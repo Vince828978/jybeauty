@@ -65,33 +65,33 @@ export default function AdminPage() {
 
   const s = stats as Record<string, Record<string, number>>;
 
-  // Home view — APP-style mobile dashboard
+  // Home view — APP-style mobile dashboard (柔粉色系)
   if (view === "home") {
     const pending = Number((stats as Record<string, number>).pending || 0);
     const followUp = Number((stats as Record<string, number>).needFollowUp || 0);
     const revenue = Number(s.month?.revenue || 0);
     return (
-      <div className="min-h-screen bg-[#F5F1EB] pb-24">
-        {/* Header — 金色漸層 */}
-        <div className="bg-gradient-to-br from-[#C99A3F] via-[#D4AA5C] to-[#B8892E] px-6 pt-10 pb-16 rounded-b-[32px] relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/4" />
-          <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/4" />
+      <div className="min-h-screen bg-[#FFF5F5] pb-24">
+        {/* Header — 柔粉漸層 */}
+        <div className="bg-gradient-to-br from-[#FECDD3] via-[#FDA4AF] to-[#FB7185] px-6 pt-10 pb-16 rounded-b-[32px] relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-40 h-40 bg-white/15 rounded-full -translate-y-1/2 translate-x-1/4" />
+          <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/10 rounded-full translate-y-1/2 -translate-x-1/4" />
           <div className="max-w-lg mx-auto relative">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <p className="text-white/70 text-sm">Hello 👋</p>
+                <p className="text-white/80 text-sm">Hello 👋</p>
                 <p className="font-serif-tc text-2xl font-bold text-white">JY Beauty</p>
               </div>
-              <button onClick={() => setView("notifications")} className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center relative">
+              <button onClick={() => setView("notifications")} className="w-10 h-10 bg-white/25 rounded-full flex items-center justify-center relative">
                 <span className="text-lg">🔔</span>
-                {notifCount > 0 && <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center animate-pulse">{notifCount}</span>}
+                {notifCount > 0 && <span className="absolute -top-1 -right-1 bg-white text-rose-500 text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center animate-pulse">{notifCount}</span>}
               </button>
             </div>
             {/* 營收大卡 */}
-            <div className="bg-white/20 backdrop-blur-sm rounded-3xl p-6 text-center">
-              <p className="text-white/80 text-sm mb-1">本月營收</p>
+            <div className="bg-white/25 backdrop-blur-sm rounded-3xl p-6 text-center">
+              <p className="text-white/90 text-sm mb-1">本月營收</p>
               <p className="text-white font-bold font-serif-tc text-5xl tracking-tight">${revenue.toLocaleString()}</p>
-              <p className="text-white/60 text-xs mt-2">{Number(s.month?.count || 0)} 筆預約 · {pending > 0 ? `${pending} 筆待確認` : "全部已確認"}</p>
+              <p className="text-white/70 text-xs mt-2">{Number(s.month?.count || 0)} 筆預約 · {pending > 0 ? `${pending} 筆待確認` : "全部已確認"}</p>
             </div>
           </div>
         </div>
@@ -100,10 +100,10 @@ export default function AdminPage() {
           {/* 快速操作 2x2 大卡片 */}
           <div className="grid grid-cols-2 gap-4 mb-6">
             {[
-              { key: "new-booking" as View, icon: "📱", label: "接單", desc: "LINE/電話預約", bg: "from-blue-50 to-indigo-50", border: "border-blue-100" },
-              { key: "schedule" as View, icon: "📅", label: "排程", desc: "管理開放時段", bg: "from-rose-50 to-pink-50", border: "border-rose-100" },
-              { key: "new-customer" as View, icon: "👤", label: "新客建檔", desc: "建立客戶資料", bg: "from-emerald-50 to-teal-50", border: "border-emerald-100" },
-              { key: "service-record" as View, icon: "📝", label: "服務紀錄", desc: "記錄產品手法", bg: "from-amber-50 to-yellow-50", border: "border-amber-100" },
+              { key: "new-booking" as View, icon: "📱", label: "接單", desc: "LINE/電話預約", bg: "from-rose-50 to-pink-50", border: "border-rose-100" },
+              { key: "schedule" as View, icon: "📅", label: "排程", desc: "管理開放時段", bg: "from-pink-50 to-fuchsia-50", border: "border-pink-100" },
+              { key: "new-customer" as View, icon: "👤", label: "新客建檔", desc: "建立客戶資料", bg: "from-rose-50 to-red-50", border: "border-rose-100" },
+              { key: "service-record" as View, icon: "📝", label: "服務紀錄", desc: "記錄產品手法", bg: "from-pink-50 to-rose-50", border: "border-pink-100" },
             ].map(a => (
               <button key={a.key} onClick={() => setView(a.key)} className={`bg-gradient-to-br ${a.bg} rounded-3xl p-5 flex flex-col items-center gap-2 border ${a.border} active:scale-95 transition-transform shadow-sm`}>
                 <span className="text-3xl">{a.icon}</span>
@@ -115,7 +115,7 @@ export default function AdminPage() {
 
           {/* 數據概覽 */}
           <div className="bg-white rounded-3xl p-5 shadow-sm mb-6">
-            <div className="grid grid-cols-3 divide-x divide-gold-light/20">
+            <div className="grid grid-cols-3 divide-x divide-rose-100">
               <button onClick={() => setView("customers")} className="text-center px-2 active:opacity-70">
                 <p className="text-dark font-bold text-2xl">{customers.length}</p>
                 <p className="text-text-light text-xs mt-1">客戶</p>
@@ -146,19 +146,19 @@ export default function AdminPage() {
             ].map((item) => (
               <button key={item.key} onClick={() => setView(item.key)}
                 className="w-full bg-white rounded-2xl px-5 py-4 flex items-center gap-4 text-left active:scale-[0.98] transition-transform shadow-sm">
-                <span className="w-11 h-11 bg-gradient-to-br from-gold-light/20 to-gold/10 rounded-2xl flex items-center justify-center text-xl">{item.icon}</span>
+                <span className="w-11 h-11 bg-gradient-to-br from-rose-100 to-pink-50 rounded-2xl flex items-center justify-center text-xl">{item.icon}</span>
                 <div className="flex-1 min-w-0">
                   <p className="text-dark font-semibold">{item.label}</p>
                   <p className="text-text-light text-xs">{item.desc}</p>
                 </div>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gold-light/50 flex-shrink-0"><path d="M9 18l6-6-6-6"/></svg>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-rose-200 flex-shrink-0"><path d="M9 18l6-6-6-6"/></svg>
               </button>
             ))}
           </div>
         </div>
 
         {/* Bottom Tab Bar */}
-        <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-gold-light/10 safe-area-pb z-50">
+        <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-rose-100/50 safe-area-pb z-50">
           <div className="max-w-lg mx-auto flex justify-around py-2">
             {[
               { key: "home" as View, icon: "🏠", label: "首頁" },
@@ -166,7 +166,7 @@ export default function AdminPage() {
               { key: "customers" as View, icon: "💎", label: "客戶" },
               { key: "stats" as View, icon: "⚙️", label: "更多" },
             ].map(tab => (
-              <button key={tab.key} onClick={() => setView(tab.key)} className={`flex flex-col items-center gap-0.5 px-4 py-1 ${view === tab.key ? "text-gold" : "text-text-light"}`}>
+              <button key={tab.key} onClick={() => setView(tab.key)} className={`flex flex-col items-center gap-0.5 px-4 py-1 ${view === tab.key ? "text-rose-500" : "text-text-light"}`}>
                 <span className="text-xl">{tab.icon}</span>
                 <span className="text-[10px] font-medium">{tab.label}</span>
               </button>
