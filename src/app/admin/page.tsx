@@ -65,77 +65,110 @@ export default function AdminPage() {
 
   const s = stats as Record<string, Record<string, number>>;
 
-  // Home view — modern mobile-first dashboard
+  // Home view — APP-style mobile dashboard
   if (view === "home") {
     const pending = Number((stats as Record<string, number>).pending || 0);
     const followUp = Number((stats as Record<string, number>).needFollowUp || 0);
+    const revenue = Number(s.month?.revenue || 0);
     return (
-      <div className="min-h-screen bg-warm-bg pb-24">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-dark to-dark-light px-6 pt-8 pb-12 text-white">
-          <div className="max-w-lg mx-auto">
-            <p className="font-serif-tc text-2xl font-bold mb-1"><span className="text-gold">JY</span> Beauty</p>
-            <p className="text-white/60 text-sm">後台管理</p>
-            {notifCount > 0 && (
-              <button onClick={() => setView("notifications")} className="absolute right-6 top-8 bg-red-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center animate-pulse">{notifCount}</button>
-            )}
+      <div className="min-h-screen bg-[#F5F1EB] pb-24">
+        {/* Header — 金色漸層 */}
+        <div className="bg-gradient-to-br from-[#C99A3F] via-[#D4AA5C] to-[#B8892E] px-6 pt-10 pb-16 rounded-b-[32px] relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/4" />
+          <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/4" />
+          <div className="max-w-lg mx-auto relative">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <p className="text-white/70 text-sm">Hello 👋</p>
+                <p className="font-serif-tc text-2xl font-bold text-white">JY Beauty</p>
+              </div>
+              <button onClick={() => setView("notifications")} className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center relative">
+                <span className="text-lg">🔔</span>
+                {notifCount > 0 && <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center animate-pulse">{notifCount}</span>}
+              </button>
+            </div>
+            {/* 營收大卡 */}
+            <div className="bg-white/20 backdrop-blur-sm rounded-3xl p-6 text-center">
+              <p className="text-white/80 text-sm mb-1">本月營收</p>
+              <p className="text-white font-bold font-serif-tc text-5xl tracking-tight">${revenue.toLocaleString()}</p>
+              <p className="text-white/60 text-xs mt-2">{Number(s.month?.count || 0)} 筆預約 · {pending > 0 ? `${pending} 筆待確認` : "全部已確認"}</p>
+            </div>
           </div>
         </div>
 
         <div className="max-w-lg mx-auto px-5 -mt-6">
-          {/* 數字卡片 */}
-          <div className="grid grid-cols-4 gap-2 mb-6">
-            <button onClick={() => setView("stats")} className="bg-white rounded-2xl p-3 text-center shadow-sm active:scale-95 transition-transform">
-              <p className="text-gold font-bold font-serif-tc text-xl">${Number(s.month?.revenue || 0) > 999 ? Math.round(Number(s.month?.revenue || 0)/1000) + "k" : Number(s.month?.revenue || 0)}</p>
-              <p className="text-text-light text-[10px] mt-1">本月營收</p>
-            </button>
-            <button onClick={() => setView("bookings")} className="bg-white rounded-2xl p-3 text-center shadow-sm active:scale-95 transition-transform relative">
-              <p className="text-dark font-bold text-xl">{bookings.length}</p>
-              <p className="text-text-light text-[10px] mt-1">預約</p>
-              {pending > 0 && <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center">{pending}</span>}
-            </button>
-            <button onClick={() => setView("customers")} className="bg-white rounded-2xl p-3 text-center shadow-sm active:scale-95 transition-transform">
-              <p className="text-dark font-bold text-xl">{customers.length}</p>
-              <p className="text-text-light text-[10px] mt-1">客戶</p>
-            </button>
-            <button onClick={() => setView("stats")} className="bg-white rounded-2xl p-3 text-center shadow-sm active:scale-95 transition-transform relative">
-              <p className="text-dark font-bold text-xl">{followUp}</p>
-              <p className="text-text-light text-[10px] mt-1">需回訪</p>
-              {followUp > 0 && <span className="absolute -top-1 -right-1 bg-amber-400 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center">!</span>}
-            </button>
-          </div>
-
-          {/* 快速操作 */}
-          <div className="grid grid-cols-4 gap-3 mb-6">
+          {/* 快速操作 2x2 大卡片 */}
+          <div className="grid grid-cols-2 gap-4 mb-6">
             {[
-              { key: "new-booking" as View, icon: "📱", label: "接單" },
-              { key: "schedule" as View, icon: "📅", label: "排程" },
-              { key: "new-customer" as View, icon: "👤", label: "新客" },
-              { key: "service-record" as View, icon: "📝", label: "紀錄" },
+              { key: "new-booking" as View, icon: "📱", label: "接單", desc: "LINE/電話預約", bg: "from-blue-50 to-indigo-50", border: "border-blue-100" },
+              { key: "schedule" as View, icon: "📅", label: "排程", desc: "管理開放時段", bg: "from-rose-50 to-pink-50", border: "border-rose-100" },
+              { key: "new-customer" as View, icon: "👤", label: "新客建檔", desc: "建立客戶資料", bg: "from-emerald-50 to-teal-50", border: "border-emerald-100" },
+              { key: "service-record" as View, icon: "📝", label: "服務紀錄", desc: "記錄產品手法", bg: "from-amber-50 to-yellow-50", border: "border-amber-100" },
             ].map(a => (
-              <button key={a.key} onClick={() => setView(a.key)} className="bg-white rounded-2xl py-4 flex flex-col items-center gap-2 shadow-sm active:scale-95 transition-transform">
-                <span className="text-2xl">{a.icon}</span>
-                <span className="text-dark text-xs font-medium">{a.label}</span>
+              <button key={a.key} onClick={() => setView(a.key)} className={`bg-gradient-to-br ${a.bg} rounded-3xl p-5 flex flex-col items-center gap-2 border ${a.border} active:scale-95 transition-transform shadow-sm`}>
+                <span className="text-3xl">{a.icon}</span>
+                <span className="text-dark font-semibold text-base">{a.label}</span>
+                <span className="text-text-light text-xs">{a.desc}</span>
               </button>
             ))}
           </div>
 
+          {/* 數據概覽 */}
+          <div className="bg-white rounded-3xl p-5 shadow-sm mb-6">
+            <div className="grid grid-cols-3 divide-x divide-gold-light/20">
+              <button onClick={() => setView("customers")} className="text-center px-2 active:opacity-70">
+                <p className="text-dark font-bold text-2xl">{customers.length}</p>
+                <p className="text-text-light text-xs mt-1">客戶</p>
+              </button>
+              <button onClick={() => setView("bookings")} className="text-center px-2 active:opacity-70 relative">
+                <p className="text-dark font-bold text-2xl">{bookings.length}</p>
+                <p className="text-text-light text-xs mt-1">預約</p>
+                {pending > 0 && <span className="absolute top-0 right-2 bg-red-500 text-white text-[9px] px-1.5 rounded-full">{pending}</span>}
+              </button>
+              <button onClick={() => setView("stats")} className="text-center px-2 active:opacity-70">
+                <p className="text-dark font-bold text-2xl">{followUp}</p>
+                <p className="text-text-light text-xs mt-1">待回訪</p>
+              </button>
+            </div>
+          </div>
+
           {/* 功能列表 */}
           <p className="text-text-light text-xs font-medium tracking-wider mb-3 px-1">管理功能</p>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-3 mb-6">
             {[
-              { key: "stats" as View, label: "營收報表", icon: "📊", color: "from-amber-50 to-orange-50" },
-              { key: "bookings" as View, label: "預約管理", icon: "📋", color: "from-blue-50 to-cyan-50" },
-              { key: "customers" as View, label: "客戶資料", icon: "👤", color: "from-purple-50 to-pink-50" },
-              { key: "coupons" as View, label: "優惠券", icon: "🎟", color: "from-green-50 to-emerald-50" },
-              { key: "referrals" as View, label: "推薦紀錄", icon: "🤝", color: "from-sky-50 to-blue-50" },
-              { key: "schedule" as View, label: "排程管理", icon: "📅", color: "from-rose-50 to-pink-50" },
-              { key: "notifications" as View, label: notifCount > 0 ? `通知 (${notifCount})` : "通知中心", icon: notifCount > 0 ? "🔴" : "🔔", color: "from-yellow-50 to-amber-50" },
+              { key: "stats" as View, label: "營收報表", desc: "今日/月/累計統計", icon: "📊" },
+              { key: "bookings" as View, label: "預約管理", desc: `${bookings.length} 筆預約`, icon: "📋" },
+              { key: "customers" as View, label: "客戶資料", desc: `${customers.length} 位客戶`, icon: "💎" },
+              { key: "coupons" as View, label: "優惠券", desc: `${coupons.length} 張`, icon: "🎟" },
+              { key: "referrals" as View, label: "推薦紀錄", desc: `${referrals.length} 筆`, icon: "🤝" },
+              { key: "schedule" as View, label: "排程管理", desc: "時段開放/關閉", icon: "📅" },
+              { key: "notifications" as View, label: "通知中心", desc: notifCount > 0 ? `${notifCount} 則未讀` : "暫無", icon: notifCount > 0 ? "🔴" : "🔔" },
             ].map((item) => (
               <button key={item.key} onClick={() => setView(item.key)}
-                className={`bg-gradient-to-br ${item.color} rounded-2xl p-4 text-left active:scale-95 transition-transform shadow-sm`}>
-                <span className="text-2xl">{item.icon}</span>
-                <p className="text-dark font-medium text-sm mt-2">{item.label}</p>
+                className="w-full bg-white rounded-2xl px-5 py-4 flex items-center gap-4 text-left active:scale-[0.98] transition-transform shadow-sm">
+                <span className="w-11 h-11 bg-gradient-to-br from-gold-light/20 to-gold/10 rounded-2xl flex items-center justify-center text-xl">{item.icon}</span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-dark font-semibold">{item.label}</p>
+                  <p className="text-text-light text-xs">{item.desc}</p>
+                </div>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gold-light/50 flex-shrink-0"><path d="M9 18l6-6-6-6"/></svg>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Bottom Tab Bar */}
+        <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-gold-light/10 safe-area-pb z-50">
+          <div className="max-w-lg mx-auto flex justify-around py-2">
+            {[
+              { key: "home" as View, icon: "🏠", label: "首頁" },
+              { key: "bookings" as View, icon: "📋", label: "預約" },
+              { key: "customers" as View, icon: "💎", label: "客戶" },
+              { key: "stats" as View, icon: "⚙️", label: "更多" },
+            ].map(tab => (
+              <button key={tab.key} onClick={() => setView(tab.key)} className={`flex flex-col items-center gap-0.5 px-4 py-1 ${view === tab.key ? "text-gold" : "text-text-light"}`}>
+                <span className="text-xl">{tab.icon}</span>
+                <span className="text-[10px] font-medium">{tab.label}</span>
               </button>
             ))}
           </div>
