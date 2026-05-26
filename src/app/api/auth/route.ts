@@ -45,7 +45,18 @@ export async function POST(request: Request) {
       const member = members[0];
       const bookings = await sql`SELECT * FROM bookings WHERE phone = ${body.phone} ORDER BY created_at DESC`;
       const referrals = await sql`SELECT * FROM referrals WHERE referrer_phone = ${body.phone}`;
-      return NextResponse.json({ success: true, member, bookings, referralCount: referrals.length });
+      await sql`CREATE TABLE IF NOT EXISTS member_coupons (
+        id SERIAL PRIMARY KEY,
+        member_phone TEXT NOT NULL,
+        code TEXT NOT NULL,
+        discount_value INTEGER DEFAULT 10,
+        description TEXT,
+        expires_at TIMESTAMP,
+        used BOOLEAN DEFAULT false,
+        created_at TIMESTAMP DEFAULT NOW()
+      )`;
+      const coupons = await sql`SELECT * FROM member_coupons WHERE member_phone = ${body.phone} ORDER BY used ASC, created_at DESC`;
+      return NextResponse.json({ success: true, member, bookings, referralCount: referrals.length, coupons });
     }
 
     return NextResponse.json({ success: false, error: "unknown action" });

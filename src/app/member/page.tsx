@@ -19,6 +19,7 @@ export default function MemberPage() {
   const [member, setMember] = useState<MemberData | null>(null);
   const [bookings, setBookings] = useState<BookingData[]>([]);
   const [referralCount, setReferralCount] = useState(0);
+  const [coupons, setCoupons] = useState<Array<{id: number; code: string; discount_value: number; description: string; expires_at: string; used: boolean}>>([]);
 
   const handleLogin = async () => {
     setError("");
@@ -28,6 +29,7 @@ export default function MemberPage() {
     if (d.success) {
       setMember(d.member);
       setBookings(d.bookings || []);
+      setCoupons(d.coupons || []);
       setReferralCount(d.referralCount || 0);
     } else {
       setError(d.error || "登入失敗");
@@ -79,6 +81,36 @@ export default function MemberPage() {
             <p className="text-dark text-sm mb-2">分享你的電話號碼給朋友</p>
             <p className="text-dark text-sm mb-1">朋友預約時填入你的電話</p>
             <p className="text-gold font-bold text-lg mt-3">雙方皆享加值項目免費升級</p>
+          </div>
+
+          <div className="bg-white rounded-2xl p-6 border border-gold-light/20 mb-6">
+            <p className="text-gold text-xs tracking-wide mb-3">🎟 我的優惠券</p>
+            {coupons.length === 0 ? (
+              <p className="text-text-light text-sm py-3">目前沒有優惠券</p>
+            ) : (
+              <div className="space-y-3">
+                {coupons.map((c) => (
+                  <div key={c.id} className={`relative rounded-xl p-4 border-2 ${c.used ? "border-gray-200 bg-gray-50 opacity-60" : "border-gold/30 bg-gradient-to-r from-gold/5 to-transparent"}`}>
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className={`font-bold text-xl ${c.used ? "text-gray-400 line-through" : "text-gold"}`}>{c.discount_value}% OFF</p>
+                        <p className={`text-sm mt-1 ${c.used ? "text-gray-400" : "text-dark"}`}>{c.description || "折扣優惠券"}</p>
+                      </div>
+                      <span className={`text-xs px-2 py-1 rounded-full ${c.used ? "bg-gray-200 text-gray-500" : "bg-gold/10 text-gold"}`}>
+                        {c.used ? "已使用" : "可使用"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center mt-3">
+                      <p className="text-xs text-text-light">代碼：{c.code}</p>
+                      <p className="text-xs text-text-light">{c.expires_at ? `有效期限 ${c.expires_at.slice(0,10)}` : "無期限"}</p>
+                    </div>
+                    {!c.used && <div className="absolute right-0 top-0 bottom-0 w-8 flex items-center justify-center">
+                      <div className="w-4 h-4 bg-warm-bg rounded-full -mr-2"></div>
+                    </div>}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <h3 className="font-serif-tc text-lg font-bold text-dark mb-4">預約紀錄</h3>
