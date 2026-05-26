@@ -124,7 +124,16 @@ export async function POST(request: Request) {
           summary: `JY Beauty 預約 - ${body.name}`,
           description: `套餐：${body.package}\n電話：${body.phone}\n金額：$${body.total}\n地址：${body.address || "工作室"}`,
           start: { dateTime: `${body.date}T${body.time}:00+08:00`, timeZone: "Asia/Taipei" },
-          end: { dateTime: `${body.date}T${String(parseInt(body.time) + 2).padStart(2, "0")}:00:00+08:00`, timeZone: "Asia/Taipei" },
+          end: { dateTime: (() => {
+            const durationMap: Record<string, number> = {
+              "精油舒壓按摩 90min": 2, "精油按摩＋熱石 120min": 3,
+              "舒壓放鬆套餐": 2, "能量煥膚套餐": 2, "極致寵愛套餐": 3,
+            };
+            const hours = durationMap[body.package] || 2;
+            const startH = parseInt(body.time);
+            const endH = startH + hours;
+            return `${body.date}T${String(endH).padStart(2, "0")}:00:00+08:00`;
+          })(), timeZone: "Asia/Taipei" },
           colorId: "6",
         },
       });
