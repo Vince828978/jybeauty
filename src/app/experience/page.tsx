@@ -37,14 +37,14 @@ export default function ExperiencePage() {
         </div>
       </div>
 
-      <div className="max-w-sm mx-auto px-6 py-8">
+      <div className="w-full px-5 py-8" style={{maxWidth:"420px", margin:"0 auto"}}>
         <div className="space-y-6">
           {experiences.map((p) => (
             <div key={p.id} className="border border-gold/30 rounded-2xl overflow-hidden">
-              <div className="bg-gold/10 px-6 py-3 text-center">
+              <div className="bg-gold/10 px-4 py-3 text-center">
                 <span className="text-gold text-xs tracking-wider font-medium">{p.tag}</span>
               </div>
-              <div className="p-6 text-center">
+              <div className="px-5 py-6 text-center">
                 <h3 className="text-white font-serif-tc text-2xl font-bold mb-1">{p.name}</h3>
                 <p className="text-gold-light text-sm mb-3">{p.time}</p>
                 <div className="w-10 h-px bg-gold/40 mx-auto my-4" />
