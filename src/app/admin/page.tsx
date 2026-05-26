@@ -65,75 +65,74 @@ export default function AdminPage() {
 
   const s = stats as Record<string, Record<string, number>>;
 
-  // Home view — APP-style mobile dashboard (柔粉色系)
+  // Home view — #3 柔粉色系（圓形元素+留白+柔和圓角）
   if (view === "home") {
     const pending = Number((stats as Record<string, number>).pending || 0);
     const followUp = Number((stats as Record<string, number>).needFollowUp || 0);
     const revenue = Number(s.month?.revenue || 0);
     return (
-      <div className="min-h-screen bg-[#FFF5F5] pb-24">
-        {/* Header — 柔粉漸層 */}
-        <div className="bg-gradient-to-br from-[#FECDD3] via-[#FDA4AF] to-[#FB7185] px-6 pt-10 pb-16 rounded-b-[32px] relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-40 h-40 bg-white/15 rounded-full -translate-y-1/2 translate-x-1/4" />
-          <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/10 rounded-full translate-y-1/2 -translate-x-1/4" />
+      <div className="min-h-screen pb-24" style={{background:"linear-gradient(180deg, #FFF0F0 0%, #FFF8F6 30%, #FFFBFA 100%)"}}>
+        {/* Header — 柔粉漸層圓弧 */}
+        <div className="relative overflow-hidden" style={{background:"linear-gradient(135deg, #FECDD3, #FDA4AF, #FB7185)", borderRadius:"0 0 40px 40px", padding:"48px 24px 60px"}}>
+          <div className="absolute" style={{top:-30,right:-30,width:120,height:120,borderRadius:"50%",background:"rgba(255,255,255,0.12)"}} />
+          <div className="absolute" style={{bottom:-20,left:-20,width:80,height:80,borderRadius:"50%",background:"rgba(255,255,255,0.08)"}} />
           <div className="max-w-lg mx-auto relative">
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between mb-8">
               <div>
                 <p className="text-white/80 text-sm">Hello 👋</p>
                 <p className="font-serif-tc text-2xl font-bold text-white">JY Beauty</p>
               </div>
-              <button onClick={() => setView("notifications")} className="w-10 h-10 bg-white/25 rounded-full flex items-center justify-center relative">
-                <span className="text-lg">🔔</span>
+              <button onClick={() => setView("notifications")} className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center relative">
+                <span className="text-xl">🔔</span>
                 {notifCount > 0 && <span className="absolute -top-1 -right-1 bg-white text-rose-500 text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center animate-pulse">{notifCount}</span>}
               </button>
             </div>
-            {/* 營收大卡 */}
-            <div className="bg-white/25 backdrop-blur-sm rounded-3xl p-6 text-center">
-              <p className="text-white/90 text-sm mb-1">本月營收</p>
-              <p className="text-white font-bold font-serif-tc text-5xl tracking-tight">${revenue.toLocaleString()}</p>
-              <p className="text-white/70 text-xs mt-2">{Number(s.month?.count || 0)} 筆預約 · {pending > 0 ? `${pending} 筆待確認` : "全部已確認"}</p>
+            {/* 營收圓形卡片 */}
+            <div className="flex justify-center">
+              <div className="w-44 h-44 rounded-full bg-white/25 backdrop-blur-sm flex flex-col items-center justify-center">
+                <p className="text-white/90 text-xs mb-1">本月營收</p>
+                <p className="text-white font-bold font-serif-tc text-3xl">${revenue.toLocaleString()}</p>
+                <p className="text-white/70 text-xs mt-1">{Number(s.month?.count || 0)} 筆預約</p>
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="max-w-lg mx-auto px-5 -mt-6">
-          {/* 快速操作 2x2 大卡片 */}
-          <div className="grid grid-cols-2 gap-4 mb-6">
+        <div className="max-w-lg mx-auto px-5 -mt-5">
+          {/* 圓形快速操作 */}
+          <div className="flex justify-around mb-8 bg-white rounded-[28px] py-5 px-3 shadow-sm">
             {[
-              { key: "new-booking" as View, icon: "📱", label: "接單", desc: "LINE/電話預約", bg: "from-rose-50 to-pink-50", border: "border-rose-100" },
-              { key: "schedule" as View, icon: "📅", label: "排程", desc: "管理開放時段", bg: "from-pink-50 to-fuchsia-50", border: "border-pink-100" },
-              { key: "new-customer" as View, icon: "👤", label: "新客建檔", desc: "建立客戶資料", bg: "from-rose-50 to-red-50", border: "border-rose-100" },
-              { key: "service-record" as View, icon: "📝", label: "服務紀錄", desc: "記錄產品手法", bg: "from-pink-50 to-rose-50", border: "border-pink-100" },
+              { key: "new-booking" as View, icon: "📱", label: "接單", color: "from-rose-100 to-rose-50" },
+              { key: "schedule" as View, icon: "📅", label: "排程", color: "from-pink-100 to-pink-50" },
+              { key: "new-customer" as View, icon: "👤", label: "新客", color: "from-fuchsia-100 to-fuchsia-50" },
+              { key: "service-record" as View, icon: "📝", label: "紀錄", color: "from-rose-100 to-pink-50" },
             ].map(a => (
-              <button key={a.key} onClick={() => setView(a.key)} className={`bg-gradient-to-br ${a.bg} rounded-3xl p-5 flex flex-col items-center gap-2 border ${a.border} active:scale-95 transition-transform shadow-sm`}>
-                <span className="text-3xl">{a.icon}</span>
-                <span className="text-dark font-semibold text-base">{a.label}</span>
-                <span className="text-text-light text-xs">{a.desc}</span>
+              <button key={a.key} onClick={() => setView(a.key)} className="flex flex-col items-center gap-2 active:scale-90 transition-transform">
+                <div className={`w-14 h-14 rounded-full bg-gradient-to-br ${a.color} flex items-center justify-center text-2xl shadow-sm`}>{a.icon}</div>
+                <span className="text-dark text-xs font-medium">{a.label}</span>
               </button>
             ))}
           </div>
 
-          {/* 數據概覽 */}
-          <div className="bg-white rounded-3xl p-5 shadow-sm mb-6">
-            <div className="grid grid-cols-3 divide-x divide-rose-100">
-              <button onClick={() => setView("customers")} className="text-center px-2 active:opacity-70">
-                <p className="text-dark font-bold text-2xl">{customers.length}</p>
-                <p className="text-text-light text-xs mt-1">客戶</p>
+          {/* 數據概覽 — 三個圓形 */}
+          <div className="flex justify-around mb-8">
+            {[
+              { key: "customers" as View, val: customers.length, label: "客戶", color: "#FDA4AF" },
+              { key: "bookings" as View, val: bookings.length, label: "預約", color: "#FB7185", badge: pending },
+              { key: "stats" as View, val: followUp, label: "待回訪", color: "#FECDD3" },
+            ].map(d => (
+              <button key={d.key} onClick={() => setView(d.key)} className="flex flex-col items-center active:scale-95 transition-transform relative">
+                <div className="w-20 h-20 rounded-full bg-white shadow-sm flex flex-col items-center justify-center" style={{border:`2px solid ${d.color}`}}>
+                  <p className="text-dark font-bold text-xl">{d.val}</p>
+                  <p className="text-text-light text-[10px]">{d.label}</p>
+                </div>
+                {d.badge ? <span className="absolute -top-1 right-1 bg-rose-500 text-white text-[9px] w-5 h-5 rounded-full flex items-center justify-center">{d.badge}</span> : null}
               </button>
-              <button onClick={() => setView("bookings")} className="text-center px-2 active:opacity-70 relative">
-                <p className="text-dark font-bold text-2xl">{bookings.length}</p>
-                <p className="text-text-light text-xs mt-1">預約</p>
-                {pending > 0 && <span className="absolute top-0 right-2 bg-red-500 text-white text-[9px] px-1.5 rounded-full">{pending}</span>}
-              </button>
-              <button onClick={() => setView("stats")} className="text-center px-2 active:opacity-70">
-                <p className="text-dark font-bold text-2xl">{followUp}</p>
-                <p className="text-text-light text-xs mt-1">待回訪</p>
-              </button>
-            </div>
+            ))}
           </div>
 
-          {/* 功能列表 */}
-          <p className="text-text-light text-xs font-medium tracking-wider mb-3 px-1">管理功能</p>
+          {/* 功能列表 — 圓角圓形圖標 */}
+          <p className="text-rose-300 text-xs font-medium tracking-wider mb-3 px-1">管理功能</p>
           <div className="space-y-3 mb-6">
             {[
               { key: "stats" as View, label: "營收報表", desc: "今日/月/累計統計", icon: "📊" },
@@ -145,8 +144,8 @@ export default function AdminPage() {
               { key: "notifications" as View, label: "通知中心", desc: notifCount > 0 ? `${notifCount} 則未讀` : "暫無", icon: notifCount > 0 ? "🔴" : "🔔" },
             ].map((item) => (
               <button key={item.key} onClick={() => setView(item.key)}
-                className="w-full bg-white rounded-2xl px-5 py-4 flex items-center gap-4 text-left active:scale-[0.98] transition-transform shadow-sm">
-                <span className="w-11 h-11 bg-gradient-to-br from-rose-100 to-pink-50 rounded-2xl flex items-center justify-center text-xl">{item.icon}</span>
+                className="w-full bg-white rounded-[22px] px-5 py-4 flex items-center gap-4 text-left active:scale-[0.98] transition-transform shadow-sm">
+                <span className="w-12 h-12 bg-gradient-to-br from-rose-50 to-pink-50 rounded-full flex items-center justify-center text-xl border border-rose-100/50">{item.icon}</span>
                 <div className="flex-1 min-w-0">
                   <p className="text-dark font-semibold">{item.label}</p>
                   <p className="text-text-light text-xs">{item.desc}</p>
@@ -157,9 +156,9 @@ export default function AdminPage() {
           </div>
         </div>
 
-        {/* Bottom Tab Bar */}
-        <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-rose-100/50 safe-area-pb z-50">
-          <div className="max-w-lg mx-auto flex justify-around py-2">
+        {/* Bottom Tab Bar — 圓角 */}
+        <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-rose-100/30 safe-area-pb z-50" style={{borderRadius:"20px 20px 0 0"}}>
+          <div className="max-w-lg mx-auto flex justify-around py-3">
             {[
               { key: "home" as View, icon: "🏠", label: "首頁" },
               { key: "bookings" as View, icon: "📋", label: "預約" },
