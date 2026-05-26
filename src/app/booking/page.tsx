@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 
 const packages = [
+  { id: "exp1", tier: "體驗", name: "精油舒壓按摩 90min", price: 1380, items: ["精油按摩 90 min", "贈筋膜放鬆或頭療"] },
+  { id: "exp2", tier: "體驗", name: "精油按摩＋熱石 120min", price: 2300, items: ["精油按摩 120 min", "熱石深層舒壓", "贈筋膜放鬆或頭療"] },
   { id: "basic", tier: "Basic", name: "舒壓放鬆套餐", price: 2280, items: ["精油按摩 60 min", "臉部保養 基礎護理"] },
   { id: "popular", tier: "Popular", name: "能量煥膚套餐", price: 3480, items: ["精油按摩 90 min", "臉部保養 深層護理", "身體加項 任選 1 項"], popular: true },
   { id: "luxury", tier: "Luxury", name: "極致寵愛套餐", price: 4880, items: ["精油按摩 120 min", "臉部保養 深層護理", "身體加項 任選 2 項", "臉部加項 任選 1 項"] },
@@ -55,6 +57,18 @@ export default function BookingPage() {
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [busySlots, setBusySlots] = useState<string[]>([]);
+
+  // URL param: ?pkg=exp1 → 自動選方案跳到日期選擇
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const pkgId = params.get("pkg");
+      if (pkgId && packages.find(p => p.id === pkgId)) {
+        setSelectedPkg(pkgId);
+        setStep(1);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     if (!selectedDate) { setBusySlots([]); return; }

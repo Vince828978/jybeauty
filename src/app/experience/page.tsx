@@ -54,7 +54,7 @@ export default function ExperiencePage() {
                 </div>
                 <p className="text-white/40 text-xs mb-1">體驗價</p>
                 <p className="text-gold font-serif-tc text-4xl font-bold mb-5">${p.price.toLocaleString()}</p>
-                <a href="/booking"
+                <a href={`/booking?pkg=${p.id}`}
                   className="block w-full bg-gold text-white py-4 rounded-2xl text-lg font-medium tracking-wide active:bg-dark-light transition-colors">
                   立即預約
                 </a>
