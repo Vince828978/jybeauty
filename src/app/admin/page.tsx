@@ -282,21 +282,101 @@ export default function AdminPage() {
         <>
           <SubHeader title="優惠券管理" />
           <div className="max-w-lg mx-auto px-5 py-6 text-center space-y-5">
-            <div className="bg-white rounded-2xl p-6 border border-gold-light/20 space-y-4">
-              <p className="text-gold text-sm font-medium">建立優惠券</p>
-              <input value={newCoupon.code} onChange={e => setNewCoupon({...newCoupon, code: e.target.value})} placeholder="優惠碼" className="w-full px-5 py-4 rounded-2xl border border-gold-light/30 text-base text-center focus:outline-none focus:border-gold" />
-              <input type="number" value={newCoupon.discount_value} onChange={e => setNewCoupon({...newCoupon, discount_value: Number(e.target.value)})} placeholder="折扣 %" className="w-full px-5 py-4 rounded-2xl border border-gold-light/30 text-base text-center focus:outline-none focus:border-gold" />
-              <input value={newCoupon.description} onChange={e => setNewCoupon({...newCoupon, description: e.target.value})} placeholder="說明" className="w-full px-5 py-4 rounded-2xl border border-gold-light/30 text-base text-center focus:outline-none focus:border-gold" />
-              <button onClick={async () => { if (!newCoupon.code) return; await fetch("/api/coupons", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(newCoupon) }); setNewCoupon({ code: "", discount_value: 15, description: "", max_uses: 100, expires_at: "" }); fetchCoupons(); }}
-                className="w-full bg-gold text-white py-5 rounded-2xl text-lg font-medium active:bg-dark-light">建立</button>
+            {/* 建立+發送優惠券 */}
+            <div className="bg-white rounded-2xl p-6 border border-rose-100 space-y-4">
+              <p className="text-rose-500 text-sm font-medium">建立並發送優惠券</p>
+              {/* 方案選擇 */}
+              <select value={newCoupon.description} onChange={e => setNewCoupon({...newCoupon, description: e.target.value})}
+                className="w-full px-4 py-3 rounded-xl border border-rose-100 text-sm focus:outline-none focus:border-rose-300">
+                <option value="">自訂方案</option>
+                <option value="全方案 85 折">全方案 85 折</option>
+                <option value="精油按摩折 $200">精油按摩折 $200</option>
+                <option value="臉部保養折 $300">臉部保養折 $300</option>
+                <option value="首次體驗 9 折">首次體驗 9 折</option>
+                <option value="生日禮 $500 折抵">生日禮 $500 折抵</option>
+                <option value="推薦好友雙方 88 折">推薦好友雙方 88 折</option>
+              </select>
+              <div className="grid grid-cols-2 gap-3">
+                <input value={newCoupon.code} onChange={e => setNewCoupon({...newCoupon, code: e.target.value})} placeholder="優惠碼（自動產生）"
+                  className="px-4 py-3 rounded-xl border border-rose-100 text-sm focus:outline-none focus:border-rose-300" />
+                <input type="number" value={newCoupon.discount_value} onChange={e => setNewCoupon({...newCoupon, discount_value: Number(e.target.value)})} placeholder="折扣 %"
+                  className="px-4 py-3 rounded-xl border border-rose-100 text-sm focus:outline-none focus:border-rose-300" />
+              </div>
+              {newCoupon.description === "" && <input value={newCoupon.description} onChange={e => setNewCoupon({...newCoupon, description: e.target.value})} placeholder="自訂說明"
+                className="w-full px-4 py-3 rounded-xl border border-rose-100 text-sm focus:outline-none focus:border-rose-300" />}
+              {/* 使用期限 */}
+              <div className="flex gap-3">
+                <select value={newCoupon.expires_at} onChange={e => {
+                  if (e.target.value === "custom") return;
+                  setNewCoupon({...newCoupon, expires_at: e.target.value});
+                }} className="flex-1 px-4 py-3 rounded-xl border border-rose-100 text-sm focus:outline-none">
+                  <option value="">無期限</option>
+                  <option value={new Date(Date.now()+7*86400000).toISOString().slice(0,10)}>7 天</option>
+                  <option value={new Date(Date.now()+30*86400000).toISOString().slice(0,10)}>30 天</option>
+                  <option value={new Date(Date.now()+90*86400000).toISOString().slice(0,10)}>90 天</option>
+                  <option value="custom">自訂日期</option>
+                </select>
+                <input type="date" value={newCoupon.expires_at} onChange={e => setNewCoupon({...newCoupon, expires_at: e.target.value})}
+                  className="flex-1 px-4 py-3 rounded-xl border border-rose-100 text-sm focus:outline-none" />
+              </div>
+              {/* 發送對象 — 會員搜尋+勾選 */}
+              <div className="text-left">
+                <p className="text-xs text-text-light mb-2">發送對象</p>
+                <input id="memberSearch" placeholder="搜尋會員（名字或電話）" onChange={e => {
+                  const q = e.target.value.toLowerCase();
+                  document.querySelectorAll("[data-member-row]").forEach((el) => {
+                    const text = el.getAttribute("data-member-row") || "";
+                    (el as HTMLElement).style.display = text.includes(q) ? "flex" : "none";
+                  });
+                }} className="w-full px-4 py-2 rounded-xl border border-rose-100 text-sm focus:outline-none focus:border-rose-300 mb-2" />
+                <div className="flex justify-between mb-2">
+                  <label className="text-xs text-rose-400 flex items-center gap-1">
+                    <input type="checkbox" id="selectAll" onChange={e => {
+                      document.querySelectorAll<HTMLInputElement>("[data-member-cb]").forEach(cb => { cb.checked = e.target.checked; });
+                    }} /> 全選
+                  </label>
+                  <span className="text-xs text-text-light">{customers.length} 位會員</span>
+                </div>
+                <div className="max-h-40 overflow-y-auto space-y-1 border border-rose-50 rounded-xl p-2">
+                  {customers.map((c) => (
+                    <div key={c.id} data-member-row={`${c.name}${c.phone}`.toLowerCase()} className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-rose-50 text-sm">
+                      <input type="checkbox" data-member-cb data-phone={c.phone} defaultChecked={false} />
+                      <span className="text-dark">{c.name}</span>
+                      <span className="text-text-light text-xs">{c.phone}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              {/* 發送按鈕 */}
+              <button onClick={async () => {
+                const phones: string[] = [];
+                document.querySelectorAll<HTMLInputElement>("[data-member-cb]:checked").forEach(cb => {
+                  const ph = cb.getAttribute("data-phone");
+                  if (ph) phones.push(ph);
+                });
+                if (phones.length === 0) return alert("請勾選至少一位會員");
+                const code = newCoupon.code || `JYB${Date.now().toString(36).toUpperCase()}`;
+                let sent = 0;
+                for (const ph of phones) {
+                  await fetch("/api/member-coupons", { method: "POST", headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ phone: ph, code, discount_value: newCoupon.discount_value, description: newCoupon.description, expires_at: newCoupon.expires_at || null }) });
+                  sent++;
+                }
+                alert(`已發送 ${sent} 張優惠券！`);
+                setNewCoupon({ code: "", discount_value: 15, description: "", max_uses: 100, expires_at: "" });
+                fetchCoupons();
+              }} className="w-full bg-rose-500 text-white py-4 rounded-2xl text-base font-medium active:bg-rose-600">
+                發送優惠券
+              </button>
             </div>
+            {/* 已建立的優惠券 */}
             {coupons.map((c) => (
-              <div key={String(c.id)} className="bg-white rounded-2xl p-5 border border-gold-light/20">
-                <p className="text-gold font-bold text-xl">{String(c.code)}</p>
+              <div key={String(c.id)} className="bg-white rounded-2xl p-5 border border-rose-100">
+                <p className="text-rose-500 font-bold text-xl">{String(c.code)}</p>
                 <p className="text-dark text-base mt-1">{String(c.description)}</p>
                 <p className="text-text-light text-sm mt-1">折扣 {String(c.discount_value)}%</p>
                 <button onClick={async () => { if (confirm("刪除？")) { await fetch("/api/coupons", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: c.id }) }); fetchCoupons(); } }}
-                  className="mt-3 w-full py-3 rounded-2xl border-2 border-red-300 text-red-400 text-base active:bg-red-500 active:text-white">刪除</button>
+                  className="mt-3 w-full py-3 rounded-2xl border-2 border-red-200 text-red-400 text-sm active:bg-red-500 active:text-white">刪除</button>
               </div>
             ))}
           </div>
