@@ -74,50 +74,45 @@ export default function AdminPage() {
     const revenue = Number(s.month?.revenue || 0);
     return (
       <div className="min-h-screen pb-44" style={{background:"linear-gradient(180deg, #FFF0F0 0%, #FFF8F6 30%, #FFFBFA 100%)"}}>
-        {/* Header — 柔粉漸層圓弧 */}
-        <div className="relative overflow-hidden" style={{background:"linear-gradient(135deg, #FECDD3, #FDA4AF, #FB7185)", borderRadius:"0 0 40px 40px", padding:"48px 24px 60px"}}>
-          <div className="absolute" style={{top:-30,right:-30,width:120,height:120,borderRadius:"50%",background:"rgba(255,255,255,0.12)"}} />
-          <div className="absolute" style={{bottom:-20,left:-20,width:80,height:80,borderRadius:"50%",background:"rgba(255,255,255,0.08)"}} />
+        {/* Header — 縮小高度 */}
+        <div className="relative overflow-hidden" style={{background:"linear-gradient(135deg, #FECDD3, #FDA4AF, #FB7185)", borderRadius:"0 0 40px 40px", padding:"40px 24px 32px"}}>
           <div className="max-w-lg mx-auto relative">
-            <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center justify-between mb-4">
               <div>
-                <p className="text-white/80 text-sm">Hello 👋</p>
+                <p className="text-white/80 text-sm">Hello</p>
                 <p className="font-serif-tc text-2xl font-bold text-white">JY Beauty</p>
               </div>
               <button onClick={() => setView("notifications")} className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center relative">
-                <span className="text-xl">🔔</span>
+                <span className="text-sm font-bold text-white">通知</span>
                 {notifCount > 0 && <span className="absolute -top-1 -right-1 bg-white text-rose-500 text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center animate-pulse">{notifCount}</span>}
               </button>
             </div>
-            {/* 營收圓形卡片 */}
-            <div className="flex justify-center">
-              <div className="w-44 h-44 rounded-full bg-white/25 backdrop-blur-sm flex flex-col items-center justify-center">
-                <p className="text-white/90 text-xs mb-1">本月營收</p>
-                <p className="text-white font-bold font-serif-tc text-3xl">${revenue.toLocaleString()}</p>
-                <p className="text-white/70 text-xs mt-1">{Number(s.month?.count || 0)} 筆預約</p>
-              </div>
+            {/* 營收 — 簡化 */}
+            <div className="text-center">
+              <p className="text-white/80 text-xs">本月營收</p>
+              <p className="text-white font-bold font-serif-tc text-3xl">${revenue.toLocaleString()}</p>
+              <p className="text-white/60 text-xs">{Number(s.month?.count || 0)} 筆預約</p>
             </div>
           </div>
         </div>
 
-        <div className="max-w-lg mx-auto px-5 -mt-5">
-          {/* 圓形快速操作 */}
-          <div className="flex justify-around mb-8 bg-white rounded-[28px] py-5 px-3 shadow-sm">
+        <div className="max-w-lg mx-auto px-4 mt-4">
+          {/* 快速操作 — 加大 */}
+          <div className="grid grid-cols-4 gap-3 mb-5">
             {[
-              { key: "new-booking" as View, icon: "📱", label: "接單", color: "from-rose-100 to-rose-50" },
-              { key: "schedule" as View, icon: "📅", label: "排程", color: "from-pink-100 to-pink-50" },
-              { key: "new-customer" as View, icon: "👤", label: "新客", color: "from-fuchsia-100 to-fuchsia-50" },
-              { key: "service-record" as View, icon: "📝", label: "紀錄", color: "from-rose-100 to-pink-50" },
+              { key: "new-booking" as View, label: "接單" },
+              { key: "schedule" as View, label: "排程" },
+              { key: "new-customer" as View, label: "新客" },
+              { key: "service-record" as View, label: "紀錄" },
             ].map(a => (
-              <button key={a.key} onClick={() => setView(a.key)} className="flex flex-col items-center gap-2 active:scale-90 transition-transform">
-                <div className={`w-14 h-14 rounded-full bg-gradient-to-br ${a.color} flex items-center justify-center text-2xl shadow-sm`}>{a.icon}</div>
-                <span className="text-dark text-xs font-medium">{a.label}</span>
+              <button key={a.key} onClick={() => setView(a.key)} className="bg-white rounded-2xl py-4 text-center active:scale-95 transition-transform shadow-sm">
+                <span className="text-dark font-semibold text-sm">{a.label}</span>
               </button>
             ))}
           </div>
 
-          {/* 數據概覽 — 三個圓形 */}
-          <div className="flex justify-around mb-8">
+          {/* 數據概覽 */}
+          <div className="flex justify-around mb-5">
             {[
               { key: "customers" as View, val: customers.length, label: "客戶", color: "#FDA4AF" },
               { key: "bookings" as View, val: bookings.length, label: "預約", color: "#FB7185", badge: pending },
@@ -146,14 +141,14 @@ export default function AdminPage() {
               { key: "notifications" as View, label: "通知中心", desc: notifCount > 0 ? `${notifCount} 則未讀` : "暫無" },
             ].map((item) => (
               <button key={item.key} onClick={() => setView(item.key)}
-                className="bg-white rounded-2xl px-4 py-5 text-center active:scale-[0.96] transition-transform shadow-sm">
-                <p className="text-dark font-semibold text-sm">{item.label}</p>
+                className="bg-white rounded-2xl px-4 py-6 text-center active:scale-[0.96] transition-transform shadow-sm min-h-[80px] flex flex-col items-center justify-center">
+                <p className="text-dark font-bold text-base">{item.label}</p>
                 <p className="text-text-light text-xs mt-1">{item.desc}</p>
               </button>
             ))}
             <a href="/admin/services"
-              className="bg-white rounded-2xl px-4 py-5 text-center active:scale-[0.96] transition-transform shadow-sm block">
-              <p className="text-dark font-semibold text-sm">服務與套餐</p>
+              className="bg-white rounded-2xl px-4 py-6 text-center active:scale-[0.96] transition-transform shadow-sm min-h-[80px] flex flex-col items-center justify-center">
+              <p className="text-dark font-bold text-base">服務與套餐</p>
               <p className="text-text-light text-xs mt-1">管理服務項目</p>
             </a>
           </div>
