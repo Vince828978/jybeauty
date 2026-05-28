@@ -33,6 +33,7 @@ export default function AdminPage() {
   const [notifications, setNotifications] = useState<Record<string, unknown>[]>([]);
   const [blockedDates, setBlockedDates] = useState<Record<string, unknown>[]>([]);
   const [blockForm, setBlockForm] = useState({ startDate: "", endDate: "", time: "all", reason: "" });
+  const [dbPackages, setDbPackages] = useState<{ id: number; name: string; package_price: number; is_active: boolean }[]>([]);
 
   const fetchBookings = async () => { const r = await fetch("/api/bookings"); const d = await r.json(); setBookings(d.bookings || []); setLoading(false); };
   const fetchCustomers = async () => { const r = await fetch("/api/customers"); const d = await r.json(); setCustomers(d.customers || []); };
@@ -41,9 +42,10 @@ export default function AdminPage() {
   const fetchReferrals = async () => { const r = await fetch("/api/referrals"); const d = await r.json(); setReferrals(d.referrals || []); };
   const fetchNotifications = async () => { const r = await fetch("/api/notifications"); const d = await r.json(); setNotifCount(d.unreadCount || 0); setNotifications(d.notifications || []); };
   const fetchBlockedDates = async () => { const r = await fetch("/api/blocked-dates"); const d = await r.json(); setBlockedDates(d.blockedDates || []); };
+  const fetchDbPackages = async () => { try { const r = await fetch("/api/packages"); const d = await r.json(); setDbPackages((d.packages || []).filter((p: { is_active: boolean }) => p.is_active)); } catch { /* ignore */ } };
 
   useEffect(() => { if (typeof window !== "undefined" && sessionStorage.getItem("jyb-admin") === "1") setAuthed(true); }, []);
-  useEffect(() => { if (authed) { fetchBookings(); fetchCustomers(); fetchStats(); fetchCoupons(); fetchReferrals(); fetchNotifications(); fetchBlockedDates(); } }, [authed]);
+  useEffect(() => { if (authed) { fetchBookings(); fetchCustomers(); fetchStats(); fetchCoupons(); fetchReferrals(); fetchNotifications(); fetchBlockedDates(); fetchDbPackages(); } }, [authed]);
   useEffect(() => { if (authed) { const iv = setInterval(fetchNotifications, 30000); return () => clearInterval(iv); } }, [authed]);
 
   if (!authed) {
@@ -71,7 +73,7 @@ export default function AdminPage() {
     const followUp = Number((stats as Record<string, number>).needFollowUp || 0);
     const revenue = Number(s.month?.revenue || 0);
     return (
-      <div className="min-h-screen pb-24" style={{background:"linear-gradient(180deg, #FFF0F0 0%, #FFF8F6 30%, #FFFBFA 100%)"}}>
+      <div className="min-h-screen pb-32" style={{background:"linear-gradient(180deg, #FFF0F0 0%, #FFF8F6 30%, #FFFBFA 100%)"}}>
         {/* Header — 柔粉漸層圓弧 */}
         <div className="relative overflow-hidden" style={{background:"linear-gradient(135deg, #FECDD3, #FDA4AF, #FB7185)", borderRadius:"0 0 40px 40px", padding:"48px 24px 60px"}}>
           <div className="absolute" style={{top:-30,right:-30,width:120,height:120,borderRadius:"50%",background:"rgba(255,255,255,0.12)"}} />
@@ -153,6 +155,15 @@ export default function AdminPage() {
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-rose-200 flex-shrink-0"><path d="M9 18l6-6-6-6"/></svg>
               </button>
             ))}
+            <a href="/admin/services"
+              className="w-full bg-white rounded-[22px] px-5 py-4 flex items-center gap-4 text-left active:scale-[0.98] transition-transform shadow-sm block">
+              <span className="w-12 h-12 bg-gradient-to-br from-rose-50 to-pink-50 rounded-full flex items-center justify-center text-xl border border-rose-100/50">💆</span>
+              <div className="flex-1 min-w-0">
+                <p className="text-dark font-semibold">服務與套餐</p>
+                <p className="text-text-light text-xs">管理服務項目與組合套餐</p>
+              </div>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-rose-200 flex-shrink-0"><path d="M9 18l6-6-6-6"/></svg>
+            </a>
           </div>
         </div>
 
@@ -409,9 +420,18 @@ export default function AdminPage() {
               <input value={nb.name} onChange={e => setNb({...nb, name: e.target.value})} placeholder="姓名" className="w-full px-5 py-4 rounded-2xl border border-gold-light/30 text-base text-center focus:outline-none focus:border-gold" />
               <input value={nb.phone} onChange={e => setNb({...nb, phone: e.target.value})} placeholder="電話" className="w-full px-5 py-4 rounded-2xl border border-gold-light/30 text-base text-center focus:outline-none focus:border-gold" />
               <input value={nb.address} onChange={e => setNb({...nb, address: e.target.value})} placeholder="到府地址" className="w-full px-5 py-4 rounded-2xl border border-gold-light/30 text-base text-center focus:outline-none focus:border-gold" />
-              <select value={nb.package} onChange={e => { const p = e.target.value; const t = p === "舒壓放鬆套餐" ? 2280 : p === "能量煥膚套餐" ? 3480 : 4880; setNb({...nb, package: p, total: t}); }}
+              <select value={nb.package} onChange={e => {
+                const p = e.target.value;
+                const dbPkg = dbPackages.find(dp => dp.name === p);
+                const priceMap: Record<string, number> = { "舒壓放鬆套餐": 2280, "能量煥膚套餐": 3480, "極致寵愛套餐": 4880 };
+                const t = dbPkg ? dbPkg.package_price : (priceMap[p] || 0);
+                setNb({...nb, package: p, total: t});
+              }}
                 className="w-full px-5 py-4 rounded-2xl border border-gold-light/30 text-base text-center focus:outline-none focus:border-gold bg-white appearance-none">
                 <option>舒壓放鬆套餐</option><option>能量煥膚套餐</option><option>極致寵愛套餐</option>
+                {dbPackages.filter(dp => !["舒壓放鬆套餐","能量煥膚套餐","極致寵愛套餐"].includes(dp.name)).map(dp => (
+                  <option key={dp.id} value={dp.name}>{dp.name} (${dp.package_price.toLocaleString()})</option>
+                ))}
               </select>
               <div className="grid grid-cols-2 gap-4">
                 <input type="date" value={nb.date} onChange={e => setNb({...nb, date: e.target.value})} className="px-4 py-4 rounded-2xl border border-gold-light/30 text-base text-center focus:outline-none focus:border-gold" />
@@ -460,6 +480,9 @@ export default function AdminPage() {
               <input type="date" value={newRecord.service_date} onChange={e => setNewRecord({...newRecord, service_date: e.target.value})} className="w-full px-5 py-4 rounded-2xl border border-gold-light/30 text-base text-center focus:outline-none focus:border-gold" />
               <select value={newRecord.package} onChange={e => setNewRecord({...newRecord, package: e.target.value})} className="w-full px-5 py-4 rounded-2xl border border-gold-light/30 text-base text-center focus:outline-none focus:border-gold bg-white appearance-none">
                 <option value="">選擇套餐</option><option>舒壓放鬆套餐</option><option>能量煥膚套餐</option><option>極致寵愛套餐</option>
+                {dbPackages.filter(dp => !["舒壓放鬆套餐","能量煥膚套餐","極致寵愛套餐"].includes(dp.name)).map(dp => (
+                  <option key={dp.id} value={dp.name}>{dp.name}</option>
+                ))}
               </select>
               <textarea value={newRecord.products_used} onChange={e => setNewRecord({...newRecord, products_used: e.target.value})} rows={2} placeholder="使用產品" className="w-full px-5 py-4 rounded-2xl border border-gold-light/30 text-base text-center focus:outline-none focus:border-gold resize-none" />
               <textarea value={newRecord.techniques} onChange={e => setNewRecord({...newRecord, techniques: e.target.value})} rows={2} placeholder="手法備註" className="w-full px-5 py-4 rounded-2xl border border-gold-light/30 text-base text-center focus:outline-none focus:border-gold resize-none" />
