@@ -133,52 +133,44 @@ export default function AdminPage() {
             ))}
           </div>
 
-          {/* 功能列表 — 圓角圓形圖標 */}
+          {/* 功能列表 — 左右兩欄格子 */}
           <p className="text-rose-300 text-xs font-medium tracking-wider mb-3 px-1">管理功能</p>
-          <div className="space-y-3 mb-6">
+          <div className="grid grid-cols-2 gap-3 mb-6">
             {[
-              { key: "stats" as View, label: "營收報表", desc: "今日/月/累計統計", icon: "📊" },
-              { key: "bookings" as View, label: "預約管理", desc: `${bookings.length} 筆預約`, icon: "📋" },
-              { key: "customers" as View, label: "客戶資料", desc: `${customers.length} 位客戶`, icon: "💎" },
-              { key: "coupons" as View, label: "優惠券", desc: `${coupons.length} 張`, icon: "🎟" },
-              { key: "referrals" as View, label: "推薦紀錄", desc: `${referrals.length} 筆`, icon: "🤝" },
-              { key: "schedule" as View, label: "排程管理", desc: "時段開放/關閉", icon: "📅" },
-              { key: "notifications" as View, label: "通知中心", desc: notifCount > 0 ? `${notifCount} 則未讀` : "暫無", icon: notifCount > 0 ? "🔴" : "🔔" },
+              { key: "stats" as View, label: "營收報表", desc: "今日/月/累計" },
+              { key: "bookings" as View, label: "預約管理", desc: `${bookings.length} 筆預約` },
+              { key: "customers" as View, label: "客戶資料", desc: `${customers.length} 位客戶` },
+              { key: "coupons" as View, label: "優惠券", desc: `${coupons.length} 張` },
+              { key: "referrals" as View, label: "推薦紀錄", desc: `${referrals.length} 筆` },
+              { key: "schedule" as View, label: "排程管理", desc: "時段開放/關閉" },
+              { key: "notifications" as View, label: "通知中心", desc: notifCount > 0 ? `${notifCount} 則未讀` : "暫無" },
             ].map((item) => (
               <button key={item.key} onClick={() => setView(item.key)}
-                className="w-full bg-white rounded-[22px] px-5 py-4 flex items-center gap-4 text-left active:scale-[0.98] transition-transform shadow-sm">
-                <span className="w-12 h-12 bg-gradient-to-br from-rose-50 to-pink-50 rounded-full flex items-center justify-center text-xl border border-rose-100/50">{item.icon}</span>
-                <div className="flex-1 min-w-0">
-                  <p className="text-dark font-semibold">{item.label}</p>
-                  <p className="text-text-light text-xs">{item.desc}</p>
-                </div>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-rose-200 flex-shrink-0"><path d="M9 18l6-6-6-6"/></svg>
+                className="bg-white rounded-2xl px-4 py-5 text-center active:scale-[0.96] transition-transform shadow-sm">
+                <p className="text-dark font-semibold text-sm">{item.label}</p>
+                <p className="text-text-light text-xs mt-1">{item.desc}</p>
               </button>
             ))}
             <a href="/admin/services"
-              className="w-full bg-white rounded-[22px] px-5 py-4 flex items-center gap-4 text-left active:scale-[0.98] transition-transform shadow-sm block">
-              <span className="w-12 h-12 bg-gradient-to-br from-rose-50 to-pink-50 rounded-full flex items-center justify-center text-xl border border-rose-100/50">💆</span>
-              <div className="flex-1 min-w-0">
-                <p className="text-dark font-semibold">服務與套餐</p>
-                <p className="text-text-light text-xs">管理服務項目與組合套餐</p>
-              </div>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-rose-200 flex-shrink-0"><path d="M9 18l6-6-6-6"/></svg>
+              className="bg-white rounded-2xl px-4 py-5 text-center active:scale-[0.96] transition-transform shadow-sm block">
+              <p className="text-dark font-semibold text-sm">服務與套餐</p>
+              <p className="text-text-light text-xs mt-1">管理服務項目</p>
             </a>
           </div>
         </div>
 
-        {/* Bottom Tab Bar — 圓角 */}
+        {/* Bottom Tab Bar — 加大觸控區 */}
         <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-rose-100/30 safe-area-pb z-50" style={{borderRadius:"20px 20px 0 0"}}>
-          <div className="max-w-lg mx-auto flex justify-around py-3">
+          <div className="max-w-lg mx-auto flex justify-around py-2">
             {[
-              { key: "home" as View, icon: "🏠", label: "首頁" },
-              { key: "bookings" as View, icon: "📋", label: "預約" },
-              { key: "customers" as View, icon: "💎", label: "客戶" },
-              { key: "stats" as View, icon: "⚙️", label: "更多" },
+              { key: "home" as View, label: "首頁" },
+              { key: "bookings" as View, label: "預約" },
+              { key: "customers" as View, label: "客戶" },
+              { key: "stats" as View, label: "更多" },
             ].map(tab => (
-              <button key={tab.key} onClick={() => setView(tab.key)} className={`flex flex-col items-center gap-0.5 px-4 py-1 ${view === tab.key ? "text-rose-500" : "text-text-light"}`}>
-                <span className="text-xl">{tab.icon}</span>
-                <span className="text-[10px] font-medium">{tab.label}</span>
+              <button key={tab.key} onClick={() => setView(tab.key)}
+                className={`flex-1 flex flex-col items-center justify-center py-3 min-h-[56px] rounded-xl mx-1 active:bg-rose-50 transition-colors ${view === tab.key ? "text-rose-500 bg-rose-50/50" : "text-text-light"}`}>
+                <span className="text-sm font-semibold">{tab.label}</span>
               </button>
             ))}
           </div>
