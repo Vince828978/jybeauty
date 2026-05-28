@@ -73,7 +73,7 @@ export default function AdminPage() {
     const followUp = Number((stats as Record<string, number>).needFollowUp || 0);
     const revenue = Number(s.month?.revenue || 0);
     return (
-      <div className="min-h-screen pb-32" style={{background:"linear-gradient(180deg, #FFF0F0 0%, #FFF8F6 30%, #FFFBFA 100%)"}}>
+      <div className="min-h-screen pb-44" style={{background:"linear-gradient(180deg, #FFF0F0 0%, #FFF8F6 30%, #FFFBFA 100%)"}}>
         {/* Header — 柔粉漸層圓弧 */}
         <div className="relative overflow-hidden" style={{background:"linear-gradient(135deg, #FECDD3, #FDA4AF, #FB7185)", borderRadius:"0 0 40px 40px", padding:"48px 24px 60px"}}>
           <div className="absolute" style={{top:-30,right:-30,width:120,height:120,borderRadius:"50%",background:"rgba(255,255,255,0.12)"}} />
