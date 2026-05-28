@@ -74,8 +74,10 @@ export default function AdminPage() {
     const revenue = Number(s.month?.revenue || 0);
     return (
       <div className="min-h-screen pb-44" style={{background:"linear-gradient(180deg, #FFF0F0 0%, #FFF8F6 30%, #FFFBFA 100%)"}}>
-        {/* Header — 縮小高度 */}
-        <div className="relative overflow-hidden" style={{background:"linear-gradient(135deg, #FECDD3, #FDA4AF, #FB7185)", borderRadius:"0 0 40px 40px", padding:"40px 24px 32px"}}>
+        {/* Header — 恢復裝飾圓 */}
+        <div className="relative overflow-hidden" style={{background:"linear-gradient(135deg, #FECDD3, #FDA4AF, #FB7185)", borderRadius:"0 0 40px 40px", padding:"44px 24px 36px"}}>
+          <div className="absolute" style={{top:-30,right:-30,width:120,height:120,borderRadius:"50%",background:"rgba(255,255,255,0.12)"}} />
+          <div className="absolute" style={{bottom:-20,left:-20,width:80,height:80,borderRadius:"50%",background:"rgba(255,255,255,0.08)"}} />
           <div className="max-w-lg mx-auto relative">
             <div className="flex items-center justify-between mb-4">
               <div>
@@ -87,7 +89,6 @@ export default function AdminPage() {
                 {notifCount > 0 && <span className="absolute -top-1 -right-1 bg-white text-rose-500 text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center animate-pulse">{notifCount}</span>}
               </button>
             </div>
-            {/* 營收 — 簡化 */}
             <div className="text-center">
               <p className="text-white/80 text-xs">本月營收</p>
               <p className="text-white font-bold font-serif-tc text-3xl">${revenue.toLocaleString()}</p>
@@ -97,29 +98,29 @@ export default function AdminPage() {
         </div>
 
         <div className="max-w-lg mx-auto px-4 mt-4">
-          {/* 快速操作 — 加大 */}
-          <div className="grid grid-cols-4 gap-3 mb-5">
+          {/* 快速操作 — 加大觸控區 */}
+          <div className="grid grid-cols-4 gap-3 mb-4">
             {[
               { key: "new-booking" as View, label: "接單" },
               { key: "schedule" as View, label: "排程" },
               { key: "new-customer" as View, label: "新客" },
               { key: "service-record" as View, label: "紀錄" },
             ].map(a => (
-              <button key={a.key} onClick={() => setView(a.key)} className="bg-white rounded-2xl py-4 text-center active:scale-95 transition-transform shadow-sm">
-                <span className="text-dark font-semibold text-sm">{a.label}</span>
+              <button key={a.key} onClick={() => setView(a.key)} className="bg-white rounded-2xl py-5 text-center active:scale-95 transition-transform shadow-sm min-h-[60px]">
+                <span className="text-dark font-bold text-base">{a.label}</span>
               </button>
             ))}
           </div>
 
-          {/* 數據概覽 */}
-          <div className="flex justify-around mb-5">
+          {/* 數據概覽 — 加大圓形 */}
+          <div className="flex justify-around mb-4">
             {[
               { key: "customers" as View, val: customers.length, label: "客戶", color: "#FDA4AF" },
               { key: "bookings" as View, val: bookings.length, label: "預約", color: "#FB7185", badge: pending },
               { key: "stats" as View, val: followUp, label: "待回訪", color: "#FECDD3" },
             ].map(d => (
               <button key={d.key} onClick={() => setView(d.key)} className="flex flex-col items-center active:scale-95 transition-transform relative">
-                <div className="w-20 h-20 rounded-full bg-white shadow-sm flex flex-col items-center justify-center" style={{border:`2px solid ${d.color}`}}>
+                <div className="w-24 h-24 rounded-full bg-white shadow-sm flex flex-col items-center justify-center" style={{border:`2px solid ${d.color}`}}>
                   <p className="text-dark font-bold text-xl">{d.val}</p>
                   <p className="text-text-light text-[10px]">{d.label}</p>
                 </div>
@@ -164,8 +165,8 @@ export default function AdminPage() {
               { key: "stats" as View, label: "更多" },
             ].map(tab => (
               <button key={tab.key} onClick={() => setView(tab.key)}
-                className={`flex-1 flex flex-col items-center justify-center py-3 min-h-[56px] rounded-xl mx-1 active:bg-rose-50 transition-colors ${view === tab.key ? "text-rose-500 bg-rose-50/50" : "text-text-light"}`}>
-                <span className="text-sm font-semibold">{tab.label}</span>
+                className={`flex-1 flex flex-col items-center justify-center py-4 min-h-[64px] rounded-xl mx-1 active:bg-rose-50 transition-colors ${view === tab.key ? "text-rose-500 bg-rose-50/50 font-bold" : "text-text-light"}`}>
+                <span className="text-base font-semibold">{tab.label}</span>
               </button>
             ))}
           </div>
