@@ -46,7 +46,7 @@ export default function ServicesPage() {
 
   // Package builder
   const [selectedServiceIds, setSelectedServiceIds] = useState<number[]>([]);
-  const [pkgForm, setPkgForm] = useState({ name: "", description: "", package_price: 0, duration_min: 60, sort_order: 0 });
+  const [pkgForm, setPkgForm] = useState({ name: "", description: "", package_price: 0, duration_min: 60, sort_order: 0, is_public: true });
   const [editPkg, setEditPkg] = useState<Package | null>(null);
   const [showPkgForm, setShowPkgForm] = useState(false);
 
@@ -110,7 +110,7 @@ export default function ServicesPage() {
   };
 
   const resetPkgForm = () => {
-    setPkgForm({ name: "", description: "", package_price: 0, duration_min: 60, sort_order: 0 });
+    setPkgForm({ name: "", description: "", package_price: 0, duration_min: 60, sort_order: 0, is_public: true });
     setSelectedServiceIds([]);
     setEditPkg(null);
     setShowPkgForm(false);
@@ -213,6 +213,7 @@ export default function ServicesPage() {
       package_price: pkg.package_price,
       duration_min: pkg.duration_min,
       sort_order: pkg.sort_order || 0,
+      is_public: (pkg as { is_public?: boolean }).is_public !== false,
     });
     setEditPkg(pkg);
     setShowPkgForm(true);
@@ -549,6 +550,17 @@ export default function ServicesPage() {
                 <input type="number" value={pkgForm.sort_order} onChange={(e) => setPkgForm({ ...pkgForm, sort_order: Number(e.target.value) })}
                   className="w-full px-5 py-5 rounded-xl border border-rose-100 text-base focus:outline-none focus:border-rose-300" />
               </div>
+
+              {/* 冠 #4350 2026-05-29: 親友專案這種只給後台用、不對外公開 */}
+              <label className="flex items-center gap-3 px-1 py-2 cursor-pointer">
+                <input type="checkbox" checked={pkgForm.is_public}
+                  onChange={(e) => setPkgForm({ ...pkgForm, is_public: e.target.checked })}
+                  className="w-6 h-6 accent-rose-500" />
+                <span className="text-sm text-dark flex-1">
+                  🌐 客戶網站可見
+                  <span className="block text-xs text-text-light">關閉的話只有後台「手動建立預約」會看到（例：親友專案組合）</span>
+                </span>
+              </label>
 
               {/* Preview */}
               {pkgForm.package_price > 0 && originalTotal > 0 && (

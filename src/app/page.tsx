@@ -217,6 +217,7 @@ type SitePackage = {
   duration_min?: number;
   serviceDetails?: { id: number; name: string; duration_min: number; price: number }[];
   is_active: boolean;
+  is_public?: boolean;
 };
 
 function PackagesPage() {
@@ -225,7 +226,8 @@ function PackagesPage() {
   useEffect(() => {
     fetch("/api/packages")
       .then(r => r.json())
-      .then(d => setPkgs((d.packages || []).filter((p: SitePackage) => p.is_active)))
+      // 冠 #4350: 親友專案這種 is_public=false 不在官網露出
+      .then(d => setPkgs((d.packages || []).filter((p: SitePackage) => p.is_active && p.is_public !== false)))
       .catch(() => {})
       .finally(() => setLoaded(true));
   }, []);

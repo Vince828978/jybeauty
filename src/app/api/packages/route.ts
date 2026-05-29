@@ -17,9 +17,12 @@ async function ensureTable() {
     duration_min INTEGER NOT NULL,
     service_ids TEXT NOT NULL,
     is_active BOOLEAN DEFAULT true,
+    is_public BOOLEAN DEFAULT true,
     sort_order INTEGER DEFAULT 0,
     created_at TIMESTAMP DEFAULT NOW()
   )`;
+  // 冠 #4350 2026-05-29: 親友專案這種 — 後台肉包自己下單用、不對外
+  try { await sql`ALTER TABLE packages ADD COLUMN IF NOT EXISTS is_public BOOLEAN DEFAULT true`; } catch {}
 }
 
 export async function GET() {
@@ -66,8 +69,8 @@ export async function POST(request: Request) {
     const body = await request.json();
     const sql = getDb();
     const serviceIds = JSON.stringify(body.service_ids || []);
-    const result = await sql`INSERT INTO packages (name, description, original_price, package_price, duration_min, service_ids, is_active, sort_order)
-      VALUES (${body.name}, ${body.description || ""}, ${body.original_price || 0}, ${body.package_price}, ${body.duration_min || 60}, ${serviceIds}, ${body.is_active !== false}, ${body.sort_order || 0})
+    const result = await sql`INSERT INTO packages (name, description, original_price, package_price, duration_min, service_ids, is_active, is_public, sort_order)
+      VALUES (${body.name}, ${body.description || ""}, ${body.original_price || 0}, ${body.package_price}, ${body.duration_min || 60}, ${serviceIds}, ${body.is_active !== false}, ${body.is_public !== false}, ${body.sort_order || 0})
       RETURNING *`;
     return NextResponse.json({ success: true, package: result[0] });
   } catch (e) {
@@ -89,6 +92,7 @@ export async function PUT(request: Request) {
       duration_min = ${body.duration_min || 60},
       service_ids = ${serviceIds},
       is_active = ${body.is_active !== false},
+      is_public = ${body.is_public !== false},
       sort_order = ${body.sort_order || 0}
       WHERE id = ${body.id}`;
     return NextResponse.json({ success: true });
