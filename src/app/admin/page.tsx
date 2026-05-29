@@ -655,9 +655,9 @@ export default function AdminPage() {
                 <div>
                   <p className="text-sm text-text-light mb-2">日期範圍</p>
                   <div className="flex gap-3 items-center">
-                    <input type="date" value={blockForm.startDate} onChange={e => setBlockForm({...blockForm, startDate: e.target.value})} className="flex-1 px-5 py-5 border border-rose-100 rounded-2xl text-base focus:outline-none focus:border-rose-300" />
+                    <input type="date" value={blockForm.startDate} onChange={e => setBlockForm({...blockForm, startDate: e.target.value})} className="flex-1 px-6 py-6 border-2 border-rose-100 rounded-2xl text-lg focus:outline-none focus:border-rose-300" />
                     <span className="text-text-light text-lg">~</span>
-                    <input type="date" value={blockForm.endDate} onChange={e => setBlockForm({...blockForm, endDate: e.target.value})} className="flex-1 px-5 py-5 border border-rose-100 rounded-2xl text-base focus:outline-none focus:border-rose-300" />
+                    <input type="date" value={blockForm.endDate} onChange={e => setBlockForm({...blockForm, endDate: e.target.value})} className="flex-1 px-6 py-6 border-2 border-rose-100 rounded-2xl text-lg focus:outline-none focus:border-rose-300" />
                   </div>
                 </div>
 
@@ -666,11 +666,11 @@ export default function AdminPage() {
                   <p className="text-sm text-text-light mb-2">封鎖範圍</p>
                   <div className="grid grid-cols-2 gap-3">
                     <button type="button" onClick={() => setBlockForm({...blockForm, mode: "all"})}
-                      className={`py-4 rounded-2xl text-base font-bold border-2 ${blockForm.mode === "all" ? "bg-rose-500 text-white border-rose-500" : "bg-white text-rose-500 border-rose-100"}`}>
+                      className={`py-6 rounded-2xl text-xl font-bold border-2 ${blockForm.mode === "all" ? "bg-rose-500 text-white border-rose-500 shadow-md" : "bg-white text-rose-500 border-rose-200"}`}>
                       整天關閉
                     </button>
                     <button type="button" onClick={() => setBlockForm({...blockForm, mode: "range"})}
-                      className={`py-4 rounded-2xl text-base font-bold border-2 ${blockForm.mode === "range" ? "bg-rose-500 text-white border-rose-500" : "bg-white text-rose-500 border-rose-100"}`}>
+                      className={`py-6 rounded-2xl text-xl font-bold border-2 ${blockForm.mode === "range" ? "bg-rose-500 text-white border-rose-500 shadow-md" : "bg-white text-rose-500 border-rose-200"}`}>
                       指定時段
                     </button>
                   </div>
@@ -681,12 +681,12 @@ export default function AdminPage() {
                     <p className="text-sm text-text-light mb-2">起訖時間（每 10 分鐘為一格）</p>
                     <div className="grid grid-cols-[1fr_auto_1fr] gap-3 items-center">
                       <select value={blockForm.startTime} onChange={e => setBlockForm({...blockForm, startTime: e.target.value})}
-                        className="px-5 py-5 border border-rose-100 rounded-2xl text-base bg-white focus:outline-none focus:border-rose-300">
+                        className="px-6 py-6 border-2 border-rose-100 rounded-2xl text-lg bg-white focus:outline-none focus:border-rose-300">
                         {(() => { const s: string[] = []; for (let h = 10; h <= 20; h++) for (let m = 0; m < 60; m += 10) { if (h === 20 && m > 0) break; s.push(`${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}`); } return s; })().map(t => <option key={t} value={t}>{t}</option>)}
                       </select>
                       <span className="text-text-light text-lg text-center">~</span>
                       <select value={blockForm.endTime} onChange={e => setBlockForm({...blockForm, endTime: e.target.value})}
-                        className="px-5 py-5 border border-rose-100 rounded-2xl text-base bg-white focus:outline-none focus:border-rose-300">
+                        className="px-6 py-6 border-2 border-rose-100 rounded-2xl text-lg bg-white focus:outline-none focus:border-rose-300">
                         {(() => { const s: string[] = []; for (let h = 10; h <= 20; h++) for (let m = 0; m < 60; m += 10) { if (h === 20 && m > 0) break; s.push(`${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}`); } return s; })().map(t => <option key={t} value={t}>{t}</option>)}
                       </select>
                     </div>
@@ -694,7 +694,7 @@ export default function AdminPage() {
                   </div>
                 )}
 
-                <input value={blockForm.reason} onChange={e => setBlockForm({...blockForm, reason: e.target.value})} placeholder="原因（選填，例：員工請假 / 設備維修）" className="w-full px-5 py-5 border border-rose-100 rounded-2xl text-base focus:outline-none focus:border-rose-300" />
+                <input value={blockForm.reason} onChange={e => setBlockForm({...blockForm, reason: e.target.value})} placeholder="原因（選填，例：員工請假 / 設備維修）" className="w-full px-6 py-6 border-2 border-rose-100 rounded-2xl text-lg focus:outline-none focus:border-rose-300" />
 
                 <button onClick={async () => {
                   if (!blockForm.startDate) return alert("請選擇日期");
@@ -714,7 +714,7 @@ export default function AdminPage() {
                   setBlockForm({ startDate: "", endDate: "", mode: "all", startTime: "14:00", endTime: "16:00", reason: "" });
                   fetchBlockedDates();
                   alert("已封鎖！");
-                }} className="w-full bg-rose-500 text-white py-5 rounded-2xl text-lg font-bold active:bg-rose-600">封鎖時段</button>
+                }} className="w-full bg-rose-500 text-white py-6 rounded-2xl text-2xl font-bold active:bg-rose-600 shadow-md">🔒 封鎖時段</button>
               </div>
 
               <div>
