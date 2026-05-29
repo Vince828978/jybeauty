@@ -39,9 +39,12 @@ async function ensureBlockedTable() {
     id SERIAL PRIMARY KEY,
     date TEXT NOT NULL,
     time TEXT,
+    end_time TEXT,
     reason TEXT DEFAULT '',
     created_at TIMESTAMP DEFAULT NOW()
   )`;
+  // 冠 #4320 2026-05-29: 既有 table 補 end_time column
+  try { await sql`ALTER TABLE blocked_dates ADD COLUMN IF NOT EXISTS end_time TEXT`; } catch {}
   await sql`CREATE TABLE IF NOT EXISTS notifications (
     id SERIAL PRIMARY KEY,
     type TEXT NOT NULL,
@@ -58,10 +61,21 @@ export async function GET(request: Request) {
   if (!dateStr) {
     return NextResponse.json({ error: "date param required" }, { status: 400 });
   }
+  // 服務時長（分鐘），預設 60；用於衝突計算 + 末班排除
+  const durMin = Math.max(10, Math.min(480, parseInt(searchParams.get("dur") || "60") || 60));
 
   const calendarId = process.env.GOOGLE_CALENDAR_ID || "primary";
   const busySlots: string[] = [];
-  const slots = ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"];
+  // 10 分鐘為單位的時段；確保 (slot + durMin) 不超過 20:00 (1200 分鐘)
+  const slots: string[] = [];
+  for (let h = 10; h <= 20; h++) {
+    for (let m = 0; m < 60; m += 10) {
+      if (h === 20 && m > 0) break;
+      const slotMin = h * 60 + m;
+      if (slotMin + durMin > 20 * 60) break;
+      slots.push(`${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`);
+    }
+  }
 
   const auth = await getAuth();
   if (auth) {
@@ -78,7 +92,7 @@ export async function GET(request: Request) {
       const busy = res.data.calendars?.[calendarId]?.busy || [];
       for (const slot of slots) {
         const slotStart = new Date(`${dateStr}T${slot}:00+08:00`);
-        const slotEnd = new Date(slotStart.getTime() + 60 * 60 * 1000);
+        const slotEnd = new Date(slotStart.getTime() + durMin * 60 * 1000);
         const isBlocked = busy.some((b) => {
           const busyStart = new Date(b.start!);
           const busyEnd = new Date(b.end!);
@@ -94,12 +108,31 @@ export async function GET(request: Request) {
   try {
     await ensureBlockedTable();
     const sql = getDb();
-    const blocked = await sql`SELECT time FROM blocked_dates WHERE date = ${dateStr}`;
+    // 冠 #4320 2026-05-29: 撈 time + end_time，若有 end_time 表示範圍封鎖
+    const blocked = await sql`SELECT time, end_time FROM blocked_dates WHERE date = ${dateStr}`;
     for (const row of blocked) {
       if (row.time === null || row.time === "all") {
         return NextResponse.json({ busySlots: slots, blockedAll: true });
       }
-      if (!busySlots.includes(row.time)) busySlots.push(row.time);
+      if (row.end_time) {
+        // 範圍封鎖：把區間內所有 slot 都加進 busy（含可預約服務時長重疊）
+        const [bsH, bsM] = String(row.time).split(":").map(Number);
+        const [beH, beM] = String(row.end_time).split(":").map(Number);
+        const blockStartMin = bsH * 60 + bsM;
+        const blockEndMin = beH * 60 + beM;
+        for (const slot of slots) {
+          const [sh, sm] = slot.split(":").map(Number);
+          const slotStart = sh * 60 + sm;
+          const slotEnd = slotStart + durMin;
+          // 任何重疊都不可預約
+          if (slotStart < blockEndMin && slotEnd > blockStartMin) {
+            if (!busySlots.includes(slot)) busySlots.push(slot);
+          }
+        }
+      } else {
+        // 舊資料：單一時段
+        if (!busySlots.includes(row.time)) busySlots.push(row.time);
+      }
     }
   } catch (e) {
     console.error("Blocked dates query error:", e);
@@ -125,14 +158,18 @@ export async function POST(request: Request) {
           description: `套餐：${body.package}\n電話：${body.phone}\n金額：$${body.total}\n地址：${body.address || "工作室"}`,
           start: { dateTime: `${body.date}T${body.time}:00+08:00`, timeZone: "Asia/Taipei" },
           end: { dateTime: (() => {
-            const durationMap: Record<string, number> = {
-              "精油舒壓按摩 90min": 2, "精油按摩＋熱石 120min": 3,
-              "舒壓放鬆套餐": 2, "能量煥膚套餐": 2, "極致寵愛套餐": 3,
+            // 優先用傳進來的 durationMin；沒有的話 fallback 到 package map (分鐘)
+            const durMap: Record<string, number> = {
+              "精油舒壓按摩 90min": 90, "精油按摩＋熱石 120min": 120,
+              "舒壓放鬆套餐": 120, "能量煥膚套餐": 150, "極致寵愛套餐": 180,
             };
-            const hours = durationMap[body.package] || 2;
-            const startH = parseInt(body.time);
-            const endH = startH + hours;
-            return `${body.date}T${String(endH).padStart(2, "0")}:00:00+08:00`;
+            const durMin = Math.max(10, Math.min(480, parseInt(body.durationMin) || durMap[body.package] || 120));
+            const [hh, mm] = String(body.time).split(":").map((v: string) => parseInt(v));
+            const startTotal = hh * 60 + mm;
+            const endTotal = startTotal + durMin;
+            const eh = Math.floor(endTotal / 60);
+            const em = endTotal % 60;
+            return `${body.date}T${String(eh).padStart(2, "0")}:${String(em).padStart(2, "0")}:00+08:00`;
           })(), timeZone: "Asia/Taipei" },
           colorId: "6",
         },
@@ -186,10 +223,17 @@ export async function POST(request: Request) {
       await ensureBlockedTable();
       const sql = getDb();
       const dates: string[] = body.dates || [body.date];
-      const time = body.time || "all";
       const reason = body.reason || "手動關閉";
+      // 冠 #4320 2026-05-29: 支援 startTime + endTime 範圍封鎖；舊 payload {time} 仍相容
+      const startTime: string | null = body.startTime || null;
+      const endTime: string | null = body.endTime || null;
+      const legacyTime: string = body.time || "all";
       for (const d of dates) {
-        await sql`INSERT INTO blocked_dates (date, time, reason) VALUES (${d}, ${time}, ${reason})`;
+        if (startTime && endTime) {
+          await sql`INSERT INTO blocked_dates (date, time, end_time, reason) VALUES (${d}, ${startTime}, ${endTime}, ${reason})`;
+        } else {
+          await sql`INSERT INTO blocked_dates (date, time, end_time, reason) VALUES (${d}, ${legacyTime}, ${null}, ${reason})`;
+        }
       }
       return NextResponse.json({ success: true });
     } catch (e) {

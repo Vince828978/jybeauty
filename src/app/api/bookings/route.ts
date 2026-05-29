@@ -47,6 +47,7 @@ export async function POST(request: Request) {
           time: body.time,
           total: body.total,
           address: body.address || "",
+          durationMin: body.durationMin || null,
         }),
       });
     } catch (calErr) {

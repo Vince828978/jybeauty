@@ -37,7 +37,7 @@ export default function AdminPage() {
   const [notifCount, setNotifCount] = useState(0);
   const [notifications, setNotifications] = useState<Record<string, unknown>[]>([]);
   const [blockedDates, setBlockedDates] = useState<Record<string, unknown>[]>([]);
-  const [blockForm, setBlockForm] = useState({ startDate: "", endDate: "", time: "all", reason: "" });
+  const [blockForm, setBlockForm] = useState({ startDate: "", endDate: "", mode: "all" as "all" | "range", startTime: "14:00", endTime: "16:00", reason: "" });
   const [dbPackages, setDbPackages] = useState<{ id: number; name: string; package_price: number; duration_min?: number; is_active: boolean }[]>([]);
   const [dbServices, setDbServices] = useState<{ id: number; name: string; price: number; duration_min: number; category?: string; is_active: boolean }[]>([]);
 
@@ -645,57 +645,103 @@ export default function AdminPage() {
 
       {view === "schedule" && (
         <>
-          <button onClick={() => setView("home")} className="text-rose-500 text-sm mb-4">&larr; 返回</button>
-          <div className="bg-white rounded-2xl p-6 space-y-4">
-            <h2 className="text-xl font-bold text-dark">排程管理</h2>
-            <p className="text-text-light text-sm">關閉預約時段。行事曆的私人行程也會自動封鎖對應時段。</p>
-            <div className="border border-rose-100 rounded-xl p-4 space-y-3">
-              <p className="font-medium text-dark">新增封鎖</p>
-              <div className="flex gap-2">
-                <input type="date" value={blockForm.startDate} onChange={e => setBlockForm({...blockForm, startDate: e.target.value})} className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm" />
-                <span className="self-center text-text-light">~</span>
-                <input type="date" value={blockForm.endDate} onChange={e => setBlockForm({...blockForm, endDate: e.target.value})} className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm" />
-              </div>
-              <select value={blockForm.time} onChange={e => setBlockForm({...blockForm, time: e.target.value})} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm">
-                <option value="all">整天關閉</option>
-                {(() => { const s: string[] = []; for (let h = 10; h <= 20; h++) for (let m = 0; m < 60; m += 10) { if (h === 20 && m > 0) break; s.push(`${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}`); } return s; })().map(t => <option key={t} value={t}>{t} 該時段</option>)}
-              </select>
-              <input value={blockForm.reason} onChange={e => setBlockForm({...blockForm, reason: e.target.value})} placeholder="原因（選填）" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm" />
-              <button onClick={async () => {
-                if (!blockForm.startDate) return alert("請選擇日期");
-                const dates: string[] = [];
-                const start = new Date(blockForm.startDate);
-                const end = blockForm.endDate ? new Date(blockForm.endDate) : start;
-                for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-                  dates.push(d.toISOString().slice(0, 10));
-                }
-                await fetch("/api/calendar", { method: "POST", headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ action: "block_dates", dates, time: blockForm.time, reason: blockForm.reason }) });
-                setBlockForm({ startDate: "", endDate: "", time: "all", reason: "" });
-                fetchBlockedDates();
-                alert("已封鎖！");
-              }} className="w-full bg-red-500 text-white py-3 rounded-xl font-medium">封鎖時段</button>
-            </div>
-            <div>
-              <p className="font-medium text-dark mb-2">已封鎖的時段</p>
-              {blockedDates.length === 0 ? <p className="text-text-light text-sm">目前沒有手動封鎖的時段</p> : (
-                <div className="space-y-2">
-                  {blockedDates.map((bd: Record<string, unknown>) => (
-                    <div key={String(bd.id)} className="flex items-center justify-between bg-red-50 px-4 py-3 rounded-xl">
-                      <div>
-                        <span className="font-medium text-dark">{String(bd.date)}</span>
-                        <span className="text-text-light ml-2">{bd.time === "all" ? "整天" : String(bd.time)}</span>
-                        {bd.reason ? <span className="text-text-light ml-2 text-sm">({String(bd.reason)})</span> : null}
-                      </div>
-                      <button onClick={async () => {
-                        await fetch("/api/calendar", { method: "POST", headers: { "Content-Type": "application/json" },
-                          body: JSON.stringify({ action: "unblock_date", id: bd.id }) });
-                        fetchBlockedDates();
-                      }} className="text-red-500 text-sm font-medium">解除</button>
-                    </div>
-                  ))}
+          <SubHeader title="排程管理" />
+          <div className="max-w-lg mx-auto px-5 py-6 space-y-5">
+            <div className="bg-white rounded-2xl p-6 space-y-5 border border-rose-100">
+              <p className="text-text-light text-base">關閉預約時段。行事曆的私人行程也會自動封鎖對應時段。</p>
+              <div className="border border-rose-100 rounded-2xl p-5 space-y-4">
+                <p className="font-bold text-dark text-lg">新增封鎖</p>
+
+                <div>
+                  <p className="text-sm text-text-light mb-2">日期範圍</p>
+                  <div className="flex gap-3 items-center">
+                    <input type="date" value={blockForm.startDate} onChange={e => setBlockForm({...blockForm, startDate: e.target.value})} className="flex-1 px-5 py-5 border border-rose-100 rounded-2xl text-base focus:outline-none focus:border-rose-300" />
+                    <span className="text-text-light text-lg">~</span>
+                    <input type="date" value={blockForm.endDate} onChange={e => setBlockForm({...blockForm, endDate: e.target.value})} className="flex-1 px-5 py-5 border border-rose-100 rounded-2xl text-base focus:outline-none focus:border-rose-300" />
+                  </div>
                 </div>
-              )}
+
+                {/* 冠 #4320: 整天 / 部分時段 切換 + 起訖時間都要選 */}
+                <div>
+                  <p className="text-sm text-text-light mb-2">封鎖範圍</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button type="button" onClick={() => setBlockForm({...blockForm, mode: "all"})}
+                      className={`py-4 rounded-2xl text-base font-bold border-2 ${blockForm.mode === "all" ? "bg-rose-500 text-white border-rose-500" : "bg-white text-rose-500 border-rose-100"}`}>
+                      整天關閉
+                    </button>
+                    <button type="button" onClick={() => setBlockForm({...blockForm, mode: "range"})}
+                      className={`py-4 rounded-2xl text-base font-bold border-2 ${blockForm.mode === "range" ? "bg-rose-500 text-white border-rose-500" : "bg-white text-rose-500 border-rose-100"}`}>
+                      指定時段
+                    </button>
+                  </div>
+                </div>
+
+                {blockForm.mode === "range" && (
+                  <div>
+                    <p className="text-sm text-text-light mb-2">起訖時間（每 10 分鐘為一格）</p>
+                    <div className="grid grid-cols-[1fr_auto_1fr] gap-3 items-center">
+                      <select value={blockForm.startTime} onChange={e => setBlockForm({...blockForm, startTime: e.target.value})}
+                        className="px-5 py-5 border border-rose-100 rounded-2xl text-base bg-white focus:outline-none focus:border-rose-300">
+                        {(() => { const s: string[] = []; for (let h = 10; h <= 20; h++) for (let m = 0; m < 60; m += 10) { if (h === 20 && m > 0) break; s.push(`${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}`); } return s; })().map(t => <option key={t} value={t}>{t}</option>)}
+                      </select>
+                      <span className="text-text-light text-lg text-center">~</span>
+                      <select value={blockForm.endTime} onChange={e => setBlockForm({...blockForm, endTime: e.target.value})}
+                        className="px-5 py-5 border border-rose-100 rounded-2xl text-base bg-white focus:outline-none focus:border-rose-300">
+                        {(() => { const s: string[] = []; for (let h = 10; h <= 20; h++) for (let m = 0; m < 60; m += 10) { if (h === 20 && m > 0) break; s.push(`${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}`); } return s; })().map(t => <option key={t} value={t}>{t}</option>)}
+                      </select>
+                    </div>
+                    <p className="text-xs text-text-light mt-2">⚠ 「{blockForm.startTime} ~ {blockForm.endTime}」之間整段時間都不能預約</p>
+                  </div>
+                )}
+
+                <input value={blockForm.reason} onChange={e => setBlockForm({...blockForm, reason: e.target.value})} placeholder="原因（選填，例：員工請假 / 設備維修）" className="w-full px-5 py-5 border border-rose-100 rounded-2xl text-base focus:outline-none focus:border-rose-300" />
+
+                <button onClick={async () => {
+                  if (!blockForm.startDate) return alert("請選擇日期");
+                  if (blockForm.mode === "range") {
+                    if (blockForm.startTime >= blockForm.endTime) return alert("結束時間必須晚於開始時間");
+                  }
+                  const dates: string[] = [];
+                  const start = new Date(blockForm.startDate);
+                  const end = blockForm.endDate ? new Date(blockForm.endDate) : start;
+                  for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+                    dates.push(d.toISOString().slice(0, 10));
+                  }
+                  const payload = blockForm.mode === "all"
+                    ? { action: "block_dates", dates, time: "all", reason: blockForm.reason }
+                    : { action: "block_dates", dates, startTime: blockForm.startTime, endTime: blockForm.endTime, reason: blockForm.reason };
+                  await fetch("/api/calendar", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+                  setBlockForm({ startDate: "", endDate: "", mode: "all", startTime: "14:00", endTime: "16:00", reason: "" });
+                  fetchBlockedDates();
+                  alert("已封鎖！");
+                }} className="w-full bg-rose-500 text-white py-5 rounded-2xl text-lg font-bold active:bg-rose-600">封鎖時段</button>
+              </div>
+
+              <div>
+                <p className="font-bold text-dark text-lg mb-3">已封鎖的時段</p>
+                {blockedDates.length === 0 ? <p className="text-text-light text-base text-center py-8">目前沒有手動封鎖的時段</p> : (
+                  <div className="space-y-3">
+                    {blockedDates.map((bd: Record<string, unknown>) => (
+                      <div key={String(bd.id)} className="flex items-center justify-between bg-rose-50/70 px-5 py-4 rounded-2xl">
+                        <div className="flex-1 min-w-0">
+                          <p className="font-bold text-dark text-base">{String(bd.date)}</p>
+                          <p className="text-text-light text-sm mt-1">
+                            {bd.time === "all" || !bd.time
+                              ? "整天關閉"
+                              : (bd.end_time ? `${String(bd.time)} ~ ${String(bd.end_time)}` : `${String(bd.time)} 起`)}
+                          </p>
+                          {bd.reason ? <p className="text-text-light text-sm mt-1">原因：{String(bd.reason)}</p> : null}
+                        </div>
+                        <button onClick={async () => {
+                          await fetch("/api/calendar", { method: "POST", headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ action: "unblock_date", id: bd.id }) });
+                          fetchBlockedDates();
+                        }} className="bg-white border-2 border-rose-300 text-rose-500 px-5 py-3 rounded-2xl text-base font-bold active:bg-rose-100">解除</button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </>

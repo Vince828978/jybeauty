@@ -4,16 +4,22 @@ import Image from "next/image";
 
 // Static experience packages (always shown)
 const staticPackages = [
-  { id: "exp1", tier: "體驗", name: "精油舒壓按摩 90min", price: 1380, items: ["精油按摩 90 min", "贈筋膜放鬆或頭療"] },
-  { id: "exp2", tier: "體驗", name: "精油按摩＋熱石 120min", price: 2300, items: ["精油按摩 120 min", "熱石深層舒壓", "贈筋膜放鬆或頭療"] },
+  { id: "exp1", tier: "體驗", name: "精油舒壓按摩 90min", price: 1380, dur_min: 90, items: ["精油按摩 90 min", "贈筋膜放鬆或頭療"] },
+  { id: "exp2", tier: "體驗", name: "精油按摩＋熱石 120min", price: 2300, dur_min: 120, items: ["精油按摩 120 min", "熱石深層舒壓", "贈筋膜放鬆或頭療"] },
 ];
 
 // Fallback packages (used when DB packages haven't loaded)
 const fallbackPackages = [
-  { id: "basic", tier: "Basic", name: "舒壓放鬆套餐", price: 2280, items: ["精油按摩 60 min", "臉部保養 基礎護理"] },
-  { id: "popular", tier: "Popular", name: "能量煥膚套餐", price: 3480, items: ["精油按摩 90 min", "臉部保養 深層護理", "身體加項 任選 1 項"], popular: true },
-  { id: "luxury", tier: "Luxury", name: "極致寵愛套餐", price: 4880, items: ["精油按摩 120 min", "臉部保養 深層護理", "身體加項 任選 2 項", "臉部加項 任選 1 項"] },
+  { id: "basic", tier: "Basic", name: "舒壓放鬆套餐", price: 2280, dur_min: 120, items: ["精油按摩 60 min", "臉部保養 基礎護理"] },
+  { id: "popular", tier: "Popular", name: "能量煥膚套餐", price: 3480, dur_min: 150, items: ["精油按摩 90 min", "臉部保養 深層護理", "身體加項 任選 1 項"], popular: true },
+  { id: "luxury", tier: "Luxury", name: "極致寵愛套餐", price: 4880, dur_min: 180, items: ["精油按摩 120 min", "臉部保養 深層護理", "身體加項 任選 2 項", "臉部加項 任選 1 項"] },
 ];
+
+function parseDurMin(s: string | undefined): number {
+  if (!s) return 0;
+  const m = s.match(/(\d+)/);
+  return m ? parseInt(m[1]) : 0;
+}
 
 interface DbPackage {
   id: number;
@@ -41,7 +47,17 @@ const faceAddons = [
   { id: "glow", name: "導入亮光 由內而外透亮", dur: "", price: 500 },
 ];
 
-const timeSlots = ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"];
+// 10 分鐘為單位的時段 (10:00 ~ 20:00)
+const timeSlots = (() => {
+  const out: string[] = [];
+  for (let h = 10; h <= 20; h++) {
+    for (let m = 0; m < 60; m += 10) {
+      if (h === 20 && m > 0) break;
+      out.push(`${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`);
+    }
+  }
+  return out;
+})();
 
 function getNextDays(count: number) {
   const days = [];
@@ -122,11 +138,18 @@ export default function BookingPage() {
 
   useEffect(() => {
     if (!selectedDate) { setBusySlots([]); return; }
-    fetch(`/api/calendar?date=${selectedDate}`)
+    const pkg = packages.find((p) => p.id === selectedPkg);
+    const pkgDur = (pkg && "dur_min" in pkg && typeof (pkg as { dur_min?: number }).dur_min === "number") ? (pkg as { dur_min: number }).dur_min : 60;
+    const addonDur = selectedAddons.reduce((sum, id) => {
+      const a = [...bodyAddons, ...faceAddons].find((x) => x.id === id);
+      return sum + parseDurMin(a?.dur);
+    }, 0);
+    const totalDur = pkgDur + addonDur;
+    fetch(`/api/calendar?date=${selectedDate}&dur=${totalDur}`)
       .then(r => r.json())
       .then(d => setBusySlots(d.busySlots || []))
       .catch(() => setBusySlots([]));
-  }, [selectedDate]);
+  }, [selectedDate, selectedPkg, selectedAddons, packages]);
 
   const days = getNextDays(14);
   const weekdays = ["日", "一", "二", "三", "四", "五", "六"];
@@ -407,10 +430,16 @@ export default function BookingPage() {
               <button onClick={async () => {
                 if (submitting) return;
                 setSubmitting(true);
+                const pkgDur = (pkg && "dur_min" in pkg && typeof (pkg as { dur_min?: number }).dur_min === "number") ? (pkg as { dur_min: number }).dur_min : 60;
+                const addonDurMin = selectedAddons.reduce((sum, id) => {
+                  const a = [...bodyAddons, ...faceAddons].find((x) => x.id === id);
+                  return sum + parseDurMin(a?.dur);
+                }, 0);
+                const totalDur = pkgDur + addonDurMin;
                 await fetch("/api/bookings", {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ package: pkg?.name, packageTier: pkg?.tier, addons: selectedAddons, date: selectedDate, time: selectedTime, name, phone, total, address, serviceMode, referralPhone }),
+                  body: JSON.stringify({ package: pkg?.name, packageTier: pkg?.tier, addons: selectedAddons, date: selectedDate, time: selectedTime, name, phone, total, address, serviceMode, referralPhone, durationMin: totalDur }),
                 });
                 if (referralPhone) {
                   await fetch("/api/referrals", { method: "POST", headers: { "Content-Type": "application/json" },
