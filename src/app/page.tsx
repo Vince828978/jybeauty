@@ -47,7 +47,7 @@ function Menu({ open, onClose, onNavigate }: { open: boolean; onClose: () => voi
           { key: "home" as Page, label: "首頁" },
           { key: "about" as Page, label: "關於我們" },
           { key: "services" as Page, label: "專屬為你" },
-          { key: "packages" as Page, label: "精選組合" },
+          { key: "packages" as Page, label: "服務項目" },
           { key: "contact" as Page, label: "聯繫我們" },
         ].map((item) => (
           <button key={item.key} onClick={() => { onNavigate(item.key); onClose(); }}
@@ -209,68 +209,84 @@ function ServicesPage() {
 }
 
 // 冠 #4334 2026-05-29: 官網首頁精選組合也改成從 DB 拉，肉包後台建立後才顯示
-type SitePackage = {
+// 冠 #4352 2026-05-29: 精選組合分頁改成顯示「服務項目」，而非套餐
+type SiteService = {
   id: number;
   name: string;
   description?: string;
-  package_price: number;
-  duration_min?: number;
-  serviceDetails?: { id: number; name: string; duration_min: number; price: number }[];
+  price: number;
+  duration_min: number;
+  category?: string;
   is_active: boolean;
   is_public?: boolean;
 };
 
 function PackagesPage() {
-  const [pkgs, setPkgs] = useState<SitePackage[]>([]);
+  const [services, setServices] = useState<SiteService[]>([]);
   const [loaded, setLoaded] = useState(false);
   useEffect(() => {
-    fetch("/api/packages")
+    fetch("/api/services")
       .then(r => r.json())
-      // 冠 #4350: 親友專案這種 is_public=false 不在官網露出
-      .then(d => setPkgs((d.packages || []).filter((p: SitePackage) => p.is_active && p.is_public !== false)))
+      // 親友價格這種 is_public=false 不在官網露出
+      .then(d => setServices((d.services || []).filter((s: SiteService) => s.is_active && s.is_public !== false)))
       .catch(() => {})
       .finally(() => setLoaded(true));
   }, []);
+
+  // 分類分組顯示 (身體 / 臉部 / 未分類 / 其他)
+  const grouped: Record<string, SiteService[]> = {};
+  for (const s of services) {
+    const cat = s.category || "其他";
+    if (!grouped[cat]) grouped[cat] = [];
+    grouped[cat].push(s);
+  }
+  const orderHint = ["身體", "臉部", "未分類", "其他"];
+  const cats = Object.keys(grouped).sort((a, b) => {
+    const ai = orderHint.indexOf(a);
+    const bi = orderHint.indexOf(b);
+    return (ai < 0 ? 99 : ai) - (bi < 0 ? 99 : bi);
+  });
   return (
     <section className="min-h-screen pt-20 bg-dark">
       <div className="relative h-[35vh]">
-        <Image src="/about-2.jpg" alt="JY Beauty 精選組合" fill className="object-cover object-top" />
+        <Image src="/about-2.jpg" alt="JY Beauty 服務項目" fill className="object-cover object-top" />
         <div className="absolute inset-0 bg-dark/50" />
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center">
-            <p className="text-gold-light text-xs tracking-[0.3em] uppercase mb-2">PACKAGES</p>
-            <h2 className="font-serif-tc text-3xl font-bold text-white">精選組合</h2>
+            <p className="text-gold-light text-xs tracking-[0.3em] uppercase mb-2">SERVICES</p>
+            <h2 className="font-serif-tc text-3xl font-bold text-white">服務項目</h2>
           </div>
         </div>
       </div>
-      <div className="md:max-w-3xl mx-auto px-16 py-8 text-center">
+      <div className="md:max-w-3xl mx-auto px-6 md:px-16 py-8">
         {!loaded ? (
-          <p className="text-white/40 py-12">載入中...</p>
-        ) : pkgs.length === 0 ? (
+          <p className="text-white/40 py-12 text-center">載入中...</p>
+        ) : services.length === 0 ? (
           <div className="border border-gold/30 rounded-2xl p-10 text-center">
             <p className="text-3xl mb-3">📋</p>
-            <p className="text-white font-bold text-lg mb-2">套餐尚未上架</p>
+            <p className="text-white font-bold text-lg mb-2">服務項目尚未上架</p>
             <p className="text-white/50 text-sm">店家正在後台建立中，請稍後再回來看看～</p>
           </div>
         ) : (
-          <div className="space-y-6 md:grid md:grid-cols-2 md:gap-6 md:space-y-0">
-            {pkgs.map((p) => {
-              const items = (p.serviceDetails || []).map(s => s.name);
-              return (
-                <div key={p.id} className="border border-gold/30 rounded-2xl p-6 text-center">
-                  <h3 className="text-white font-serif-tc text-xl font-bold mb-2">{p.name}</h3>
-                  {p.description && <p className="text-white/50 text-xs mb-3">{p.description}</p>}
-                  <div className="w-10 h-px bg-gold/40 mx-auto my-4" />
-                  <div className="space-y-2 mb-5">
-                    {items.map((item) => (
-                      <p key={item} className="text-white/70 text-sm">▸ {item}</p>
-                    ))}
-                    {p.duration_min ? <p className="text-white/50 text-xs">約 {p.duration_min} 分鐘</p> : null}
-                  </div>
-                  <p className="text-gold font-serif-tc text-3xl font-bold">${p.package_price.toLocaleString()}</p>
+          <div className="space-y-8">
+            {cats.map((cat) => (
+              <div key={cat}>
+                <p className="text-gold-light text-xs tracking-[0.3em] uppercase mb-2 text-center">{cat.toUpperCase()}</p>
+                <h3 className="text-gold font-serif-tc text-2xl font-bold mb-5 text-center">{cat}</h3>
+                <div className="space-y-3 md:grid md:grid-cols-2 md:gap-4 md:space-y-0">
+                  {grouped[cat].map((s) => (
+                    <div key={s.id} className="border border-gold/30 rounded-2xl p-5 flex flex-col">
+                      <h4 className="text-white font-serif-tc text-lg font-bold mb-1">{s.name}</h4>
+                      {s.description && <p className="text-white/50 text-xs mb-2">{s.description}</p>}
+                      <div className="mt-auto pt-3 border-t border-gold/20 flex items-baseline justify-between">
+                        <span className="text-white/60 text-sm">{s.duration_min} 分鐘</span>
+                        <span className="text-gold font-serif-tc text-2xl font-bold">${s.price.toLocaleString()}</span>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              );
-            })}
+              </div>
+            ))}
           </div>
         )}
         <div className="text-center mt-10">
