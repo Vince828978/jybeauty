@@ -2,18 +2,8 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 
-// Static experience packages (always shown)
-const staticPackages = [
-  { id: "exp1", tier: "體驗", name: "精油舒壓按摩 90min", price: 1380, dur_min: 90, items: ["精油按摩 90 min", "贈筋膜放鬆或頭療"] },
-  { id: "exp2", tier: "體驗", name: "精油按摩＋熱石 120min", price: 2300, dur_min: 120, items: ["精油按摩 120 min", "熱石深層舒壓", "贈筋膜放鬆或頭療"] },
-];
-
-// Fallback packages (used when DB packages haven't loaded)
-const fallbackPackages = [
-  { id: "basic", tier: "Basic", name: "舒壓放鬆套餐", price: 2280, dur_min: 120, items: ["精油按摩 60 min", "臉部保養 基礎護理"] },
-  { id: "popular", tier: "Popular", name: "能量煥膚套餐", price: 3480, dur_min: 150, items: ["精油按摩 90 min", "臉部保養 深層護理", "身體加項 任選 1 項"], popular: true },
-  { id: "luxury", tier: "Luxury", name: "極致寵愛套餐", price: 4880, dur_min: 180, items: ["精油按摩 120 min", "臉部保養 深層護理", "身體加項 任選 2 項", "臉部加項 任選 1 項"] },
-];
+// 冠 #4334 2026-05-29: 拿掉所有 hard-coded 套餐，全部由肉包在後台 /admin/services 建立
+// → packages 完全來自 /api/packages，DB 是空的就顯示「尚未上架」提示
 
 function parseDurMin(s: string | undefined): number {
   if (!s) return 0;
@@ -92,24 +82,21 @@ export default function BookingPage() {
   const [busySlots, setBusySlots] = useState<string[]>([]);
   const [dbPackages, setDbPackages] = useState<DbPackage[]>([]);
 
-  // Build combined package list: static experience + dynamic DB packages (or fallbacks)
-  const dynamicPackages = dbPackages.filter(p => p.is_active).map((p) => {
-    const items = (p.serviceDetails || []).map(s => s.name);
-    if (p.description && items.length === 0) items.push(p.description);
-    return {
-      id: `db-${p.id}`,
-      tier: "",
-      name: p.name,
-      price: p.package_price,
-      items: items.length > 0 ? items : [p.description || p.name],
-      popular: false,
-    };
-  });
-
-  const packages: { id: string; tier: string; name: string; price: number; items: string[]; popular?: boolean }[] = [
-    ...staticPackages,
-    ...(dynamicPackages.length > 0 ? dynamicPackages : fallbackPackages),
-  ];
+  // 冠 #4334 2026-05-29: 套餐完全由 DB 決定 (肉包後台建立)
+  const packages: { id: string; tier: string; name: string; price: number; dur_min: number; items: string[]; popular?: boolean }[] =
+    dbPackages.filter(p => p.is_active).map((p) => {
+      const items = (p.serviceDetails || []).map(s => s.name);
+      if (p.description && items.length === 0) items.push(p.description);
+      return {
+        id: `db-${p.id}`,
+        tier: "",
+        name: p.name,
+        price: p.package_price,
+        dur_min: p.duration_min || 0,
+        items: items.length > 0 ? items : [p.description || p.name],
+        popular: false,
+      };
+    });
 
   // Fetch dynamic packages from DB
   useEffect(() => {
@@ -218,11 +205,17 @@ export default function BookingPage() {
               <h2 className="font-serif-tc text-xl font-bold text-dark">選擇你的療程</h2>
             </div>
             <div className="flex-1 flex flex-col gap-3">
-              {packages.map((p) => (
+              {packages.length === 0 ? (
+                <div className="bg-white border-2 border-gold-light/20 rounded-2xl p-10 text-center">
+                  <p className="text-3xl mb-3">📋</p>
+                  <p className="text-dark font-bold text-lg mb-2">套餐尚未上架</p>
+                  <p className="text-text-light text-sm">店家正在後台建立中，請稍後再回來看看～</p>
+                </div>
+              ) : packages.map((p) => (
                 <button key={p.id} onClick={() => setSelectedPkg(p.id)}
                   className="flex-1 text-center rounded-2xl border-2 border-gold-light/20 bg-white active:border-gold active:bg-gold/5 active:shadow-lg transition-all flex flex-col items-center justify-center px-6 relative">
                   {p.popular && <span className="absolute top-3 right-3 bg-gold text-white text-xs px-3 py-1 rounded-full">推薦</span>}
-                  <p className="text-gold text-sm italic">{p.tier}</p>
+                  {p.tier && <p className="text-gold text-sm italic">{p.tier}</p>}
                   <h3 className="font-serif-tc text-2xl font-bold text-dark mt-1">{p.name}</h3>
                   <div className="mt-2 space-y-1">
                     {p.items.map((item) => (
@@ -230,6 +223,7 @@ export default function BookingPage() {
                     ))}
                   </div>
                   <p className="font-serif-tc text-3xl text-gold font-bold mt-3">${p.price.toLocaleString()}</p>
+                  {p.dur_min > 0 && <p className="text-text-light text-xs mt-1">約 {p.dur_min} 分鐘</p>}
                 </button>
               ))}
             </div>
