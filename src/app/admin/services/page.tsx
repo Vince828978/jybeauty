@@ -258,40 +258,40 @@ export default function ServicesPage() {
                 <p className="text-rose-500 text-sm font-medium mb-4">{editService ? "編輯服務" : "新增服務"}</p>
                 <div className="space-y-3">
                   <input value={serviceForm.name} onChange={(e) => setServiceForm({ ...serviceForm, name: e.target.value })}
-                    placeholder="服務名稱" className="w-full px-4 py-3 rounded-xl border border-rose-100 text-sm focus:outline-none focus:border-rose-300" />
+                    placeholder="服務名稱" className="w-full px-5 py-5 rounded-xl border border-rose-100 text-base focus:outline-none focus:border-rose-300" />
                   <input value={serviceForm.description} onChange={(e) => setServiceForm({ ...serviceForm, description: e.target.value })}
-                    placeholder="服務說明（選填）" className="w-full px-4 py-3 rounded-xl border border-rose-100 text-sm focus:outline-none focus:border-rose-300" />
+                    placeholder="服務說明（選填）" className="w-full px-5 py-5 rounded-xl border border-rose-100 text-base focus:outline-none focus:border-rose-300" />
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="text-xs text-text-light mb-1 block">時長（分鐘）</label>
+                      <label className="text-sm text-text-light mb-2 block">時長（分鐘）</label>
                       <input type="number" value={serviceForm.duration_min} onChange={(e) => setServiceForm({ ...serviceForm, duration_min: Number(e.target.value) })}
-                        className="w-full px-4 py-3 rounded-xl border border-rose-100 text-sm focus:outline-none focus:border-rose-300" />
+                        className="w-full px-5 py-5 rounded-xl border border-rose-100 text-base focus:outline-none focus:border-rose-300" />
                     </div>
                     <div>
-                      <label className="text-xs text-text-light mb-1 block">價格</label>
+                      <label className="text-sm text-text-light mb-2 block">價格</label>
                       <input type="number" value={serviceForm.price} onChange={(e) => setServiceForm({ ...serviceForm, price: Number(e.target.value) })}
-                        className="w-full px-4 py-3 rounded-xl border border-rose-100 text-sm focus:outline-none focus:border-rose-300" />
+                        className="w-full px-5 py-5 rounded-xl border border-rose-100 text-base focus:outline-none focus:border-rose-300" />
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="text-xs text-text-light mb-1 block">分類</label>
+                      <label className="text-sm text-text-light mb-2 block">分類</label>
                       <select value={serviceForm.category} onChange={(e) => setServiceForm({ ...serviceForm, category: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl border border-rose-100 text-sm focus:outline-none focus:border-rose-300 bg-white">
+                        className="w-full px-5 py-5 rounded-xl border border-rose-100 text-base focus:outline-none focus:border-rose-300 bg-white">
                         {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
                       </select>
                     </div>
                     <div>
-                      <label className="text-xs text-text-light mb-1 block">排序</label>
+                      <label className="text-sm text-text-light mb-2 block">排序</label>
                       <input type="number" value={serviceForm.sort_order} onChange={(e) => setServiceForm({ ...serviceForm, sort_order: Number(e.target.value) })}
-                        className="w-full px-4 py-3 rounded-xl border border-rose-100 text-sm focus:outline-none focus:border-rose-300" />
+                        className="w-full px-5 py-5 rounded-xl border border-rose-100 text-base focus:outline-none focus:border-rose-300" />
                     </div>
                   </div>
                   <div className="flex gap-3 pt-2">
                     <button onClick={resetServiceForm}
-                      className="flex-1 py-3 rounded-xl border-2 border-rose-200 text-rose-400 text-sm font-medium active:bg-rose-50">取消</button>
+                      className="flex-1 py-4 rounded-xl border-2 border-rose-200 text-rose-400 text-base font-semibold active:bg-rose-50">取消</button>
                     <button onClick={handleSaveService}
-                      className="flex-1 py-3 rounded-xl bg-rose-500 text-white text-sm font-medium active:bg-rose-600">{editService ? "更新" : "新增"}</button>
+                      className="flex-1 py-4 rounded-xl bg-rose-500 text-white text-base font-semibold active:bg-rose-600">{editService ? "更新" : "新增"}</button>
                   </div>
                 </div>
               </div>
@@ -502,25 +502,25 @@ export default function ServicesPage() {
             <div className="bg-white rounded-[22px] p-5 border border-rose-50 shadow-sm mb-4 space-y-3">
               <p className="text-dark font-semibold text-sm mb-1">套餐資訊</p>
               <input value={pkgForm.name} onChange={(e) => setPkgForm({ ...pkgForm, name: e.target.value })}
-                placeholder="套餐名稱" className="w-full px-4 py-3 rounded-xl border border-rose-100 text-sm focus:outline-none focus:border-rose-300" />
+                placeholder="套餐名稱" className="w-full px-5 py-5 rounded-xl border border-rose-100 text-base focus:outline-none focus:border-rose-300" />
               <input value={pkgForm.description} onChange={(e) => setPkgForm({ ...pkgForm, description: e.target.value })}
-                placeholder="套餐說明（選填）" className="w-full px-4 py-3 rounded-xl border border-rose-100 text-sm focus:outline-none focus:border-rose-300" />
+                placeholder="套餐說明（選填）" className="w-full px-5 py-5 rounded-xl border border-rose-100 text-base focus:outline-none focus:border-rose-300" />
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-text-light mb-1 block">套餐售價</label>
+                  <label className="text-sm text-text-light mb-2 block">套餐售價</label>
                   <input type="number" value={pkgForm.package_price} onChange={(e) => setPkgForm({ ...pkgForm, package_price: Number(e.target.value) })}
-                    placeholder="套餐價格" className="w-full px-4 py-3 rounded-xl border border-rose-100 text-sm focus:outline-none focus:border-rose-300" />
+                    placeholder="套餐價格" className="w-full px-5 py-5 rounded-xl border border-rose-100 text-base focus:outline-none focus:border-rose-300" />
                 </div>
                 <div>
-                  <label className="text-xs text-text-light mb-1 block">總時長（分鐘）</label>
+                  <label className="text-sm text-text-light mb-2 block">總時長（分鐘）</label>
                   <input type="number" value={pkgForm.duration_min || totalDuration} onChange={(e) => setPkgForm({ ...pkgForm, duration_min: Number(e.target.value) })}
-                    className="w-full px-4 py-3 rounded-xl border border-rose-100 text-sm focus:outline-none focus:border-rose-300" />
+                    className="w-full px-5 py-5 rounded-xl border border-rose-100 text-base focus:outline-none focus:border-rose-300" />
                 </div>
               </div>
               <div>
-                <label className="text-xs text-text-light mb-1 block">排序</label>
+                <label className="text-sm text-text-light mb-2 block">排序</label>
                 <input type="number" value={pkgForm.sort_order} onChange={(e) => setPkgForm({ ...pkgForm, sort_order: Number(e.target.value) })}
-                  className="w-full px-4 py-3 rounded-xl border border-rose-100 text-sm focus:outline-none focus:border-rose-300" />
+                  className="w-full px-5 py-5 rounded-xl border border-rose-100 text-base focus:outline-none focus:border-rose-300" />
               </div>
 
               {/* Preview */}
