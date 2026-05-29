@@ -181,6 +181,19 @@ export async function POST(request: Request) {
     }
   }
 
+  if (action === "delete_event") {
+    const auth = await getAuth();
+    if (!auth) return NextResponse.json({ error: "Calendar not configured" }, { status: 500 });
+    const calendarId = process.env.GOOGLE_CALENDAR_ID || "primary";
+    const calendar = google.calendar({ version: "v3", auth });
+    try {
+      await calendar.events.delete({ calendarId, eventId: body.eventId });
+      return NextResponse.json({ success: true });
+    } catch (e) {
+      return NextResponse.json({ error: String(e) }, { status: 500 });
+    }
+  }
+
   if (action === "check_conflicts") {
     const auth = await getAuth();
     if (!auth) return NextResponse.json({ conflicts: [] });
