@@ -80,11 +80,12 @@ export default function BookingPage() {
   const [busySlots, setBusySlots] = useState<string[]>([]);
   const [dbServices, setDbServices] = useState<DbService[]>([]);
 
-  // Fetch active services from DB
+  // Fetch active + 客戶可見 services from DB（is_public=false 的只有後台手動下單看得到）
   useEffect(() => {
     fetch("/api/services")
       .then(r => r.json())
-      .then(d => setDbServices((d.services || []).filter((s: DbService) => s.is_active)))
+      .then(d => setDbServices((d.services || []).filter((s: DbService & { is_public?: boolean }) =>
+        s.is_active && s.is_public !== false)))
       .catch(() => {});
   }, []);
 

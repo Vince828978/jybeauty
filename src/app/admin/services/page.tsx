@@ -41,7 +41,7 @@ export default function ServicesPage() {
 
   // Service form
   const [editService, setEditService] = useState<Service | null>(null);
-  const [serviceForm, setServiceForm] = useState({ name: "", description: "", duration_min: 60, price: 0, category: "身體", sort_order: 0 });
+  const [serviceForm, setServiceForm] = useState({ name: "", description: "", duration_min: 60, price: 0, category: "身體", sort_order: 0, is_public: true });
   const [showServiceForm, setShowServiceForm] = useState(false);
 
   // Package builder
@@ -104,7 +104,7 @@ export default function ServicesPage() {
   }, 0);
 
   const resetServiceForm = () => {
-    setServiceForm({ name: "", description: "", duration_min: 60, price: 0, category: "身體", sort_order: 0 });
+    setServiceForm({ name: "", description: "", duration_min: 60, price: 0, category: "身體", sort_order: 0, is_public: true });
     setEditService(null);
     setShowServiceForm(false);
   };
@@ -197,6 +197,7 @@ export default function ServicesPage() {
       price: svc.price,
       category: svc.category || "身體",
       sort_order: svc.sort_order || 0,
+      is_public: (svc as { is_public?: boolean }).is_public !== false,
     });
     setEditService(svc);
     setShowServiceForm(true);
@@ -303,6 +304,16 @@ export default function ServicesPage() {
                         className="w-full px-5 py-5 rounded-xl border border-rose-100 text-base focus:outline-none focus:border-rose-300" />
                     </div>
                   </div>
+                  {/* 冠 #4344 2026-05-29: 客戶網站可見開關 (像親友優惠這種只給後台手動下單用的勾掉) */}
+                  <label className="flex items-center gap-3 px-1 py-2 cursor-pointer">
+                    <input type="checkbox" checked={serviceForm.is_public}
+                      onChange={(e) => setServiceForm({ ...serviceForm, is_public: e.target.checked })}
+                      className="w-6 h-6 accent-rose-500" />
+                    <span className="text-sm text-dark flex-1">
+                      🌐 客戶網站可見
+                      <span className="block text-xs text-text-light">關閉的話只有後台「手動建立預約」會看到（例：親友優惠方案）</span>
+                    </span>
+                  </label>
                   <div className="flex gap-3 pt-2">
                     <button onClick={resetServiceForm}
                       className="flex-1 py-4 rounded-xl border-2 border-rose-200 text-rose-400 text-base font-semibold active:bg-rose-50">取消</button>
