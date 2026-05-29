@@ -23,6 +23,12 @@ async function ensureTable() {
     status TEXT DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT NOW()
   )`;
+  // 冠 #4329 2026-05-29: 舊 table 可能漏欄；補上 IF NOT EXISTS（修上線後客戶送單但後台看不到的 bug）
+  try { await sql`ALTER TABLE bookings ADD COLUMN IF NOT EXISTS address TEXT`; } catch {}
+  try { await sql`ALTER TABLE bookings ADD COLUMN IF NOT EXISTS package_tier TEXT`; } catch {}
+  try { await sql`ALTER TABLE bookings ADD COLUMN IF NOT EXISTS addons TEXT`; } catch {}
+  try { await sql`ALTER TABLE bookings ADD COLUMN IF NOT EXISTS source TEXT DEFAULT 'online'`; } catch {}
+  try { await sql`ALTER TABLE bookings ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'pending'`; } catch {}
 }
 
 export async function POST(request: Request) {
