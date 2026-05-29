@@ -11,7 +11,8 @@ function parseDurMin(s: string | undefined): number {
   return m ? parseInt(m[1]) : 0;
 }
 
-interface DbPackage {
+// 冠 #4342: DbPackage 介面已棄用（hardcoded packages + DB packages 流程拿掉）
+interface _DbPackageDeprecated {
   id: number;
   name: string;
   description: string;
@@ -23,19 +24,17 @@ interface DbPackage {
   serviceDetails?: { id: number; name: string; duration_min: number; price: number }[];
 }
 
-const bodyAddons = [
-  { id: "hotstone", name: "熱石深層舒緩", dur: "30min", price: 200 },
-  { id: "guasha", name: "刮痧/筋膜放鬆", dur: "30min", price: 300 },
-  { id: "head", name: "頭療（含耳燭）", dur: "30min", price: 400 },
-  { id: "boost", name: "加乘體驗放鬆 UP", dur: "15min", price: 300 },
-];
-
-const faceAddons = [
-  { id: "lulu", name: "Lulu SPA 煥顏護理", dur: "40min", price: 600 },
-  { id: "slim", name: "臉部瘦小臉", dur: "20min", price: 500 },
-  { id: "firm", name: "細緻護理 緊緻拉提", dur: "", price: 500 },
-  { id: "glow", name: "導入亮光 由內而外透亮", dur: "", price: 500 },
-];
+// 冠 #4342 2026-05-29: 拿掉所有 hardcoded addons；所有可選項目都從 /api/services 拉
+interface DbService {
+  id: number;
+  name: string;
+  description?: string;
+  duration_min: number;
+  price: number;
+  category?: string;
+  is_active: boolean;
+  sort_order?: number;
+}
 
 // 10 分鐘為單位的時段 (10:00 ~ 20:00)
 const timeSlots = (() => {
@@ -68,8 +67,7 @@ function getNextDays(count: number) {
 
 export default function BookingPage() {
   const [step, setStep] = useState(0);
-  const [selectedPkg, setSelectedPkg] = useState("");
-  const [selectedAddons, setSelectedAddons] = useState<string[]>([]);
+  const [selectedServiceIds, setSelectedServiceIds] = useState<number[]>([]);
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
   const [name, setName] = useState("");
@@ -80,76 +78,47 @@ export default function BookingPage() {
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [busySlots, setBusySlots] = useState<string[]>([]);
-  const [dbPackages, setDbPackages] = useState<DbPackage[]>([]);
+  const [dbServices, setDbServices] = useState<DbService[]>([]);
 
-  // 冠 #4334 2026-05-29: 套餐完全由 DB 決定 (肉包後台建立)
-  const packages: { id: string; tier: string; name: string; price: number; dur_min: number; items: string[]; popular?: boolean }[] =
-    dbPackages.filter(p => p.is_active).map((p) => {
-      const items = (p.serviceDetails || []).map(s => s.name);
-      if (p.description && items.length === 0) items.push(p.description);
-      return {
-        id: `db-${p.id}`,
-        tier: "",
-        name: p.name,
-        price: p.package_price,
-        dur_min: p.duration_min || 0,
-        items: items.length > 0 ? items : [p.description || p.name],
-        popular: false,
-      };
-    });
-
-  // Fetch dynamic packages from DB
+  // Fetch active services from DB
   useEffect(() => {
-    fetch("/api/packages")
+    fetch("/api/services")
       .then(r => r.json())
-      .then(d => {
-        if (d.packages && d.packages.length > 0) {
-          setDbPackages(d.packages);
-        }
-      })
-      .catch(() => { /* use fallbacks */ });
+      .then(d => setDbServices((d.services || []).filter((s: DbService) => s.is_active)))
+      .catch(() => {});
   }, []);
 
-  // URL param: ?pkg=exp1 → 自動選方案跳到日期選擇
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search);
-      const pkgId = params.get("pkg");
-      if (pkgId && packages.find(p => p.id === pkgId)) {
-        setSelectedPkg(pkgId);
-        setStep(1);
-      }
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dbPackages]);
+  const selectedServices = dbServices.filter(s => selectedServiceIds.includes(s.id));
+  const total = selectedServices.reduce((sum, s) => sum + s.price, 0);
+  const totalDur = selectedServices.reduce((sum, s) => sum + (s.duration_min || 0), 0);
+
+  // Group services by category for display
+  const servicesByCategory: Record<string, DbService[]> = {};
+  for (const s of dbServices) {
+    const cat = s.category || "其他";
+    if (!servicesByCategory[cat]) servicesByCategory[cat] = [];
+    servicesByCategory[cat].push(s);
+  }
+  const categoryOrder = ["身體", "臉部", "未分類", "其他"];
+  const sortedCategories = Object.keys(servicesByCategory).sort((a, b) => {
+    const ai = categoryOrder.indexOf(a);
+    const bi = categoryOrder.indexOf(b);
+    return (ai < 0 ? 99 : ai) - (bi < 0 ? 99 : bi);
+  });
 
   useEffect(() => {
     if (!selectedDate) { setBusySlots([]); return; }
-    const pkg = packages.find((p) => p.id === selectedPkg);
-    const pkgDur = (pkg && "dur_min" in pkg && typeof (pkg as { dur_min?: number }).dur_min === "number") ? (pkg as { dur_min: number }).dur_min : 60;
-    const addonDur = selectedAddons.reduce((sum, id) => {
-      const a = [...bodyAddons, ...faceAddons].find((x) => x.id === id);
-      return sum + parseDurMin(a?.dur);
-    }, 0);
-    const totalDur = pkgDur + addonDur;
-    fetch(`/api/calendar?date=${selectedDate}&dur=${totalDur}`)
+    fetch(`/api/calendar?date=${selectedDate}&dur=${totalDur || 60}`)
       .then(r => r.json())
       .then(d => setBusySlots(d.busySlots || []))
       .catch(() => setBusySlots([]));
-  }, [selectedDate, selectedPkg, selectedAddons, packages]);
+  }, [selectedDate, totalDur]);
 
   const days = getNextDays(14);
   const weekdays = ["日", "一", "二", "三", "四", "五", "六"];
-  const pkg = packages.find((p) => p.id === selectedPkg);
-  const allAddons = [...bodyAddons, ...faceAddons];
-  const addonTotal = selectedAddons.reduce((sum, id) => {
-    const a = allAddons.find((x) => x.id === id);
-    return sum + (a?.price || 0);
-  }, 0);
-  const total = (pkg?.price || 0) + addonTotal;
 
-  const toggleAddon = (id: string) => {
-    setSelectedAddons((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]);
+  const toggleService = (id: number) => {
+    setSelectedServiceIds((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]);
   };
 
   const booked = busySlots;
@@ -164,7 +133,7 @@ export default function BookingPage() {
           <h2 className="font-serif-tc text-2xl font-bold text-dark mb-3">預約成功</h2>
           <p className="text-text-light mb-6">感謝你的預約！我們會盡快透過 LINE 與你確認詳細時間。</p>
           <div className="bg-cream/50 rounded-xl p-5 text-left text-sm space-y-2 mb-6">
-            <div className="flex justify-between"><span className="text-text-light">套餐</span><span className="text-dark font-medium">{pkg?.name}</span></div>
+            <div className="flex justify-between"><span className="text-text-light">服務項目</span><span className="text-dark font-medium text-right">{selectedServices.map(s => s.name).join("、")}</span></div>
             <div className="flex justify-between"><span className="text-text-light">日期</span><span className="text-dark font-medium">{selectedDate}</span></div>
             <div className="flex justify-between"><span className="text-text-light">時段</span><span className="text-dark font-medium">{selectedTime}</span></div>
             <div className="flex justify-between"><span className="text-text-light">姓名</span><span className="text-dark font-medium">{name}</span></div>
@@ -198,80 +167,60 @@ export default function BookingPage() {
           ))}
         </div>
 
-        {/* Step 0: Package Selection */}
-        {step === 0 && !selectedPkg && (
-          <div className="fade-in flex flex-col" style={{ minHeight: "calc(100vh - 140px)" }}>
-            <div className="text-center mb-4">
-              <h2 className="font-serif-tc text-xl font-bold text-dark">選擇你的療程</h2>
-            </div>
-            <div className="flex-1 flex flex-col gap-3">
-              {packages.length === 0 ? (
-                <div className="bg-white border-2 border-gold-light/20 rounded-2xl p-10 text-center">
-                  <p className="text-3xl mb-3">📋</p>
-                  <p className="text-dark font-bold text-lg mb-2">套餐尚未上架</p>
-                  <p className="text-text-light text-sm">店家正在後台建立中，請稍後再回來看看～</p>
-                </div>
-              ) : packages.map((p) => (
-                <button key={p.id} onClick={() => setSelectedPkg(p.id)}
-                  className="flex-1 text-center rounded-2xl border-2 border-gold-light/20 bg-white active:border-gold active:bg-gold/5 active:shadow-lg transition-all flex flex-col items-center justify-center px-6 relative">
-                  {p.popular && <span className="absolute top-3 right-3 bg-gold text-white text-xs px-3 py-1 rounded-full">推薦</span>}
-                  {p.tier && <p className="text-gold text-sm italic">{p.tier}</p>}
-                  <h3 className="font-serif-tc text-2xl font-bold text-dark mt-1">{p.name}</h3>
-                  <div className="mt-2 space-y-1">
-                    {p.items.map((item) => (
-                      <p key={item} className="text-text-light text-sm">{item}</p>
-                    ))}
-                  </div>
-                  <p className="font-serif-tc text-3xl text-gold font-bold mt-3">${p.price.toLocaleString()}</p>
-                  {p.dur_min > 0 && <p className="text-text-light text-xs mt-1">約 {p.dur_min} 分鐘</p>}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Step 0b: Add-ons after selecting package */}
-        {step === 0 && selectedPkg && (
+        {/* 冠 #4342 2026-05-29: 單一服務多選 — 取消套餐流程 */}
+        {step === 0 && (
           <div className="fade-in">
-            <div className="text-center mb-6">
-              <button onClick={() => setSelectedPkg("")} className="text-text-light text-sm mb-2">← 重新選擇套餐</button>
-              <h2 className="font-serif-tc text-xl font-bold text-dark">{pkg?.name}</h2>
-              <p className="text-gold font-serif-tc text-2xl font-bold mt-1">${pkg?.price.toLocaleString()}</p>
+            <div className="text-center mb-4">
+              <h2 className="font-serif-tc text-xl font-bold text-dark">選擇你的療程（可複選）</h2>
+              <p className="text-text-light text-sm mt-1">勾選你想要的單項服務</p>
             </div>
 
-            <h3 className="font-serif-tc text-lg font-bold text-dark text-center mb-4">加值項目（選填）</h3>
-            <p className="text-text-light text-center text-sm mb-4">身體加項</p>
-            <div className="grid grid-cols-2 gap-3 mb-5">
-              {bodyAddons.map((a) => (
-                <button key={a.id} onClick={() => toggleAddon(a.id)}
-                  className={`p-5 rounded-2xl border-2 text-center transition-all ${selectedAddons.includes(a.id) ? "border-gold bg-gold/5 shadow-md" : "border-gold-light/20 bg-white"}`}>
-                  <p className="text-dark text-base font-medium">{a.name}</p>
-                  {a.dur && <p className="text-text-light text-sm">{a.dur}</p>}
-                  <p className="text-gold font-semibold text-lg mt-1">+${a.price}</p>
-                </button>
-              ))}
-            </div>
-            <p className="text-text-light text-center text-sm mb-4">臉部加項</p>
-            <div className="grid grid-cols-2 gap-3 mb-6">
-              {faceAddons.map((a) => (
-                <button key={a.id} onClick={() => toggleAddon(a.id)}
-                  className={`p-5 rounded-2xl border-2 text-center transition-all ${selectedAddons.includes(a.id) ? "border-gold bg-gold/5 shadow-md" : "border-gold-light/20 bg-white"}`}>
-                  <p className="text-dark text-base font-medium">{a.name}</p>
-                  {a.dur && <p className="text-text-light text-sm">{a.dur}</p>}
-                  <p className="text-gold font-semibold text-lg mt-1">+${a.price}</p>
-                </button>
-              ))}
-            </div>
-
-            <div className="sticky bottom-0 bg-warm-bg pt-4 pb-8">
-              <div className="flex justify-between items-center mb-4">
-                <span className="text-dark text-lg font-medium">預估金額</span>
-                <span className="font-serif-tc text-3xl text-gold font-bold">${total.toLocaleString()}</span>
+            {dbServices.length === 0 ? (
+              <div className="bg-white border-2 border-gold-light/20 rounded-2xl p-10 text-center">
+                <p className="text-3xl mb-3">📋</p>
+                <p className="text-dark font-bold text-lg mb-2">服務項目尚未上架</p>
+                <p className="text-text-light text-sm">店家正在後台建立中，請稍後再回來看看～</p>
               </div>
-              <button onClick={() => setStep(1)} className="w-full bg-gold text-white py-5 rounded-2xl text-lg font-medium tracking-wide active:bg-dark-light transition-colors">
-                下一步：選擇時間
-              </button>
-            </div>
+            ) : (
+              <div className="space-y-5 pb-32">
+                {sortedCategories.map((cat) => (
+                  <div key={cat}>
+                    <p className="text-gold text-sm font-semibold tracking-wider mb-3 px-1">{cat}</p>
+                    <div className="space-y-3">
+                      {servicesByCategory[cat].map((s) => {
+                        const sel = selectedServiceIds.includes(s.id);
+                        return (
+                          <label key={s.id}
+                            className={`flex items-center gap-4 p-5 rounded-2xl border-2 cursor-pointer transition-all ${sel ? "border-gold bg-gold/5 shadow-md" : "border-gold-light/20 bg-white"}`}>
+                            <input type="checkbox" checked={sel} onChange={() => toggleService(s.id)} className="w-6 h-6 accent-gold flex-shrink-0" />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-dark text-lg font-bold">{s.name}</p>
+                              {s.description && <p className="text-text-light text-sm mt-1">{s.description}</p>}
+                              <p className="text-text-light text-sm mt-1">約 {s.duration_min} 分鐘</p>
+                            </div>
+                            <p className="text-gold font-serif-tc text-2xl font-bold flex-shrink-0">${s.price.toLocaleString()}</p>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {selectedServiceIds.length > 0 && (
+              <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gold-light/30 shadow-lg pt-4 pb-6 px-5 z-50">
+                <div className="max-w-md mx-auto">
+                  <div className="flex justify-between items-center mb-3">
+                    <span className="text-dark text-base font-medium">已選 {selectedServiceIds.length} 項 · 約 {totalDur} 分鐘</span>
+                    <span className="font-serif-tc text-3xl text-gold font-bold">${total.toLocaleString()}</span>
+                  </div>
+                  <button onClick={() => setStep(1)} className="w-full bg-gold text-white py-5 rounded-2xl text-lg font-bold tracking-wide active:bg-dark-light transition-colors">
+                    下一步：選擇時間
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -334,10 +283,7 @@ export default function BookingPage() {
             <div className="bg-white rounded-2xl p-6 mb-6 border border-gold-light/20">
               <p className="text-gold text-xs tracking-wide mb-4">預約摘要</p>
               <div className="space-y-2 text-sm">
-                <div className="flex justify-between"><span className="text-text-light">套餐</span><span className="text-dark font-medium">{pkg?.name}</span></div>
-                {selectedAddons.length > 0 && (
-                  <div className="flex justify-between"><span className="text-text-light">加項</span><span className="text-dark font-medium">{selectedAddons.map((id) => allAddons.find((a) => a.id === id)?.name).join("、")}</span></div>
-                )}
+                <div className="flex justify-between"><span className="text-text-light">服務項目</span><span className="text-dark font-medium text-right">{selectedServices.map(s => s.name).join("、")}</span></div>
                 <div className="flex justify-between"><span className="text-text-light">日期</span><span className="text-dark font-medium">{selectedDate}</span></div>
                 <div className="flex justify-between"><span className="text-text-light">時段</span><span className="text-dark font-medium">{selectedTime}</span></div>
                 <div className="flex justify-between border-t border-gold-light/20 pt-2 mt-2">
@@ -395,10 +341,7 @@ export default function BookingPage() {
 
             <div className="bg-white rounded-2xl p-6 mb-6 border-2 border-gold/30 shadow-lg">
               <div className="space-y-4 text-sm">
-                <div className="flex justify-between py-2 border-b border-gold-light/10"><span className="text-text-light">套餐</span><span className="text-dark font-semibold">{pkg?.name}</span></div>
-                {selectedAddons.length > 0 && (
-                  <div className="flex justify-between py-2 border-b border-gold-light/10"><span className="text-text-light">加項</span><span className="text-dark font-medium text-right">{selectedAddons.map((id) => allAddons.find((a) => a.id === id)?.name).join("、")}</span></div>
-                )}
+                <div className="flex justify-between py-2 border-b border-gold-light/10"><span className="text-text-light">服務項目</span><span className="text-dark font-semibold text-right max-w-[60%]">{selectedServices.map(s => s.name).join("、")}</span></div>
                 <div className="flex justify-between py-2 border-b border-gold-light/10"><span className="text-text-light">日期</span><span className="text-dark font-semibold">{selectedDate}</span></div>
                 <div className="flex justify-between py-2 border-b border-gold-light/10"><span className="text-text-light">時段</span><span className="text-dark font-semibold">{selectedTime}</span></div>
                 <div className="flex justify-between py-2 border-b border-gold-light/10"><span className="text-text-light">服務方式</span><span className="text-dark font-medium">{serviceMode === "home" ? "到府服務" : "工作室服務"}</span></div>
@@ -424,16 +367,11 @@ export default function BookingPage() {
               <button onClick={async () => {
                 if (submitting) return;
                 setSubmitting(true);
-                const pkgDur = (pkg && "dur_min" in pkg && typeof (pkg as { dur_min?: number }).dur_min === "number") ? (pkg as { dur_min: number }).dur_min : 60;
-                const addonDurMin = selectedAddons.reduce((sum, id) => {
-                  const a = [...bodyAddons, ...faceAddons].find((x) => x.id === id);
-                  return sum + parseDurMin(a?.dur);
-                }, 0);
-                const totalDur = pkgDur + addonDurMin;
+                const serviceNames = selectedServices.map(s => s.name).join(" + ");
                 await fetch("/api/bookings", {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ package: pkg?.name, packageTier: pkg?.tier, addons: selectedAddons, date: selectedDate, time: selectedTime, name, phone, total, address, serviceMode, referralPhone, durationMin: totalDur }),
+                  body: JSON.stringify({ package: serviceNames, packageTier: "", addons: selectedServiceIds, date: selectedDate, time: selectedTime, name, phone, total, address, serviceMode, referralPhone, durationMin: totalDur }),
                 });
                 if (referralPhone) {
                   await fetch("/api/referrals", { method: "POST", headers: { "Content-Type": "application/json" },
