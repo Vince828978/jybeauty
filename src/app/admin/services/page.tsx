@@ -73,16 +73,21 @@ export default function ServicesPage() {
 
   if (!authed) {
     return (
-      <div className="min-h-screen bg-warm-bg flex items-center justify-center px-8">
-        <div className="bg-white rounded-2xl p-10 max-w-sm w-full text-center">
-          <p className="font-serif-tc text-2xl font-bold text-dark mb-2"><span className="text-gold">JY</span> Beauty</p>
-          <p className="text-text-light text-base mb-8">後台管理登入</p>
-          <input type="password" value={pass} onChange={(e) => setPass(e.target.value)}
-            onKeyDown={(e) => { if (e.key === "Enter" && pass === ADMIN_PASS) { sessionStorage.setItem("jyb-admin", "1"); setAuthed(true); } }}
-            placeholder="請輸入管理密碼"
-            className="w-full px-5 py-4 rounded-2xl border border-gold-light/30 bg-white text-dark text-center text-lg focus:outline-none focus:border-gold mb-5" />
-          <button onClick={() => { if (pass === ADMIN_PASS) { sessionStorage.setItem("jyb-admin", "1"); setAuthed(true); } }}
-            className="w-full bg-gold text-white py-4 rounded-full text-base tracking-wide">登入</button>
+      <div className="min-h-screen flex items-center justify-center px-6" style={{background:"linear-gradient(180deg, #FFF0F0 0%, #FFF8F6 30%, #FFFBFA 100%)"}}>
+        <div className="relative w-full max-w-sm">
+          <div className="absolute -top-10 -right-6" style={{width:120,height:120,borderRadius:"50%",background:"linear-gradient(135deg, #FECDD3, #FDA4AF, #FB7185)",opacity:0.4}} />
+          <div className="absolute -bottom-8 -left-8" style={{width:96,height:96,borderRadius:"50%",background:"linear-gradient(135deg, #FB7185, #FDA4AF)",opacity:0.3}} />
+          <div className="bg-white rounded-[28px] p-10 text-center shadow-lg border border-rose-100 relative">
+            <p className="font-serif-tc text-3xl font-bold text-dark mb-2"><span className="text-rose-500">JY</span> Beauty</p>
+            <p className="text-text-light text-base mb-8">後台管理登入</p>
+            <input type="password" value={pass} onChange={(e) => setPass(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter" && pass === ADMIN_PASS) { sessionStorage.setItem("jyb-admin", "1"); setAuthed(true); } }}
+              placeholder="請輸入管理密碼"
+              className="w-full px-6 py-5 rounded-2xl border-2 border-rose-100 bg-white text-dark text-center text-xl focus:outline-none focus:border-rose-300 mb-5" />
+            <button onClick={() => { if (pass === ADMIN_PASS) { sessionStorage.setItem("jyb-admin", "1"); setAuthed(true); } }}
+              className="w-full text-white py-5 rounded-2xl text-lg font-bold tracking-wide shadow-md active:opacity-90"
+              style={{background:"linear-gradient(135deg, #FB7185, #FDA4AF)"}}>登入</button>
+          </div>
         </div>
       </div>
     );

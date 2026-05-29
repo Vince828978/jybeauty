@@ -110,16 +110,22 @@ export default function AdminPage() {
 
   if (!authed) {
     return (
-      <div className="min-h-screen bg-warm-bg flex items-center justify-center px-8">
-        <div className="bg-white rounded-2xl p-10 max-w-sm w-full text-center">
-          <p className="font-serif-tc text-2xl font-bold text-dark mb-2"><span className="text-gold">JY</span> Beauty</p>
-          <p className="text-text-light text-base mb-8">後台管理登入</p>
-          <input type="password" value={pass} onChange={(e) => setPass(e.target.value)}
-            onKeyDown={(e) => { if (e.key === "Enter" && pass === ADMIN_PASS) { sessionStorage.setItem("jyb-admin", "1"); setAuthed(true); } }}
-            placeholder="請輸入管理密碼"
-            className="w-full px-5 py-4 rounded-2xl border border-gold-light/30 bg-white text-dark text-center text-lg focus:outline-none focus:border-gold mb-5" />
-          <button onClick={() => { if (pass === ADMIN_PASS) { sessionStorage.setItem("jyb-admin", "1"); setAuthed(true); } }}
-            className="w-full bg-gold text-white py-4 rounded-full text-base tracking-wide">登入</button>
+      <div className="min-h-screen flex items-center justify-center px-6" style={{background:"linear-gradient(180deg, #FFF0F0 0%, #FFF8F6 30%, #FFFBFA 100%)"}}>
+        <div className="relative w-full max-w-sm">
+          {/* 裝飾圓點 — 跟首頁同款 */}
+          <div className="absolute -top-10 -right-6" style={{width:120,height:120,borderRadius:"50%",background:"linear-gradient(135deg, #FECDD3, #FDA4AF, #FB7185)",opacity:0.4}} />
+          <div className="absolute -bottom-8 -left-8" style={{width:96,height:96,borderRadius:"50%",background:"linear-gradient(135deg, #FB7185, #FDA4AF)",opacity:0.3}} />
+          <div className="bg-white rounded-[28px] p-10 text-center shadow-lg border border-rose-100 relative">
+            <p className="font-serif-tc text-3xl font-bold text-dark mb-2"><span className="text-rose-500">JY</span> Beauty</p>
+            <p className="text-text-light text-base mb-8">後台管理登入</p>
+            <input type="password" value={pass} onChange={(e) => setPass(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter" && pass === ADMIN_PASS) { sessionStorage.setItem("jyb-admin", "1"); setAuthed(true); } }}
+              placeholder="請輸入管理密碼"
+              className="w-full px-6 py-5 rounded-2xl border-2 border-rose-100 bg-white text-dark text-center text-xl focus:outline-none focus:border-rose-300 mb-5" />
+            <button onClick={() => { if (pass === ADMIN_PASS) { sessionStorage.setItem("jyb-admin", "1"); setAuthed(true); } }}
+              className="w-full text-white py-5 rounded-2xl text-lg font-bold tracking-wide shadow-md active:opacity-90"
+              style={{background:"linear-gradient(135deg, #FB7185, #FDA4AF)"}}>登入</button>
+          </div>
         </div>
       </div>
     );
@@ -131,7 +137,7 @@ export default function AdminPage() {
   const pullIndicator = (
     <div className="fixed top-0 left-0 right-0 z-50 pointer-events-none flex justify-center"
          style={{ transform: `translateY(${refreshing ? 30 : Math.max(0, pullDelta - 20)}px)`, transition: refreshing ? "transform 200ms ease" : (pullDelta === 0 ? "transform 200ms ease" : "none"), opacity: pullDelta > 5 || refreshing ? 1 : 0 }}>
-      <div className="bg-white rounded-full shadow-md px-5 py-2 text-sm text-gold font-semibold border border-gold-light/30">
+      <div className="bg-white rounded-full shadow-md px-5 py-2 text-sm text-rose-500 font-semibold border border-rose-100">
         {refreshing ? "🔄 重新整理中..." : pullDelta > 60 ? "↑ 放開以更新" : "↓ 下拉更新"}
       </div>
     </div>
@@ -248,43 +254,45 @@ export default function AdminPage() {
 
   // Sub-page header with back button
   const SubHeader = ({ title }: { title: string }) => (
-    <div className="bg-white border-b border-gold-light/30 px-6 py-5 sticky top-0 z-50">
-      <div className="max-w-lg mx-auto flex items-center">
-        <button onClick={() => setView("home")} className="w-12 h-12 flex items-center justify-center rounded-full active:bg-cream">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-dark"><path d="M15 18l-6-6 6-6"/></svg>
+    <div className="relative overflow-hidden" style={{background:"linear-gradient(135deg, #FECDD3, #FDA4AF, #FB7185)", borderRadius:"0 0 32px 32px", padding:"24px 24px 24px"}}>
+      <div className="absolute" style={{top:-30,right:-30,width:100,height:100,borderRadius:"50%",background:"rgba(255,255,255,0.12)"}} />
+      <div className="absolute" style={{bottom:-15,left:-15,width:64,height:64,borderRadius:"50%",background:"rgba(255,255,255,0.08)"}} />
+      <div className="max-w-lg mx-auto flex items-center relative">
+        <button onClick={() => setView("home")} className="w-12 h-12 flex items-center justify-center rounded-full bg-white/20 active:bg-white/30">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-white"><path d="M15 18l-6-6 6-6"/></svg>
         </button>
-        <p className="flex-1 font-serif-tc text-lg font-bold text-dark text-center pr-12">{title}</p>
+        <p className="flex-1 font-serif-tc text-xl font-bold text-white text-center pr-12">{title}</p>
       </div>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-warm-bg">
+    <div className="min-h-screen bg-gradient-to-b from-rose-50 via-rose-50/30 to-white">
       {pullIndicator}
       {view === "stats" && (
         <>
           <SubHeader title="營收報表" />
           <div className="max-w-lg mx-auto px-5 py-6 text-center space-y-4">
             <div className="grid grid-cols-2 gap-4">
-              <div className="bg-white rounded-2xl p-5 border border-gold-light/20"><p className="text-text-light text-sm mb-1">今日營收</p><p className="text-gold font-bold font-serif-tc text-2xl">${Number(s.today?.revenue || 0).toLocaleString()}</p><p className="text-text-light text-xs">{Number(s.today?.count || 0)} 筆</p></div>
-              <div className="bg-white rounded-2xl p-5 border border-gold-light/20"><p className="text-text-light text-sm mb-1">本月營收</p><p className="text-gold font-bold font-serif-tc text-2xl">${Number(s.month?.revenue || 0).toLocaleString()}</p><p className="text-text-light text-xs">{Number(s.month?.count || 0)} 筆</p></div>
-              <div className="bg-white rounded-2xl p-5 border border-gold-light/20"><p className="text-text-light text-sm mb-1">累計營收</p><p className="text-gold font-bold font-serif-tc text-2xl">${Number(s.total?.revenue || 0).toLocaleString()}</p><p className="text-text-light text-xs">{Number(s.total?.count || 0)} 筆</p></div>
-              <div className="bg-white rounded-2xl p-5 border border-gold-light/20"><p className="text-text-light text-sm mb-1">待確認</p><p className="text-dark font-bold text-2xl">{Number((stats as Record<string, number>).pending || 0)}</p><p className="text-text-light text-xs">筆預約</p></div>
+              <div className="bg-white rounded-2xl p-5 border border-rose-100/60"><p className="text-text-light text-sm mb-1">今日營收</p><p className="text-rose-500 font-bold font-serif-tc text-2xl">${Number(s.today?.revenue || 0).toLocaleString()}</p><p className="text-text-light text-xs">{Number(s.today?.count || 0)} 筆</p></div>
+              <div className="bg-white rounded-2xl p-5 border border-rose-100/60"><p className="text-text-light text-sm mb-1">本月營收</p><p className="text-rose-500 font-bold font-serif-tc text-2xl">${Number(s.month?.revenue || 0).toLocaleString()}</p><p className="text-text-light text-xs">{Number(s.month?.count || 0)} 筆</p></div>
+              <div className="bg-white rounded-2xl p-5 border border-rose-100/60"><p className="text-text-light text-sm mb-1">累計營收</p><p className="text-rose-500 font-bold font-serif-tc text-2xl">${Number(s.total?.revenue || 0).toLocaleString()}</p><p className="text-text-light text-xs">{Number(s.total?.count || 0)} 筆</p></div>
+              <div className="bg-white rounded-2xl p-5 border border-rose-100/60"><p className="text-text-light text-sm mb-1">待確認</p><p className="text-dark font-bold text-2xl">{Number((stats as Record<string, number>).pending || 0)}</p><p className="text-text-light text-xs">筆預約</p></div>
             </div>
-            <div className="bg-white rounded-2xl p-5 border border-gold-light/20"><p className="text-text-light text-sm mb-1">熱門套餐</p><p className="text-dark font-bold text-lg">{String((stats as Record<string, string>).popularPackage || "—")}</p></div>
-            <div className="bg-white rounded-2xl p-5 border border-gold-light/20"><p className="text-text-light text-sm mb-1">需回訪提醒</p><p className="text-dark font-bold text-2xl">{Number((stats as Record<string, number>).needFollowUp || 0)} 位客戶</p><p className="text-text-light text-xs">超過 30 天未到訪</p></div>
-            <div className="bg-white rounded-2xl p-5 border border-gold-light/20 text-left mt-4">
+            <div className="bg-white rounded-2xl p-5 border border-rose-100/60"><p className="text-text-light text-sm mb-1">熱門套餐</p><p className="text-dark font-bold text-lg">{String((stats as Record<string, string>).popularPackage || "—")}</p></div>
+            <div className="bg-white rounded-2xl p-5 border border-rose-100/60"><p className="text-text-light text-sm mb-1">需回訪提醒</p><p className="text-dark font-bold text-2xl">{Number((stats as Record<string, number>).needFollowUp || 0)} 位客戶</p><p className="text-text-light text-xs">超過 30 天未到訪</p></div>
+            <div className="bg-white rounded-2xl p-5 border border-rose-100/60 text-left mt-4">
               <p className="text-text-light text-sm mb-3 text-center">客戶分析</p>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between"><span className="text-text-light">總客戶數</span><span className="text-dark font-bold">{customers.length} 位</span></div>
                 <div className="flex justify-between"><span className="text-text-light">本月新客</span><span className="text-dark font-bold">{customers.filter(c => c.created_at && c.created_at.startsWith(new Date().toISOString().slice(0,7))).length} 位</span></div>
                 <div className="flex justify-between"><span className="text-text-light">本月預約數</span><span className="text-dark font-bold">{Number(s.month?.count || 0)} 筆</span></div>
-                <div className="flex justify-between"><span className="text-text-light">平均客單價</span><span className="text-gold font-bold">${Number(s.month?.count || 0) > 0 ? Math.round(Number(s.month?.revenue || 0) / Number(s.month?.count || 1)).toLocaleString() : "—"}</span></div>
+                <div className="flex justify-between"><span className="text-text-light">平均客單價</span><span className="text-rose-500 font-bold">${Number(s.month?.count || 0) > 0 ? Math.round(Number(s.month?.revenue || 0) / Number(s.month?.count || 1)).toLocaleString() : "—"}</span></div>
                 <div className="flex justify-between"><span className="text-text-light">優惠券使用</span><span className="text-dark font-bold">{coupons.filter((c: Record<string, unknown>) => Number(c.used_count || 0) > 0).length} / {coupons.length} 張</span></div>
                 <div className="flex justify-between"><span className="text-text-light">推薦紀錄</span><span className="text-dark font-bold">{referrals.length} 筆</span></div>
               </div>
             </div>
-            <button onClick={fetchStats} className="w-full py-4 rounded-2xl border-2 border-gold text-gold text-base font-medium active:bg-gold active:text-white">重新整理</button>
+            <button onClick={fetchStats} className="w-full py-4 rounded-2xl border-2 border-rose-400 text-rose-500 text-base font-medium active:bg-rose-500 active:text-white">重新整理</button>
           </div>
         </>
       )}
@@ -295,27 +303,27 @@ export default function AdminPage() {
           <div className="max-w-lg mx-auto px-5 py-6 text-center">
             <div className="flex justify-between items-center mb-5">
               <span className="text-text-light text-base">{bookings.length} 筆預約</span>
-              <button onClick={fetchBookings} className="text-gold text-sm border-2 border-gold px-5 py-2 rounded-full">重新整理</button>
+              <button onClick={fetchBookings} className="text-rose-500 text-sm border-2 border-rose-400 px-5 py-2 rounded-full">重新整理</button>
             </div>
             {loading ? <p className="text-text-light py-16 text-lg">載入中...</p> :
             bookings.length === 0 ? <p className="text-text-light py-16 text-lg">目前沒有預約</p> :
             <div className="space-y-5">
               {bookings.map((b) => (
-                <div key={b.id} className="bg-white rounded-2xl p-6 border border-gold-light/20 text-center">
-                  <span className={`inline-block text-sm px-4 py-1.5 rounded-full mb-3 ${b.status === "pending" ? "bg-gold/10 text-gold" : "bg-green-100 text-green-700"}`}>{b.status === "pending" ? "待確認" : "已確認"}</span>
+                <div key={b.id} className="bg-white rounded-2xl p-6 border border-rose-100/60 text-center">
+                  <span className={`inline-block text-sm px-4 py-1.5 rounded-full mb-3 ${b.status === "pending" ? "bg-rose-500/10 text-rose-500" : "bg-green-100 text-green-700"}`}>{b.status === "pending" ? "待確認" : "已確認"}</span>
                   {b.source === "manual" && <span className="inline-block text-sm px-3 py-1 rounded-full bg-blue-50 text-blue-500 ml-2">手動</span>}
                   <p className="font-bold text-dark text-2xl mt-2">{b.name}</p>
                   <p className="text-text-light text-base mt-1">{b.phone}</p>
                   {b.address && <p className="text-text-light text-sm mt-1">{b.address}</p>}
                   <div className="grid grid-cols-2 gap-4 my-5">
-                    <div className="bg-cream/50 rounded-xl p-3"><p className="text-text-light text-xs mb-1">套餐</p><p className="text-dark font-medium text-base">{b.package}</p></div>
-                    <div className="bg-cream/50 rounded-xl p-3"><p className="text-text-light text-xs mb-1">金額</p><p className="text-gold font-bold font-serif-tc text-2xl">${b.total?.toLocaleString()}</p></div>
-                    <div className="bg-cream/50 rounded-xl p-3"><p className="text-text-light text-xs mb-1">日期</p><p className="text-dark font-medium text-base">{b.date}</p></div>
-                    <div className="bg-cream/50 rounded-xl p-3"><p className="text-text-light text-xs mb-1">時段</p><p className="text-dark font-medium text-base">{b.time}</p></div>
+                    <div className="bg-rose-50/70 rounded-2xl p-5"><p className="text-text-light text-sm mb-2">套餐</p><p className="text-dark font-medium text-base">{b.package}</p></div>
+                    <div className="bg-rose-50/70 rounded-2xl p-5"><p className="text-text-light text-sm mb-2">金額</p><p className="text-rose-500 font-bold font-serif-tc text-2xl">${b.total?.toLocaleString()}</p></div>
+                    <div className="bg-rose-50/70 rounded-2xl p-5"><p className="text-text-light text-sm mb-2">日期</p><p className="text-dark font-medium text-base">{b.date}</p></div>
+                    <div className="bg-rose-50/70 rounded-2xl p-5"><p className="text-text-light text-sm mb-2">時段</p><p className="text-dark font-medium text-base">{b.time}</p></div>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <button onClick={async () => { await fetch("/api/bookings", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: b.id, status: b.status === "pending" ? "confirmed" : "pending" }) }); fetchBookings(); fetchStats(); }}
-                      className={`py-4 rounded-2xl text-base font-medium border-2 ${b.status === "pending" ? "border-green-500 text-green-600 active:bg-green-500 active:text-white" : "border-gold text-gold active:bg-gold active:text-white"}`}>{b.status === "pending" ? "✓ 確認" : "↩ 待確認"}</button>
+                      className={`py-4 rounded-2xl text-base font-medium border-2 ${b.status === "pending" ? "border-green-500 text-green-600 active:bg-green-500 active:text-white" : "border-rose-400 text-rose-500 active:bg-rose-500 active:text-white"}`}>{b.status === "pending" ? "✓ 確認" : "↩ 待確認"}</button>
                     <button onClick={async () => { if (confirm("確定刪除？")) { await fetch("/api/bookings", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: b.id }) }); fetchBookings(); fetchStats(); } }}
                       className="py-4 rounded-2xl text-base font-medium border-2 border-red-300 text-red-400 active:bg-red-500 active:text-white">刪除</button>
                   </div>
@@ -332,14 +340,14 @@ export default function AdminPage() {
           <div className="max-w-lg mx-auto px-5 py-6 text-center">
             <span className="text-text-light text-base block mb-5">{customers.length} 位客戶</span>
             {customers.map((c) => (
-              <div key={c.id} className="bg-white rounded-2xl p-6 border border-gold-light/20 text-center mb-4">
+              <div key={c.id} className="bg-white rounded-2xl p-6 border border-rose-100/60 text-center mb-4">
                 <p className="font-bold text-dark text-2xl">{c.name}</p>
                 <p className="text-text-light text-base mt-1">{c.phone}</p>
                 {c.address && <p className="text-text-light text-sm mt-1">{c.address}</p>}
                 <div className="grid grid-cols-3 gap-3 my-4">
-                  <div className="bg-cream/50 rounded-xl p-3"><p className="text-text-light text-xs mb-1">預約</p><p className="text-dark font-bold text-xl">{c.booking_count}</p></div>
-                  <div className="bg-cream/50 rounded-xl p-3"><p className="text-text-light text-xs mb-1">消費</p><p className="text-gold font-bold font-serif-tc">${Number(c.total_spent).toLocaleString()}</p></div>
-                  <div className="bg-cream/50 rounded-xl p-3"><p className="text-text-light text-xs mb-1">最近</p><p className="text-dark text-sm">{c.last_visit || "—"}</p></div>
+                  <div className="bg-rose-50/70 rounded-2xl p-5"><p className="text-text-light text-sm mb-2">預約</p><p className="text-dark font-bold text-xl">{c.booking_count}</p></div>
+                  <div className="bg-rose-50/70 rounded-2xl p-5"><p className="text-text-light text-sm mb-2">消費</p><p className="text-rose-500 font-bold font-serif-tc">${Number(c.total_spent).toLocaleString()}</p></div>
+                  <div className="bg-rose-50/70 rounded-2xl p-5"><p className="text-text-light text-sm mb-2">最近</p><p className="text-dark text-sm">{c.last_visit || "—"}</p></div>
                 </div>
                 <button onClick={async () => { if (confirm("確定刪除？")) { await fetch("/api/customers", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: c.id }) }); fetchCustomers(); } }}
                   className="w-full py-4 rounded-2xl border-2 border-red-300 text-red-400 text-base active:bg-red-500 active:text-white">刪除</button>
@@ -358,7 +366,7 @@ export default function AdminPage() {
               <p className="text-rose-500 text-sm font-medium">建立並發送優惠券</p>
               {/* 方案選擇 */}
               <select value={newCoupon.description} onChange={e => setNewCoupon({...newCoupon, description: e.target.value})}
-                className="w-full px-4 py-3 rounded-xl border border-rose-100 text-sm focus:outline-none focus:border-rose-300">
+                className="w-full px-5 py-5 rounded-xl border border-rose-100 text-base focus:outline-none focus:border-rose-300">
                 <option value="">自訂方案</option>
                 <option value="全方案 85 折">全方案 85 折</option>
                 <option value="精油按摩折 $200">精油按摩折 $200</option>
@@ -374,7 +382,7 @@ export default function AdminPage() {
                   className="px-4 py-3 rounded-xl border border-rose-100 text-sm focus:outline-none focus:border-rose-300" />
               </div>
               {newCoupon.description === "" && <input value={newCoupon.description} onChange={e => setNewCoupon({...newCoupon, description: e.target.value})} placeholder="自訂說明"
-                className="w-full px-4 py-3 rounded-xl border border-rose-100 text-sm focus:outline-none focus:border-rose-300" />}
+                className="w-full px-5 py-5 rounded-xl border border-rose-100 text-base focus:outline-none focus:border-rose-300" />}
               {/* 使用期限 */}
               <div className="flex gap-3">
                 <select value={newCoupon.expires_at} onChange={e => {
@@ -460,10 +468,10 @@ export default function AdminPage() {
           <div className="max-w-lg mx-auto px-5 py-6 text-center space-y-5">
             {referrals.length === 0 ? <p className="text-text-light py-10 text-lg">目前沒有推薦紀錄</p> :
             referrals.map((r) => (
-              <div key={String(r.id)} className="bg-white rounded-2xl p-5 border border-gold-light/20">
+              <div key={String(r.id)} className="bg-white rounded-2xl p-5 border border-rose-100/60">
                 <p className="text-dark font-bold text-lg">推薦人：{String(r.referrer_name || r.referrer_phone)}</p>
-                <p className="text-gold text-base mt-2">→ {String(r.referred_name || r.referred_phone)}</p>
-                <span className={`inline-block mt-2 text-sm px-4 py-1.5 rounded-full ${r.reward_claimed ? "bg-green-100 text-green-700" : "bg-gold/10 text-gold"}`}>{r.reward_claimed ? "已發放" : "待發放"}</span>
+                <p className="text-rose-500 text-base mt-2">→ {String(r.referred_name || r.referred_phone)}</p>
+                <span className={`inline-block mt-2 text-sm px-4 py-1.5 rounded-full ${r.reward_claimed ? "bg-green-100 text-green-700" : "bg-rose-500/10 text-rose-500"}`}>{r.reward_claimed ? "已發放" : "待發放"}</span>
                 {!r.reward_claimed && <button onClick={async () => { await fetch("/api/referrals", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: r.id }) }); fetchReferrals(); }}
                   className="mt-3 w-full py-4 rounded-2xl border-2 border-green-500 text-green-600 text-base active:bg-green-500 active:text-white">標記已發放</button>}
               </div>
@@ -476,10 +484,10 @@ export default function AdminPage() {
         <>
           <SubHeader title="手動建立預約" />
           <div className="max-w-lg mx-auto px-5 py-6">
-            <div className="bg-white rounded-2xl p-6 border border-gold-light/20 space-y-6">
-              <input value={nb.name} onChange={e => setNb({...nb, name: e.target.value})} placeholder="姓名" className="w-full px-6 py-5 rounded-2xl border border-gold-light/30 text-lg focus:outline-none focus:border-gold" />
-              <input value={nb.phone} onChange={e => setNb({...nb, phone: e.target.value})} placeholder="電話" inputMode="tel" className="w-full px-6 py-5 rounded-2xl border border-gold-light/30 text-lg focus:outline-none focus:border-gold" />
-              <input value={nb.address} onChange={e => setNb({...nb, address: e.target.value})} placeholder="到府地址" className="w-full px-6 py-5 rounded-2xl border border-gold-light/30 text-lg focus:outline-none focus:border-gold" />
+            <div className="bg-white rounded-2xl p-6 border border-rose-100/60 space-y-6">
+              <input value={nb.name} onChange={e => setNb({...nb, name: e.target.value})} placeholder="姓名" className="w-full px-6 py-5 rounded-2xl border border-rose-100 text-lg focus:outline-none focus:border-rose-300" />
+              <input value={nb.phone} onChange={e => setNb({...nb, phone: e.target.value})} placeholder="電話" inputMode="tel" className="w-full px-6 py-5 rounded-2xl border border-rose-100 text-lg focus:outline-none focus:border-rose-300" />
+              <input value={nb.address} onChange={e => setNb({...nb, address: e.target.value})} placeholder="到府地址" className="w-full px-6 py-5 rounded-2xl border border-rose-100 text-lg focus:outline-none focus:border-rose-300" />
 
               {/* 冠 #4310: 服務 + 套餐 全部可勾選 */}
               <div>
@@ -487,19 +495,19 @@ export default function AdminPage() {
                 <div className="space-y-3 max-h-96 overflow-y-auto pr-1">
                   {dbPackages.length > 0 && (
                     <div>
-                      <p className="text-xs text-gold mb-2 font-semibold tracking-wider">套餐</p>
+                      <p className="text-xs text-rose-500 mb-2 font-semibold tracking-wider">套餐</p>
                       {dbPackages.map(dp => {
                         const sel = nb.selected.some(x => x.kind === "package" && x.id === dp.id);
                         return (
                           <label key={`pkg-${dp.id}`}
-                            className={`flex items-center gap-4 px-5 py-4 rounded-2xl border-2 mb-2 cursor-pointer active:bg-gold-light/10 ${sel ? "border-gold bg-gold-light/20" : "border-gold-light/30 bg-white"}`}>
+                            className={`flex items-center gap-4 px-5 py-4 rounded-2xl border-2 mb-2 cursor-pointer active:bg-rose-500-light/10 ${sel ? "border-rose-400 bg-rose-500-light/20" : "border-rose-100 bg-white"}`}>
                             <input type="checkbox" checked={sel} onChange={() => {
                               const next = sel
                                 ? nb.selected.filter(x => !(x.kind === "package" && x.id === dp.id))
                                 : [...nb.selected, { kind: "package" as const, id: dp.id, name: dp.name, price: dp.package_price, duration: dp.duration_min || 0 }];
                               const total = next.reduce((s, x) => s + x.price, 0);
                               setNb({ ...nb, selected: next, total });
-                            }} className="w-6 h-6 accent-gold" />
+                            }} className="w-6 h-6 accent-rose-500" />
                             <span className="flex-1">
                               <span className="block text-base font-semibold text-dark">{dp.name}</span>
                               <span className="block text-sm text-text-light">套餐 · ${dp.package_price.toLocaleString()}</span>
@@ -511,19 +519,19 @@ export default function AdminPage() {
                   )}
                   {dbServices.length > 0 && (
                     <div>
-                      <p className="text-xs text-gold mb-2 font-semibold tracking-wider">單項服務</p>
+                      <p className="text-xs text-rose-500 mb-2 font-semibold tracking-wider">單項服務</p>
                       {dbServices.map(svc => {
                         const sel = nb.selected.some(x => x.kind === "service" && x.id === svc.id);
                         return (
                           <label key={`svc-${svc.id}`}
-                            className={`flex items-center gap-4 px-5 py-4 rounded-2xl border-2 mb-2 cursor-pointer active:bg-gold-light/10 ${sel ? "border-gold bg-gold-light/20" : "border-gold-light/30 bg-white"}`}>
+                            className={`flex items-center gap-4 px-5 py-4 rounded-2xl border-2 mb-2 cursor-pointer active:bg-rose-500-light/10 ${sel ? "border-rose-400 bg-rose-500-light/20" : "border-rose-100 bg-white"}`}>
                             <input type="checkbox" checked={sel} onChange={() => {
                               const next = sel
                                 ? nb.selected.filter(x => !(x.kind === "service" && x.id === svc.id))
                                 : [...nb.selected, { kind: "service" as const, id: svc.id, name: svc.name, price: svc.price, duration: svc.duration_min }];
                               const total = next.reduce((s, x) => s + x.price, 0);
                               setNb({ ...nb, selected: next, total });
-                            }} className="w-6 h-6 accent-gold" />
+                            }} className="w-6 h-6 accent-rose-500" />
                             <span className="flex-1">
                               <span className="block text-base font-semibold text-dark">{svc.name}</span>
                               <span className="block text-sm text-text-light">{svc.duration_min} 分鐘 · ${svc.price.toLocaleString()}{svc.category ? ` · ${svc.category}` : ""}</span>
@@ -536,15 +544,15 @@ export default function AdminPage() {
                 </div>
                 {nb.selected.length > 0 && (
                   <p className="text-sm text-dark mt-3">
-                    已選 <b className="text-gold">{nb.selected.length}</b> 項 · 共
-                    <b className="text-gold"> {nb.selected.reduce((s, x) => s + x.duration, 0)}</b> 分鐘
+                    已選 <b className="text-rose-500">{nb.selected.length}</b> 項 · 共
+                    <b className="text-rose-500"> {nb.selected.reduce((s, x) => s + x.duration, 0)}</b> 分鐘
                   </p>
                 )}
               </div>
 
               <div>
                 <p className="text-sm text-text-light mb-2">日期</p>
-                <input type="date" value={nb.date} onChange={e => setNb({...nb, date: e.target.value})} className="w-full px-6 py-5 rounded-2xl border border-gold-light/30 text-lg focus:outline-none focus:border-gold" />
+                <input type="date" value={nb.date} onChange={e => setNb({...nb, date: e.target.value})} className="w-full px-6 py-5 rounded-2xl border border-rose-100 text-lg focus:outline-none focus:border-rose-300" />
               </div>
 
               {/* 冠 #4310: 時間切成「時 / 分」兩個獨立 select，10 分鐘為單位 */}
@@ -552,13 +560,13 @@ export default function AdminPage() {
                 <p className="text-sm text-text-light mb-2">時間（每 10 分鐘為一格）</p>
                 <div className="grid grid-cols-2 gap-3">
                   <select value={nb.hour} onChange={e => setNb({ ...nb, hour: e.target.value })}
-                    className="px-6 py-5 rounded-2xl border border-gold-light/30 text-lg focus:outline-none focus:border-gold bg-white">
+                    className="px-6 py-5 rounded-2xl border border-rose-100 text-lg focus:outline-none focus:border-rose-300 bg-white">
                     {Array.from({ length: 11 }, (_, i) => String(10 + i).padStart(2, "0")).map(h => (
                       <option key={h} value={h}>{h} 時</option>
                     ))}
                   </select>
                   <select value={nb.minute} onChange={e => setNb({ ...nb, minute: e.target.value })}
-                    className="px-6 py-5 rounded-2xl border border-gold-light/30 text-lg focus:outline-none focus:border-gold bg-white">
+                    className="px-6 py-5 rounded-2xl border border-rose-100 text-lg focus:outline-none focus:border-rose-300 bg-white">
                     {["00","10","20","30","40","50"].map(m => (
                       <option key={m} value={m}>{m} 分</option>
                     ))}
@@ -569,7 +577,7 @@ export default function AdminPage() {
 
               <div>
                 <p className="text-sm text-text-light mb-2">總金額（自動帶入，可手動調整）</p>
-                <input type="number" inputMode="numeric" value={nb.total} onChange={e => setNb({...nb, total: Number(e.target.value)})} placeholder="金額" className="w-full px-6 py-5 rounded-2xl border border-gold-light/30 text-2xl text-center font-bold text-gold focus:outline-none focus:border-gold" />
+                <input type="number" inputMode="numeric" value={nb.total} onChange={e => setNb({...nb, total: Number(e.target.value)})} placeholder="金額" className="w-full px-6 py-5 rounded-2xl border border-rose-100 text-2xl text-center font-bold text-rose-500 focus:outline-none focus:border-rose-300" />
               </div>
 
               <button onClick={async () => {
@@ -583,7 +591,7 @@ export default function AdminPage() {
                 alert("預約已建立！");
                 setNb({ name: "", phone: "", address: "", selected: [], date: "", hour: "10", minute: "00", total: 0 });
                 fetchBookings(); fetchCustomers(); fetchStats(); setView("bookings");
-              }} className="w-full bg-gold text-white py-6 rounded-2xl text-xl font-bold active:bg-dark-light">建立預約</button>
+              }} className="w-full bg-rose-500 text-white py-6 rounded-2xl text-xl font-bold active:bg-dark-light">建立預約</button>
             </div>
           </div>
         </>
@@ -593,16 +601,16 @@ export default function AdminPage() {
         <>
           <SubHeader title="新增客戶" />
           <div className="max-w-lg mx-auto px-5 py-6">
-            <div className="bg-white rounded-2xl p-6 border border-gold-light/20 text-center space-y-5">
-              <input value={nc.name} onChange={e => setNc({...nc, name: e.target.value})} placeholder="姓名" className="w-full px-5 py-4 rounded-2xl border border-gold-light/30 text-base text-center focus:outline-none focus:border-gold" />
-              <input value={nc.phone} onChange={e => setNc({...nc, phone: e.target.value})} placeholder="電話" className="w-full px-5 py-4 rounded-2xl border border-gold-light/30 text-base text-center focus:outline-none focus:border-gold" />
-              <input value={nc.address} onChange={e => setNc({...nc, address: e.target.value})} placeholder="地址" className="w-full px-5 py-4 rounded-2xl border border-gold-light/30 text-base text-center focus:outline-none focus:border-gold" />
-              <textarea value={nc.notes} onChange={e => setNc({...nc, notes: e.target.value})} rows={3} placeholder="備註（膚質、過敏等）" className="w-full px-5 py-4 rounded-2xl border border-gold-light/30 text-base text-center focus:outline-none focus:border-gold resize-none" />
+            <div className="bg-white rounded-2xl p-6 border border-rose-100/60 text-center space-y-5">
+              <input value={nc.name} onChange={e => setNc({...nc, name: e.target.value})} placeholder="姓名" className="w-full px-5 py-4 rounded-2xl border border-rose-100 text-base text-center focus:outline-none focus:border-rose-300" />
+              <input value={nc.phone} onChange={e => setNc({...nc, phone: e.target.value})} placeholder="電話" className="w-full px-5 py-4 rounded-2xl border border-rose-100 text-base text-center focus:outline-none focus:border-rose-300" />
+              <input value={nc.address} onChange={e => setNc({...nc, address: e.target.value})} placeholder="地址" className="w-full px-5 py-4 rounded-2xl border border-rose-100 text-base text-center focus:outline-none focus:border-rose-300" />
+              <textarea value={nc.notes} onChange={e => setNc({...nc, notes: e.target.value})} rows={3} placeholder="備註（膚質、過敏等）" className="w-full px-5 py-4 rounded-2xl border border-rose-100 text-base text-center focus:outline-none focus:border-rose-300 resize-none" />
               <button onClick={async () => {
                 if (!nc.name || !nc.phone) return;
                 await fetch("/api/customers", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(nc) });
                 alert("客戶已建立！"); setNc({ name: "", phone: "", address: "", notes: "" }); fetchCustomers(); setView("customers");
-              }} className="w-full bg-gold text-white py-5 rounded-2xl text-lg font-medium active:bg-dark-light">新增客戶</button>
+              }} className="w-full bg-rose-500 text-white py-5 rounded-2xl text-lg font-medium active:bg-dark-light">新增客戶</button>
             </div>
           </div>
         </>
@@ -612,24 +620,24 @@ export default function AdminPage() {
         <>
           <SubHeader title="新增服務紀錄" />
           <div className="max-w-lg mx-auto px-5 py-6">
-            <div className="bg-white rounded-2xl p-6 border border-gold-light/20 text-center space-y-5">
-              <input value={newRecord.customer_name} onChange={e => setNewRecord({...newRecord, customer_name: e.target.value})} placeholder="客戶姓名" className="w-full px-5 py-4 rounded-2xl border border-gold-light/30 text-base text-center focus:outline-none focus:border-gold" />
-              <input value={newRecord.customer_phone} onChange={e => setNewRecord({...newRecord, customer_phone: e.target.value})} placeholder="客戶電話" className="w-full px-5 py-4 rounded-2xl border border-gold-light/30 text-base text-center focus:outline-none focus:border-gold" />
-              <input type="date" value={newRecord.service_date} onChange={e => setNewRecord({...newRecord, service_date: e.target.value})} className="w-full px-5 py-4 rounded-2xl border border-gold-light/30 text-base text-center focus:outline-none focus:border-gold" />
-              <select value={newRecord.package} onChange={e => setNewRecord({...newRecord, package: e.target.value})} className="w-full px-5 py-4 rounded-2xl border border-gold-light/30 text-base text-center focus:outline-none focus:border-gold bg-white appearance-none">
+            <div className="bg-white rounded-2xl p-6 border border-rose-100/60 text-center space-y-5">
+              <input value={newRecord.customer_name} onChange={e => setNewRecord({...newRecord, customer_name: e.target.value})} placeholder="客戶姓名" className="w-full px-5 py-4 rounded-2xl border border-rose-100 text-base text-center focus:outline-none focus:border-rose-300" />
+              <input value={newRecord.customer_phone} onChange={e => setNewRecord({...newRecord, customer_phone: e.target.value})} placeholder="客戶電話" className="w-full px-5 py-4 rounded-2xl border border-rose-100 text-base text-center focus:outline-none focus:border-rose-300" />
+              <input type="date" value={newRecord.service_date} onChange={e => setNewRecord({...newRecord, service_date: e.target.value})} className="w-full px-5 py-4 rounded-2xl border border-rose-100 text-base text-center focus:outline-none focus:border-rose-300" />
+              <select value={newRecord.package} onChange={e => setNewRecord({...newRecord, package: e.target.value})} className="w-full px-5 py-4 rounded-2xl border border-rose-100 text-base text-center focus:outline-none focus:border-rose-300 bg-white appearance-none">
                 <option value="">選擇套餐</option><option>舒壓放鬆套餐</option><option>能量煥膚套餐</option><option>極致寵愛套餐</option>
                 {dbPackages.filter(dp => !["舒壓放鬆套餐","能量煥膚套餐","極致寵愛套餐"].includes(dp.name)).map(dp => (
                   <option key={dp.id} value={dp.name}>{dp.name}</option>
                 ))}
               </select>
-              <textarea value={newRecord.products_used} onChange={e => setNewRecord({...newRecord, products_used: e.target.value})} rows={2} placeholder="使用產品" className="w-full px-5 py-4 rounded-2xl border border-gold-light/30 text-base text-center focus:outline-none focus:border-gold resize-none" />
-              <textarea value={newRecord.techniques} onChange={e => setNewRecord({...newRecord, techniques: e.target.value})} rows={2} placeholder="手法備註" className="w-full px-5 py-4 rounded-2xl border border-gold-light/30 text-base text-center focus:outline-none focus:border-gold resize-none" />
-              <textarea value={newRecord.skin_condition} onChange={e => setNewRecord({...newRecord, skin_condition: e.target.value})} rows={2} placeholder="膚況紀錄" className="w-full px-5 py-4 rounded-2xl border border-gold-light/30 text-base text-center focus:outline-none focus:border-gold resize-none" />
+              <textarea value={newRecord.products_used} onChange={e => setNewRecord({...newRecord, products_used: e.target.value})} rows={2} placeholder="使用產品" className="w-full px-5 py-4 rounded-2xl border border-rose-100 text-base text-center focus:outline-none focus:border-rose-300 resize-none" />
+              <textarea value={newRecord.techniques} onChange={e => setNewRecord({...newRecord, techniques: e.target.value})} rows={2} placeholder="手法備註" className="w-full px-5 py-4 rounded-2xl border border-rose-100 text-base text-center focus:outline-none focus:border-rose-300 resize-none" />
+              <textarea value={newRecord.skin_condition} onChange={e => setNewRecord({...newRecord, skin_condition: e.target.value})} rows={2} placeholder="膚況紀錄" className="w-full px-5 py-4 rounded-2xl border border-rose-100 text-base text-center focus:outline-none focus:border-rose-300 resize-none" />
               <button onClick={async () => {
                 if (!newRecord.customer_phone) return;
                 await fetch("/api/service-records", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(newRecord) });
                 alert("紀錄已建立！"); setNewRecord({ customer_phone: "", customer_name: "", service_date: "", package: "", products_used: "", techniques: "", skin_condition: "", notes: "" });
-              }} className="w-full bg-gold text-white py-5 rounded-2xl text-lg font-medium active:bg-dark-light">建立紀錄</button>
+              }} className="w-full bg-rose-500 text-white py-5 rounded-2xl text-lg font-medium active:bg-dark-light">建立紀錄</button>
             </div>
           </div>
         </>
@@ -637,11 +645,11 @@ export default function AdminPage() {
 
       {view === "schedule" && (
         <>
-          <button onClick={() => setView("home")} className="text-gold text-sm mb-4">&larr; 返回</button>
+          <button onClick={() => setView("home")} className="text-rose-500 text-sm mb-4">&larr; 返回</button>
           <div className="bg-white rounded-2xl p-6 space-y-4">
             <h2 className="text-xl font-bold text-dark">排程管理</h2>
             <p className="text-text-light text-sm">關閉預約時段。行事曆的私人行程也會自動封鎖對應時段。</p>
-            <div className="border border-gold-light/30 rounded-xl p-4 space-y-3">
+            <div className="border border-rose-100 rounded-xl p-4 space-y-3">
               <p className="font-medium text-dark">新增封鎖</p>
               <div className="flex gap-2">
                 <input type="date" value={blockForm.startDate} onChange={e => setBlockForm({...blockForm, startDate: e.target.value})} className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm" />
@@ -695,14 +703,14 @@ export default function AdminPage() {
 
       {view === "notifications" && (
         <>
-          <button onClick={() => setView("home")} className="text-gold text-sm mb-4">&larr; 返回</button>
+          <button onClick={() => setView("home")} className="text-rose-500 text-sm mb-4">&larr; 返回</button>
           <div className="bg-white rounded-2xl p-6 space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-bold text-dark">通知中心</h2>
               {notifCount > 0 && <button onClick={async () => {
                 await fetch("/api/notifications", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ readAll: true }) });
                 fetchNotifications();
-              }} className="text-gold text-sm">全部已讀</button>}
+              }} className="text-rose-500 text-sm">全部已讀</button>}
             </div>
             {notifications.length === 0 ? <p className="text-text-light text-sm text-center py-8">暫無通知</p> : (
               <div className="space-y-2">
