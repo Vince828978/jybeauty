@@ -39,9 +39,11 @@ export async function POST(request: Request) {
     await sql`INSERT INTO bookings (package, package_tier, addons, date, time, name, phone, total, address)
       VALUES (${body.package}, ${body.packageTier}, ${JSON.stringify(body.addons || [])}, ${body.date}, ${body.time}, ${body.name}, ${body.phone}, ${body.total}, ${body.address || ""})`;
     // sync to Google Calendar
+    // 冠 #4336 2026-05-29: 之前用 VERCEL_URL fallback 導致 deployment-specific URL，
+    // 改成永遠 hit 正式網址；失敗會 log 但不擋客戶送單流程
     try {
-      const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://www.jybeauty.tw";
-      await fetch(`${baseUrl}/api/calendar`, {
+      const baseUrl = "https://www.jybeauty.tw";
+      const calRes = await fetch(`${baseUrl}/api/calendar`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -56,6 +58,10 @@ export async function POST(request: Request) {
           durationMin: body.durationMin || null,
         }),
       });
+      if (!calRes.ok) {
+        const txt = await calRes.text().catch(() => "");
+        console.error("Calendar sync HTTP fail", calRes.status, txt);
+      }
     } catch (calErr) {
       console.error("Calendar sync error (non-blocking):", calErr);
     }
