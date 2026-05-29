@@ -117,7 +117,10 @@ export default function ServicesPage() {
   };
 
   const handleSaveService = async () => {
-    if (!serviceForm.name || !serviceForm.price) return;
+    // 冠 #4340 2026-05-29: 時長必填 — 不寫客戶端 calendar 算不出結束時間
+    if (!serviceForm.name) { alert("請填服務名稱"); return; }
+    if (!serviceForm.duration_min || serviceForm.duration_min < 10) { alert("時長必填，至少 10 分鐘"); return; }
+    if (!serviceForm.price && serviceForm.price !== 0) { alert("請填價格（免費填 0）"); return; }
     if (editService) {
       await fetch("/api/services", {
         method: "PUT",
@@ -145,12 +148,20 @@ export default function ServicesPage() {
   };
 
   const handleSavePackage = async () => {
-    if (!pkgForm.name || !pkgForm.package_price || selectedServiceIds.length === 0) return;
+    // 冠 #4340: 套餐至少 1 個服務 → 時長自動 = 所有服務時長加總，可手動覆寫
+    if (!pkgForm.name) { alert("請填套餐名稱"); return; }
+    if (!pkgForm.package_price) { alert("請填套餐售價"); return; }
+    if (selectedServiceIds.length === 0) { alert("請至少勾選一項服務"); return; }
+    const finalDuration = pkgForm.duration_min || totalDuration;
+    if (!finalDuration || finalDuration < 10) {
+      alert("套餐時長必須有值（會自動從所選服務加總，可手動覆寫）");
+      return;
+    }
     const payload = {
       ...pkgForm,
       service_ids: selectedServiceIds,
       original_price: originalTotal,
-      duration_min: pkgForm.duration_min || totalDuration,
+      duration_min: finalDuration,
     };
     if (editPkg) {
       await fetch("/api/packages", {

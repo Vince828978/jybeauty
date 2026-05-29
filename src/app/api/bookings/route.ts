@@ -29,6 +29,8 @@ async function ensureTable() {
   try { await sql`ALTER TABLE bookings ADD COLUMN IF NOT EXISTS addons TEXT`; } catch {}
   try { await sql`ALTER TABLE bookings ADD COLUMN IF NOT EXISTS source TEXT DEFAULT 'online'`; } catch {}
   try { await sql`ALTER TABLE bookings ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'pending'`; } catch {}
+  // 冠 #4340 2026-05-29: 存 duration_min 讓未來重 sync calendar 不會用錯預設值
+  try { await sql`ALTER TABLE bookings ADD COLUMN IF NOT EXISTS duration_min INTEGER`; } catch {}
 }
 
 export async function POST(request: Request) {
@@ -36,8 +38,8 @@ export async function POST(request: Request) {
     await ensureTable();
     const body = await request.json();
     const sql = getDb();
-    await sql`INSERT INTO bookings (package, package_tier, addons, date, time, name, phone, total, address)
-      VALUES (${body.package}, ${body.packageTier}, ${JSON.stringify(body.addons || [])}, ${body.date}, ${body.time}, ${body.name}, ${body.phone}, ${body.total}, ${body.address || ""})`;
+    await sql`INSERT INTO bookings (package, package_tier, addons, date, time, name, phone, total, address, duration_min)
+      VALUES (${body.package}, ${body.packageTier}, ${JSON.stringify(body.addons || [])}, ${body.date}, ${body.time}, ${body.name}, ${body.phone}, ${body.total}, ${body.address || ""}, ${body.durationMin || null})`;
     // sync to Google Calendar
     // 冠 #4336 2026-05-29: 之前用 VERCEL_URL fallback 導致 deployment-specific URL，
     // 改成永遠 hit 正式網址；失敗會 log 但不擋客戶送單流程
