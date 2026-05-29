@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const ADMIN_PASS = process.env.NEXT_PUBLIC_ADMIN_PASS || "1234";
 
@@ -27,13 +27,19 @@ export default function AdminPage() {
   const [referrals, setReferrals] = useState<Record<string, unknown>[]>([]);
   const [newCoupon, setNewCoupon] = useState({ code: "", discount_value: 15, description: "", max_uses: 100, expires_at: "" });
   const [newRecord, setNewRecord] = useState({ customer_phone: "", customer_name: "", service_date: "", package: "", products_used: "", techniques: "", skin_condition: "", notes: "" });
-  const [nb, setNb] = useState({ name: "", phone: "", address: "", package: "舒壓放鬆套餐", date: "", time: "10:00", total: 2280 });
+  // 冠 #4310 2026-05-29: 預約改成可勾選多項 (服務 + 套餐) + 時間切成時 / 分
+  const [nb, setNb] = useState<{
+    name: string; phone: string; address: string;
+    selected: { kind: "service" | "package"; id: number; name: string; price: number; duration: number }[];
+    date: string; hour: string; minute: string; total: number;
+  }>({ name: "", phone: "", address: "", selected: [], date: "", hour: "10", minute: "00", total: 0 });
   const [nc, setNc] = useState({ name: "", phone: "", address: "", notes: "" });
   const [notifCount, setNotifCount] = useState(0);
   const [notifications, setNotifications] = useState<Record<string, unknown>[]>([]);
   const [blockedDates, setBlockedDates] = useState<Record<string, unknown>[]>([]);
   const [blockForm, setBlockForm] = useState({ startDate: "", endDate: "", time: "all", reason: "" });
-  const [dbPackages, setDbPackages] = useState<{ id: number; name: string; package_price: number; is_active: boolean }[]>([]);
+  const [dbPackages, setDbPackages] = useState<{ id: number; name: string; package_price: number; duration_min?: number; is_active: boolean }[]>([]);
+  const [dbServices, setDbServices] = useState<{ id: number; name: string; price: number; duration_min: number; category?: string; is_active: boolean }[]>([]);
 
   const fetchBookings = async () => { const r = await fetch("/api/bookings"); const d = await r.json(); setBookings(d.bookings || []); setLoading(false); };
   const fetchCustomers = async () => { const r = await fetch("/api/customers"); const d = await r.json(); setCustomers(d.customers || []); };
@@ -43,10 +49,64 @@ export default function AdminPage() {
   const fetchNotifications = async () => { const r = await fetch("/api/notifications"); const d = await r.json(); setNotifCount(d.unreadCount || 0); setNotifications(d.notifications || []); };
   const fetchBlockedDates = async () => { const r = await fetch("/api/blocked-dates"); const d = await r.json(); setBlockedDates(d.blockedDates || []); };
   const fetchDbPackages = async () => { try { const r = await fetch("/api/packages"); const d = await r.json(); setDbPackages((d.packages || []).filter((p: { is_active: boolean }) => p.is_active)); } catch { /* ignore */ } };
+  const fetchDbServices = async () => { try { const r = await fetch("/api/services"); const d = await r.json(); setDbServices((d.services || []).filter((s: { is_active: boolean }) => s.is_active)); } catch { /* ignore */ } };
 
   useEffect(() => { if (typeof window !== "undefined" && sessionStorage.getItem("jyb-admin") === "1") setAuthed(true); }, []);
-  useEffect(() => { if (authed) { fetchBookings(); fetchCustomers(); fetchStats(); fetchCoupons(); fetchReferrals(); fetchNotifications(); fetchBlockedDates(); fetchDbPackages(); } }, [authed]);
+  const refreshAll = async () => {
+    await Promise.all([fetchBookings(), fetchCustomers(), fetchStats(), fetchCoupons(), fetchReferrals(), fetchNotifications(), fetchBlockedDates(), fetchDbPackages(), fetchDbServices()]);
+  };
+  useEffect(() => { if (authed) { refreshAll(); } /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [authed]);
   useEffect(() => { if (authed) { const iv = setInterval(fetchNotifications, 30000); return () => clearInterval(iv); } }, [authed]);
+
+  // 冠 #4312 2026-05-29: 下拉刷新 (pull-to-refresh) — 任何頁面在頂部下拉都會觸發 refreshAll
+  const [pullDelta, setPullDelta] = useState(0);
+  const [refreshing, setRefreshing] = useState(false);
+  const pullStartYRef = useRef<number | null>(null);
+  const pullDeltaRef = useRef(0);
+  const refreshingRef = useRef(false);
+  useEffect(() => {
+    if (!authed) return;
+    const onTS = (e: TouchEvent) => {
+      if ((document.scrollingElement?.scrollTop ?? window.scrollY) <= 0) {
+        pullStartYRef.current = e.touches[0].clientY;
+      } else {
+        pullStartYRef.current = null;
+      }
+    };
+    const onTM = (e: TouchEvent) => {
+      if (pullStartYRef.current === null || refreshingRef.current) return;
+      const d = e.touches[0].clientY - pullStartYRef.current;
+      if (d > 0) {
+        const clamped = Math.min(d * 0.5, 100);
+        pullDeltaRef.current = clamped;
+        setPullDelta(clamped);
+        if (d > 30) e.preventDefault();
+      }
+    };
+    const onTE = async () => {
+      if (pullStartYRef.current === null) return;
+      pullStartYRef.current = null;
+      if (pullDeltaRef.current > 60 && !refreshingRef.current) {
+        refreshingRef.current = true; setRefreshing(true);
+        try { await refreshAll(); } finally {
+          setTimeout(() => { refreshingRef.current = false; setRefreshing(false); pullDeltaRef.current = 0; setPullDelta(0); }, 400);
+        }
+      } else {
+        pullDeltaRef.current = 0; setPullDelta(0);
+      }
+    };
+    window.addEventListener("touchstart", onTS, { passive: true });
+    window.addEventListener("touchmove", onTM, { passive: false });
+    window.addEventListener("touchend", onTE);
+    window.addEventListener("touchcancel", onTE);
+    return () => {
+      window.removeEventListener("touchstart", onTS);
+      window.removeEventListener("touchmove", onTM);
+      window.removeEventListener("touchend", onTE);
+      window.removeEventListener("touchcancel", onTE);
+    };
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
+  }, [authed]);
 
   if (!authed) {
     return (
@@ -67,6 +127,16 @@ export default function AdminPage() {
 
   const s = stats as Record<string, Record<string, number>>;
 
+  // 冠 #4312: 下拉刷新指示器，固定貼頂
+  const pullIndicator = (
+    <div className="fixed top-0 left-0 right-0 z-50 pointer-events-none flex justify-center"
+         style={{ transform: `translateY(${refreshing ? 30 : Math.max(0, pullDelta - 20)}px)`, transition: refreshing ? "transform 200ms ease" : (pullDelta === 0 ? "transform 200ms ease" : "none"), opacity: pullDelta > 5 || refreshing ? 1 : 0 }}>
+      <div className="bg-white rounded-full shadow-md px-5 py-2 text-sm text-gold font-semibold border border-gold-light/30">
+        {refreshing ? "🔄 重新整理中..." : pullDelta > 60 ? "↑ 放開以更新" : "↓ 下拉更新"}
+      </div>
+    </div>
+  );
+
   // Home view — #3 柔粉色系（圓形元素+留白+柔和圓角）
   if (view === "home") {
     const pending = Number((stats as Record<string, number>).pending || 0);
@@ -74,6 +144,7 @@ export default function AdminPage() {
     const revenue = Number(s.month?.revenue || 0);
     return (
       <div className="min-h-screen pb-44" style={{background:"linear-gradient(180deg, #FFF0F0 0%, #FFF8F6 30%, #FFFBFA 100%)"}}>
+        {pullIndicator}
         {/* Header — 恢復裝飾圓 */}
         <div className="relative overflow-hidden" style={{background:"linear-gradient(135deg, #FECDD3, #FDA4AF, #FB7185)", borderRadius:"0 0 40px 40px", padding:"44px 24px 36px"}}>
           <div className="absolute" style={{top:-30,right:-30,width:120,height:120,borderRadius:"50%",background:"rgba(255,255,255,0.12)"}} />
@@ -189,6 +260,7 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen bg-warm-bg">
+      {pullIndicator}
       {view === "stats" && (
         <>
           <SubHeader title="營收報表" />
@@ -404,36 +476,114 @@ export default function AdminPage() {
         <>
           <SubHeader title="手動建立預約" />
           <div className="max-w-lg mx-auto px-5 py-6">
-            <div className="bg-white rounded-2xl p-6 border border-gold-light/20 text-center space-y-5">
-              <input value={nb.name} onChange={e => setNb({...nb, name: e.target.value})} placeholder="姓名" className="w-full px-5 py-4 rounded-2xl border border-gold-light/30 text-base text-center focus:outline-none focus:border-gold" />
-              <input value={nb.phone} onChange={e => setNb({...nb, phone: e.target.value})} placeholder="電話" className="w-full px-5 py-4 rounded-2xl border border-gold-light/30 text-base text-center focus:outline-none focus:border-gold" />
-              <input value={nb.address} onChange={e => setNb({...nb, address: e.target.value})} placeholder="到府地址" className="w-full px-5 py-4 rounded-2xl border border-gold-light/30 text-base text-center focus:outline-none focus:border-gold" />
-              <select value={nb.package} onChange={e => {
-                const p = e.target.value;
-                const dbPkg = dbPackages.find(dp => dp.name === p);
-                const priceMap: Record<string, number> = { "舒壓放鬆套餐": 2280, "能量煥膚套餐": 3480, "極致寵愛套餐": 4880 };
-                const t = dbPkg ? dbPkg.package_price : (priceMap[p] || 0);
-                setNb({...nb, package: p, total: t});
-              }}
-                className="w-full px-5 py-4 rounded-2xl border border-gold-light/30 text-base text-center focus:outline-none focus:border-gold bg-white appearance-none">
-                <option>舒壓放鬆套餐</option><option>能量煥膚套餐</option><option>極致寵愛套餐</option>
-                {dbPackages.filter(dp => !["舒壓放鬆套餐","能量煥膚套餐","極致寵愛套餐"].includes(dp.name)).map(dp => (
-                  <option key={dp.id} value={dp.name}>{dp.name} (${dp.package_price.toLocaleString()})</option>
-                ))}
-              </select>
-              <div className="grid grid-cols-2 gap-4">
-                <input type="date" value={nb.date} onChange={e => setNb({...nb, date: e.target.value})} className="px-4 py-4 rounded-2xl border border-gold-light/30 text-base text-center focus:outline-none focus:border-gold" />
-                <select value={nb.time} onChange={e => setNb({...nb, time: e.target.value})} className="px-4 py-4 rounded-2xl border border-gold-light/30 text-base text-center focus:outline-none focus:border-gold bg-white appearance-none">
-                  {["10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00"].map(t => <option key={t}>{t}</option>)}
-                </select>
+            <div className="bg-white rounded-2xl p-6 border border-gold-light/20 space-y-6">
+              <input value={nb.name} onChange={e => setNb({...nb, name: e.target.value})} placeholder="姓名" className="w-full px-6 py-5 rounded-2xl border border-gold-light/30 text-lg focus:outline-none focus:border-gold" />
+              <input value={nb.phone} onChange={e => setNb({...nb, phone: e.target.value})} placeholder="電話" inputMode="tel" className="w-full px-6 py-5 rounded-2xl border border-gold-light/30 text-lg focus:outline-none focus:border-gold" />
+              <input value={nb.address} onChange={e => setNb({...nb, address: e.target.value})} placeholder="到府地址" className="w-full px-6 py-5 rounded-2xl border border-gold-light/30 text-lg focus:outline-none focus:border-gold" />
+
+              {/* 冠 #4310: 服務 + 套餐 全部可勾選 */}
+              <div>
+                <p className="text-sm text-text-light mb-3">勾選服務 / 套餐（可複選）</p>
+                <div className="space-y-3 max-h-96 overflow-y-auto pr-1">
+                  {dbPackages.length > 0 && (
+                    <div>
+                      <p className="text-xs text-gold mb-2 font-semibold tracking-wider">套餐</p>
+                      {dbPackages.map(dp => {
+                        const sel = nb.selected.some(x => x.kind === "package" && x.id === dp.id);
+                        return (
+                          <label key={`pkg-${dp.id}`}
+                            className={`flex items-center gap-4 px-5 py-4 rounded-2xl border-2 mb-2 cursor-pointer active:bg-gold-light/10 ${sel ? "border-gold bg-gold-light/20" : "border-gold-light/30 bg-white"}`}>
+                            <input type="checkbox" checked={sel} onChange={() => {
+                              const next = sel
+                                ? nb.selected.filter(x => !(x.kind === "package" && x.id === dp.id))
+                                : [...nb.selected, { kind: "package" as const, id: dp.id, name: dp.name, price: dp.package_price, duration: dp.duration_min || 0 }];
+                              const total = next.reduce((s, x) => s + x.price, 0);
+                              setNb({ ...nb, selected: next, total });
+                            }} className="w-6 h-6 accent-gold" />
+                            <span className="flex-1">
+                              <span className="block text-base font-semibold text-dark">{dp.name}</span>
+                              <span className="block text-sm text-text-light">套餐 · ${dp.package_price.toLocaleString()}</span>
+                            </span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  )}
+                  {dbServices.length > 0 && (
+                    <div>
+                      <p className="text-xs text-gold mb-2 font-semibold tracking-wider">單項服務</p>
+                      {dbServices.map(svc => {
+                        const sel = nb.selected.some(x => x.kind === "service" && x.id === svc.id);
+                        return (
+                          <label key={`svc-${svc.id}`}
+                            className={`flex items-center gap-4 px-5 py-4 rounded-2xl border-2 mb-2 cursor-pointer active:bg-gold-light/10 ${sel ? "border-gold bg-gold-light/20" : "border-gold-light/30 bg-white"}`}>
+                            <input type="checkbox" checked={sel} onChange={() => {
+                              const next = sel
+                                ? nb.selected.filter(x => !(x.kind === "service" && x.id === svc.id))
+                                : [...nb.selected, { kind: "service" as const, id: svc.id, name: svc.name, price: svc.price, duration: svc.duration_min }];
+                              const total = next.reduce((s, x) => s + x.price, 0);
+                              setNb({ ...nb, selected: next, total });
+                            }} className="w-6 h-6 accent-gold" />
+                            <span className="flex-1">
+                              <span className="block text-base font-semibold text-dark">{svc.name}</span>
+                              <span className="block text-sm text-text-light">{svc.duration_min} 分鐘 · ${svc.price.toLocaleString()}{svc.category ? ` · ${svc.category}` : ""}</span>
+                            </span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+                {nb.selected.length > 0 && (
+                  <p className="text-sm text-dark mt-3">
+                    已選 <b className="text-gold">{nb.selected.length}</b> 項 · 共
+                    <b className="text-gold"> {nb.selected.reduce((s, x) => s + x.duration, 0)}</b> 分鐘
+                  </p>
+                )}
               </div>
-              <input type="number" value={nb.total} onChange={e => setNb({...nb, total: Number(e.target.value)})} placeholder="金額" className="w-full px-5 py-4 rounded-2xl border border-gold-light/30 text-base text-center focus:outline-none focus:border-gold" />
+
+              <div>
+                <p className="text-sm text-text-light mb-2">日期</p>
+                <input type="date" value={nb.date} onChange={e => setNb({...nb, date: e.target.value})} className="w-full px-6 py-5 rounded-2xl border border-gold-light/30 text-lg focus:outline-none focus:border-gold" />
+              </div>
+
+              {/* 冠 #4310: 時間切成「時 / 分」兩個獨立 select，10 分鐘為單位 */}
+              <div>
+                <p className="text-sm text-text-light mb-2">時間（每 10 分鐘為一格）</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <select value={nb.hour} onChange={e => setNb({ ...nb, hour: e.target.value })}
+                    className="px-6 py-5 rounded-2xl border border-gold-light/30 text-lg focus:outline-none focus:border-gold bg-white">
+                    {Array.from({ length: 11 }, (_, i) => String(10 + i).padStart(2, "0")).map(h => (
+                      <option key={h} value={h}>{h} 時</option>
+                    ))}
+                  </select>
+                  <select value={nb.minute} onChange={e => setNb({ ...nb, minute: e.target.value })}
+                    className="px-6 py-5 rounded-2xl border border-gold-light/30 text-lg focus:outline-none focus:border-gold bg-white">
+                    {["00","10","20","30","40","50"].map(m => (
+                      <option key={m} value={m}>{m} 分</option>
+                    ))}
+                  </select>
+                </div>
+                <p className="text-xs text-text-light mt-2 text-center">已選：{nb.hour}:{nb.minute}</p>
+              </div>
+
+              <div>
+                <p className="text-sm text-text-light mb-2">總金額（自動帶入，可手動調整）</p>
+                <input type="number" inputMode="numeric" value={nb.total} onChange={e => setNb({...nb, total: Number(e.target.value)})} placeholder="金額" className="w-full px-6 py-5 rounded-2xl border border-gold-light/30 text-2xl text-center font-bold text-gold focus:outline-none focus:border-gold" />
+              </div>
+
               <button onClick={async () => {
-                if (!nb.name || !nb.phone || !nb.date) return;
-                await fetch("/api/bookings", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ package: nb.package, packageTier: "", addons: [], date: nb.date, time: nb.time, name: nb.name, phone: nb.phone, total: nb.total, address: nb.address, source: "manual" }) });
+                if (!nb.name || !nb.phone || !nb.date) { alert("姓名 / 電話 / 日期必填"); return; }
+                if (nb.selected.length === 0) { alert("請至少勾選一項服務或套餐"); return; }
+                const packageStr = nb.selected.map(x => x.name).join(" + ");
+                const time = `${nb.hour}:${nb.minute}`;
+                const totalDur = nb.selected.reduce((s, x) => s + x.duration, 0);
+                await fetch("/api/bookings", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ package: packageStr, packageTier: "", addons: [], date: nb.date, time, name: nb.name, phone: nb.phone, total: nb.total, address: nb.address, source: "manual", durationMin: totalDur }) });
                 await fetch("/api/customers", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: nb.name, phone: nb.phone, address: nb.address }) });
-                alert("預約已建立！"); setNb({ name: "", phone: "", address: "", package: "舒壓放鬆套餐", date: "", time: "10:00", total: 2280 }); fetchBookings(); fetchCustomers(); fetchStats(); setView("bookings");
-              }} className="w-full bg-gold text-white py-5 rounded-2xl text-lg font-medium active:bg-dark-light">建立預約</button>
+                alert("預約已建立！");
+                setNb({ name: "", phone: "", address: "", selected: [], date: "", hour: "10", minute: "00", total: 0 });
+                fetchBookings(); fetchCustomers(); fetchStats(); setView("bookings");
+              }} className="w-full bg-gold text-white py-6 rounded-2xl text-xl font-bold active:bg-dark-light">建立預約</button>
             </div>
           </div>
         </>
@@ -500,7 +650,7 @@ export default function AdminPage() {
               </div>
               <select value={blockForm.time} onChange={e => setBlockForm({...blockForm, time: e.target.value})} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm">
                 <option value="all">整天關閉</option>
-                {["10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00","20:00"].map(t => <option key={t} value={t}>{t} 該時段</option>)}
+                {(() => { const s: string[] = []; for (let h = 10; h <= 20; h++) for (let m = 0; m < 60; m += 10) { if (h === 20 && m > 0) break; s.push(`${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}`); } return s; })().map(t => <option key={t} value={t}>{t} 該時段</option>)}
               </select>
               <input value={blockForm.reason} onChange={e => setBlockForm({...blockForm, reason: e.target.value})} placeholder="原因（選填）" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm" />
               <button onClick={async () => {
