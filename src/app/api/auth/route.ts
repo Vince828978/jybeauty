@@ -56,7 +56,34 @@ export async function POST(request: Request) {
         created_at TIMESTAMP DEFAULT NOW()
       )`;
       const coupons = await sql`SELECT * FROM member_coupons WHERE member_phone = ${body.phone} ORDER BY used ASC, created_at DESC`;
-      return NextResponse.json({ success: true, member, bookings, referralCount: referrals.length, coupons });
+      return NextResponse.json({ success: true, member, bookings, referralCount: referrals.length, referrals, coupons });
+    }
+
+    // 冠 #4456 2026-05-30: 改密碼
+    if (body.action === "change_password") {
+      const { phone, oldPassword, newPassword } = body;
+      if (!phone || !oldPassword || !newPassword) {
+        return NextResponse.json({ success: false, error: "缺少必要欄位" });
+      }
+      if (String(newPassword).length < 4) {
+        return NextResponse.json({ success: false, error: "新密碼至少 4 字" });
+      }
+      const rows = await sql`SELECT id FROM members WHERE phone = ${phone} AND password = ${oldPassword}`;
+      if (rows.length === 0) {
+        return NextResponse.json({ success: false, error: "原密碼錯誤" });
+      }
+      await sql`UPDATE members SET password = ${newPassword} WHERE phone = ${phone}`;
+      return NextResponse.json({ success: true });
+    }
+
+    // 冠 #4456: 移除自己邀請的推薦人 (測試/誤填)
+    if (body.action === "delete_referral") {
+      const { phone, referredPhone } = body;
+      if (!phone || !referredPhone) {
+        return NextResponse.json({ success: false, error: "缺少必要欄位" });
+      }
+      const r = await sql`DELETE FROM referrals WHERE referrer_phone = ${phone} AND referred_phone = ${referredPhone} RETURNING id`;
+      return NextResponse.json({ success: true, deleted: r.length });
     }
 
     return NextResponse.json({ success: false, error: "unknown action" });

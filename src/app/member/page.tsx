@@ -19,7 +19,11 @@ export default function MemberPage() {
   const [member, setMember] = useState<MemberData | null>(null);
   const [bookings, setBookings] = useState<BookingData[]>([]);
   const [referralCount, setReferralCount] = useState(0);
+  const [referrals, setReferrals] = useState<Array<{id: number; referred_phone: string; referred_name: string; created_at: string}>>([]);
   const [coupons, setCoupons] = useState<Array<{id: number; code: string; discount_value: number; description: string; expires_at: string; used: boolean}>>([]);
+  // 冠 #4456: 修改密碼 state
+  const [pwOld, setPwOld] = useState(""); const [pwNew, setPwNew] = useState(""); const [pwConfirm, setPwConfirm] = useState("");
+  const [pwMsg, setPwMsg] = useState("");
 
   const handleLogin = async () => {
     setError("");
@@ -31,9 +35,35 @@ export default function MemberPage() {
       setBookings(d.bookings || []);
       setCoupons(d.coupons || []);
       setReferralCount(d.referralCount || 0);
+      setReferrals(d.referrals || []);
     } else {
       setError(d.error || "登入失敗");
     }
+  };
+
+  // 冠 #4456: 改密碼
+  const handleChangePw = async () => {
+    setPwMsg("");
+    if (!pwOld || !pwNew || !pwConfirm) { setPwMsg("請填完三欄"); return; }
+    if (pwNew !== pwConfirm) { setPwMsg("兩次新密碼不一致"); return; }
+    if (pwNew.length < 4) { setPwMsg("新密碼至少 4 字"); return; }
+    const r = await fetch("/api/auth", { method: "POST", headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({ action: "change_password", phone: member?.phone, oldPassword: pwOld, newPassword: pwNew }) });
+    const d = await r.json();
+    if (d.success) { setPwMsg("✅ 密碼已更新"); setPwOld(""); setPwNew(""); setPwConfirm(""); }
+    else setPwMsg(d.error || "更新失敗");
+  };
+
+  // 冠 #4456: 移除推薦人
+  const handleDeleteReferral = async (referredPhone: string) => {
+    if (!confirm(`確定要移除推薦人「${referredPhone}」？`)) return;
+    const r = await fetch("/api/auth", { method: "POST", headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({ action: "delete_referral", phone: member?.phone, referredPhone }) });
+    const d = await r.json();
+    if (d.success) {
+      setReferrals(prev => prev.filter(x => x.referred_phone !== referredPhone));
+      setReferralCount(prev => Math.max(0, prev - 1));
+    } else alert(d.error || "移除失敗");
   };
 
   const handleRegister = async () => {
@@ -111,8 +141,38 @@ export default function MemberPage() {
             )}
           </div>
 
+          {/* 冠 #4456: 推薦好友明細 (可移除測試資料) */}
+          {referrals.length > 0 && (
+            <div className="bg-white rounded-3xl p-8 border border-gold-light/20 mb-8 shadow-sm">
+              <p className="text-gold text-sm tracking-widest mb-4">🤝 我邀請的好友 ({referrals.length})</p>
+              <div className="space-y-3">
+                {referrals.map((r) => (
+                  <div key={r.id} className="flex justify-between items-center bg-cream/40 rounded-xl p-4 border border-gold-light/10">
+                    <div className="text-left">
+                      <p className="text-dark font-medium text-base">{r.referred_name || "未填姓名"}</p>
+                      <p className="text-text-light text-xs mt-1">{r.referred_phone} · {r.created_at?.slice(0,10)}</p>
+                    </div>
+                    <button onClick={() => handleDeleteReferral(r.referred_phone)}
+                      className="text-xs text-red-500 px-3 py-2 rounded-lg border border-red-200 active:bg-red-50">
+                      移除
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* 冠 #4456: 預約紀錄 + 累計消費 */}
           <div className="bg-white rounded-3xl p-8 border border-gold-light/20 mb-8 shadow-sm">
-            <h3 className="font-serif-tc text-xl font-bold text-dark mb-5">預約紀錄</h3>
+            <div className="flex items-baseline justify-between mb-5">
+              <h3 className="font-serif-tc text-xl font-bold text-dark">預約紀錄</h3>
+              {bookings.length > 0 && (
+                <div className="text-right">
+                  <p className="text-text-light text-xs">累計消費</p>
+                  <p className="text-gold font-bold text-xl">${bookings.reduce((s,b)=>s+(b.total||0),0).toLocaleString()}</p>
+                </div>
+              )}
+            </div>
             {bookings.length === 0 ? <p className="text-text-light text-base py-6">尚無預約紀錄</p> :
             <div className="space-y-4">
               {bookings.map((b) => (
@@ -129,6 +189,26 @@ export default function MemberPage() {
               ))}
             </div>}
           </div>
+
+          {/* 冠 #4456: 修改密碼 (折疊) */}
+          <details className="bg-white rounded-3xl border border-gold-light/20 mb-8 shadow-sm overflow-hidden">
+            <summary className="px-8 py-6 cursor-pointer text-gold text-sm tracking-widest font-medium" style={{listStyle:"none"}}>
+              🔒 修改密碼  <span className="text-text-light text-xs ml-2">點此展開</span>
+            </summary>
+            <div className="px-8 pb-8 space-y-4">
+              <input type="password" placeholder="原密碼" value={pwOld} onChange={e=>setPwOld(e.target.value)}
+                className="w-full px-5 py-4 rounded-xl border-2 border-gold-light/30 text-base focus:outline-none focus:border-gold" />
+              <input type="password" placeholder="新密碼 (至少 4 字)" value={pwNew} onChange={e=>setPwNew(e.target.value)}
+                className="w-full px-5 py-4 rounded-xl border-2 border-gold-light/30 text-base focus:outline-none focus:border-gold" />
+              <input type="password" placeholder="再次輸入新密碼" value={pwConfirm} onChange={e=>setPwConfirm(e.target.value)}
+                className="w-full px-5 py-4 rounded-xl border-2 border-gold-light/30 text-base focus:outline-none focus:border-gold" />
+              {pwMsg && <p className={`text-sm py-2 ${pwMsg.startsWith("✅") ? "text-green-600" : "text-red-500"}`}>{pwMsg}</p>}
+              <button onClick={handleChangePw}
+                className="w-full bg-gold text-white py-4 rounded-xl text-base font-medium active:bg-dark-light">
+                更新密碼
+              </button>
+            </div>
+          </details>
 
           <div className="space-y-4">
             <a href="/booking" className="block w-full bg-gold text-white py-6 rounded-2xl text-xl font-medium text-center active:bg-dark-light shadow-md">預約療程</a>
