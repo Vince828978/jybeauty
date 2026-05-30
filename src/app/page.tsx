@@ -258,7 +258,8 @@ function PackagesPage() {
           </div>
         </div>
       </div>
-      <div className="md:max-w-3xl mx-auto px-6 md:px-16 py-8">
+      {/* 冠 #4452 2026-05-30: 加大左右 padding，pb 留空間避免被右下浮動按鈕擋住 */}
+      <div className="md:max-w-3xl mx-auto px-8 md:px-16 py-8 pb-40">
         {!loaded ? (
           <p className="text-white/40 py-12 text-center">載入中...</p>
         ) : services.length === 0 ? (
@@ -268,18 +269,18 @@ function PackagesPage() {
             <p className="text-white/50 text-sm">店家正在後台建立中，請稍後再回來看看～</p>
           </div>
         ) : (
-          <div className="space-y-8">
+          <div className="space-y-10">
             {cats.map((cat) => (
               <div key={cat}>
                 <p className="text-gold-light text-xs tracking-[0.3em] uppercase mb-2 text-center">{cat.toUpperCase()}</p>
-                <h3 className="text-gold font-serif-tc text-2xl font-bold mb-5 text-center">{cat}</h3>
-                <div className="space-y-3 md:grid md:grid-cols-2 md:gap-4 md:space-y-0">
+                <h3 className="text-gold font-serif-tc text-2xl font-bold mb-6 text-center">{cat}</h3>
+                <div className="space-y-4 md:grid md:grid-cols-2 md:gap-4 md:space-y-0">
                   {grouped[cat].map((s) => (
-                    <div key={s.id} className="border border-gold/30 rounded-2xl p-5 flex flex-col">
+                    <div key={s.id} className="border border-gold/30 rounded-2xl p-6 flex flex-col bg-dark/30">
                       <h4 className="text-white font-serif-tc text-lg font-bold mb-1">{s.name}</h4>
                       {s.description && <p className="text-white/50 text-xs mb-2">{s.description}</p>}
-                      <div className="mt-auto pt-3 border-t border-gold/20 flex items-baseline justify-between">
-                        <span className="text-white/60 text-sm">{s.duration_min} 分鐘</span>
+                      <div className="mt-auto pt-3 border-t border-gold/20 flex items-baseline justify-between gap-3">
+                        <span className="text-white/60 text-sm flex-shrink-0">{s.duration_min} 分鐘</span>
                         <span className="text-gold font-serif-tc text-2xl font-bold">${s.price.toLocaleString()}</span>
                       </div>
                     </div>
@@ -289,7 +290,7 @@ function PackagesPage() {
             ))}
           </div>
         )}
-        <div className="text-center mt-10">
+        <div className="text-center mt-12">
           <a href="/member" className="inline-block bg-gold text-white px-12 py-5 text-lg tracking-wide rounded-2xl font-medium active:bg-dark-light transition-colors">
             會員預約
           </a>
