@@ -31,6 +31,32 @@ type View = "services" | "packages" | "package-builder";
 
 const CATEGORIES = ["身體", "臉部", "加項", "其他"];
 
+// 冠 #4514/4518 2026-05-30: 市場價對照表，肉包填價時 reference
+// 資料來源：美業自由通行 APP 5 位老師 + Clio/Whobooking + Pro360 個體戶
+const MARKET_REF: Array<{ match: RegExp; durMatch?: (d: number) => boolean; label: string; price: string }> = [
+  { match: /精油.*60|60.*精油/, durMatch: (d) => d === 60, label: '精油 60min', price: '美業 APP $1,800 / Pro360 $1,000-1,200' },
+  { match: /精油.*90|90.*精油/, durMatch: (d) => d === 90, label: '精油 90min', price: '美業 APP $2,200 / Clio $2,500 / Pro360 $1,500-1,800' },
+  { match: /精油.*120|120.*精油/, durMatch: (d) => d === 120, label: '精油 120min', price: '~Clio $3,300 估算' },
+  { match: /美胸|暖宮/, durMatch: (d) => d === 30, label: '美胸/暖宮 30min', price: '個別店家 $1,000-1,500' },
+  { match: /美胸/, durMatch: (d) => d === 60, label: '美胸 60min', price: '美業 APP $2,000' },
+  { match: /美胸/, durMatch: (d) => d === 90, label: '美胸 90min', price: '美業 APP $2,500' },
+  { match: /肩頸|頸/, durMatch: (d) => d === 30, label: '肩頸舒壓 30min', price: '美業 APP $800' },
+  { match: /頭療|頭皮/, durMatch: (d) => d === 30, label: '頭皮舒壓 30min', price: '美業 APP $900' },
+  { match: /眼周|眼部/, label: '眼周保養', price: '(無 APP 對應，可走精品定位)' },
+  { match: /瘦小臉|小臉/, label: '瘦小臉', price: '(無 APP 對應)' },
+  { match: /(臉部|皮膚).*基礎|清潔保濕/, label: '臉部基礎', price: '美業 APP 基礎清潔保濕 $1,500' },
+  { match: /(臉部|皮膚).*深層|深層|水飛梭|煥膚/, label: '臉部深層', price: '美業 APP 水飛梭/煥膚 $2,500-2,800' },
+  { match: /熱石/, label: '熱石加購', price: '(其他平台無對應加購機制)' },
+  { match: /刮痧|筋膜/, label: '刮痧/筋膜', price: '(其他平台無對應加購)' },
+  { match: /Lulu|美白/, label: '美白護理', price: '美業 APP 亮白淨膚 $2,200' },
+];
+function getMarketRef(name: string, dur: number): { label: string; price: string } | null {
+  for (const r of MARKET_REF) {
+    if (r.match.test(name) && (!r.durMatch || r.durMatch(dur))) return { label: r.label, price: r.price };
+  }
+  return null;
+}
+
 export default function ServicesPage() {
   const [authed, setAuthed] = useState(false);
   const [pass, setPass] = useState("");
@@ -291,6 +317,20 @@ export default function ServicesPage() {
                         className="w-full px-5 py-5 rounded-xl border border-rose-100 text-base focus:outline-none focus:border-rose-300" />
                     </div>
                   </div>
+                  {/* 冠 #4514/4518: 市場價對照給肉包填價時參考 */}
+                  {(() => {
+                    const ref = getMarketRef(serviceForm.name, serviceForm.duration_min);
+                    return ref ? (
+                      <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs">
+                        <p className="text-amber-800 font-medium mb-1">📊 市場參考 — {ref.label}</p>
+                        <p className="text-amber-700">{ref.price}</p>
+                      </div>
+                    ) : (
+                      <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-500">
+                        無對應市場資料（這個 SKU 比較獨特，自己決定）
+                      </div>
+                    );
+                  })()}
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="text-sm text-text-light mb-2 block">分類</label>
@@ -351,6 +391,13 @@ export default function ServicesPage() {
                                 <span className="text-text-light text-xs">{svc.duration_min} 分鐘</span>
                                 <span className="text-rose-500 font-bold text-sm">${svc.price.toLocaleString()}</span>
                               </div>
+                              {/* 冠 #4521: 市場參考標記 */}
+                              {(() => {
+                                const ref = getMarketRef(svc.name, svc.duration_min);
+                                return ref ? (
+                                  <p className="text-amber-600 text-[11px] mt-1">📊 {ref.price}</p>
+                                ) : null;
+                              })()}
                               {svc.description && <p className="text-text-light text-xs mt-1 truncate">{svc.description}</p>}
                             </div>
                             <div className="flex items-center gap-2 flex-shrink-0">
