@@ -57,6 +57,25 @@ function getMarketRef(name: string, dur: number): { label: string; price: string
   return null;
 }
 
+// 冠 #4529 2026-05-30: 也吃 DB-backed market_pricing_refs（從 /admin/market-refs 維護）
+interface DbMarketRef {
+  id: number; sku_keyword: string; duration_min: number | null;
+  source_name: string; price_low: number | null; price_high: number | null; notes: string;
+}
+function getDbMarketRef(refs: DbMarketRef[], name: string, dur: number): { label: string; price: string } | null {
+  const matches = refs.filter(r => {
+    if (!name.includes(r.sku_keyword) && !r.sku_keyword.includes(name.replace(/\s+/g, ""))) return false;
+    if (r.duration_min && Math.abs(r.duration_min - dur) > 5) return false;
+    return true;
+  });
+  if (matches.length === 0) return null;
+  const priceStrs = matches.map(m => {
+    const range = m.price_high ? `$${m.price_low?.toLocaleString()}-${m.price_high.toLocaleString()}` : `$${m.price_low?.toLocaleString()}`;
+    return m.source_name ? `${m.source_name} ${range}` : range;
+  });
+  return { label: `${matches[0].sku_keyword} ${matches[0].duration_min || dur}min (DB)`, price: priceStrs.join(" / ") };
+}
+
 export default function ServicesPage() {
   const [authed, setAuthed] = useState(false);
   const [pass, setPass] = useState("");
@@ -76,6 +95,16 @@ export default function ServicesPage() {
   const [editPkg, setEditPkg] = useState<Package | null>(null);
   const [showPkgForm, setShowPkgForm] = useState(false);
 
+  // 冠 #4529 2026-05-30: 拉 DB market refs 進來，跟 hardcoded 一起做為 fallback
+  const [dbRefs, setDbRefs] = useState<DbMarketRef[]>([]);
+  const fetchDbRefs = async () => {
+    try {
+      const r = await fetch("/api/market-refs");
+      const d = await r.json();
+      setDbRefs(d.refs || []);
+    } catch {}
+  };
+
   const fetchServices = async () => {
     const r = await fetch("/api/services");
     const d = await r.json();
@@ -94,7 +123,7 @@ export default function ServicesPage() {
   }, []);
 
   useEffect(() => {
-    if (authed) { fetchServices(); fetchPackages(); }
+    if (authed) { fetchServices(); fetchPackages(); fetchDbRefs(); }
   }, [authed]);
 
   if (!authed) {
@@ -317,9 +346,10 @@ export default function ServicesPage() {
                         className="w-full px-5 py-5 rounded-xl border border-rose-100 text-base focus:outline-none focus:border-rose-300" />
                     </div>
                   </div>
-                  {/* 冠 #4514/4518: 市場價對照給肉包填價時參考 */}
+                  {/* 冠 #4514/4518/4529: 市場價對照 — 優先 DB 對照，再 fallback 內建 */}
                   {(() => {
-                    const ref = getMarketRef(serviceForm.name, serviceForm.duration_min);
+                    const ref = getDbMarketRef(dbRefs, serviceForm.name, serviceForm.duration_min)
+                              || getMarketRef(serviceForm.name, serviceForm.duration_min);
                     return ref ? (
                       <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs">
                         <p className="text-amber-800 font-medium mb-1">📊 市場參考 — {ref.label}</p>
@@ -327,7 +357,7 @@ export default function ServicesPage() {
                       </div>
                     ) : (
                       <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-500">
-                        無對應市場資料（這個 SKU 比較獨特，自己決定）
+                        無對應市場資料（這個 SKU 比較獨特，自己決定）。可去 <a href="/admin/market-refs" className="text-rose-500 underline">/admin/market-refs</a> 上傳競品菜單照片補資料。
                       </div>
                     );
                   })()}
@@ -391,9 +421,10 @@ export default function ServicesPage() {
                                 <span className="text-text-light text-xs">{svc.duration_min} 分鐘</span>
                                 <span className="text-rose-500 font-bold text-sm">${svc.price.toLocaleString()}</span>
                               </div>
-                              {/* 冠 #4521: 市場參考標記 */}
+                              {/* 冠 #4521/4529: 市場參考標記 — 優先 DB */}
                               {(() => {
-                                const ref = getMarketRef(svc.name, svc.duration_min);
+                                const ref = getDbMarketRef(dbRefs, svc.name, svc.duration_min)
+                                          || getMarketRef(svc.name, svc.duration_min);
                                 return ref ? (
                                   <p className="text-amber-600 text-[11px] mt-1">📊 {ref.price}</p>
                                 ) : null;
