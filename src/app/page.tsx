@@ -275,13 +275,14 @@ function PackagesPage() {
                 <p className="text-gold-light text-xs tracking-[0.3em] uppercase mb-2 text-center">{cat.toUpperCase()}</p>
                 <h3 className="text-gold font-serif-tc text-2xl font-bold mb-6 text-center">{cat}</h3>
                 <div className="space-y-4 md:grid md:grid-cols-2 md:gap-4 md:space-y-0">
+                  {/* 冠 #4489 2026-05-30: 字級加大、移除分線、時長改放金額上方 */}
                   {grouped[cat].map((s) => (
-                    <div key={s.id} className="border border-gold/30 rounded-2xl p-6 flex flex-col bg-dark/30">
-                      <h4 className="text-white font-serif-tc text-lg font-bold mb-1">{s.name}</h4>
-                      {s.description && <p className="text-white/50 text-xs mb-2">{s.description}</p>}
-                      <div className="mt-auto pt-3 border-t border-gold/20 flex items-baseline justify-between gap-3">
-                        <span className="text-white/60 text-sm flex-shrink-0">{s.duration_min} 分鐘</span>
-                        <span className="text-gold font-serif-tc text-2xl font-bold">${s.price.toLocaleString()}</span>
+                    <div key={s.id} className="border border-gold/30 rounded-2xl p-7 flex flex-col bg-dark/30">
+                      <h4 className="text-white font-serif-tc text-2xl font-bold mb-2">{s.name}</h4>
+                      {s.description && <p className="text-white/60 text-sm mb-3">{s.description}</p>}
+                      <div className="mt-auto pt-4 text-right">
+                        <p className="text-white/60 text-base mb-1">{s.duration_min} 分鐘</p>
+                        <p className="text-gold font-serif-tc text-3xl font-bold">${s.price.toLocaleString()}</p>
                       </div>
                     </div>
                   ))}
