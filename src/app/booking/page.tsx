@@ -324,7 +324,19 @@ export default function BookingPage() {
                         );
                       })}
                     </div>
-{/* 冠 #4438: 40min buffer 只給後台看，客人預約頁不顯示 */}
+{/* 冠 #4440: 顯示「服務時段 X:XX ~ X:XX」讓客人知道幾點到幾點，但不提 40 min buffer */}
+                    {selectedTime && totalDur > 0 && (() => {
+                      const [sh, sm] = selectedTime.split(":").map(Number);
+                      const endTotal = sh * 60 + sm + totalDur;
+                      const eh = Math.floor(endTotal / 60);
+                      const em = endTotal % 60;
+                      const endStr = `${String(eh).padStart(2,"0")}:${String(em).padStart(2,"0")}`;
+                      return (
+                        <p className="text-gold text-sm mt-4 text-center font-medium bg-gold/5 rounded-xl py-3">
+                          ⏱ 你的服務時段：<b>{selectedTime} ~ {endStr}</b>（{totalDur} 分鐘）
+                        </p>
+                      );
+                    })()}
                   </div>
                 )}
               </div>
