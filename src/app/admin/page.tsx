@@ -272,27 +272,28 @@ export default function AdminPage() {
       {view === "stats" && (
         <>
           <SubHeader title="營收報表" />
-          <div className="max-w-lg mx-auto px-5 py-6 text-center space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-white rounded-2xl p-5 border border-rose-100/60"><p className="text-text-light text-sm mb-1">今日營收</p><p className="text-rose-500 font-bold font-serif-tc text-2xl">${Number(s.today?.revenue || 0).toLocaleString()}</p><p className="text-text-light text-xs">{Number(s.today?.count || 0)} 筆</p></div>
-              <div className="bg-white rounded-2xl p-5 border border-rose-100/60"><p className="text-text-light text-sm mb-1">本月營收</p><p className="text-rose-500 font-bold font-serif-tc text-2xl">${Number(s.month?.revenue || 0).toLocaleString()}</p><p className="text-text-light text-xs">{Number(s.month?.count || 0)} 筆</p></div>
-              <div className="bg-white rounded-2xl p-5 border border-rose-100/60"><p className="text-text-light text-sm mb-1">累計營收</p><p className="text-rose-500 font-bold font-serif-tc text-2xl">${Number(s.total?.revenue || 0).toLocaleString()}</p><p className="text-text-light text-xs">{Number(s.total?.count || 0)} 筆</p></div>
-              <div className="bg-white rounded-2xl p-5 border border-rose-100/60"><p className="text-text-light text-sm mb-1">待確認</p><p className="text-dark font-bold text-2xl">{Number((stats as Record<string, number>).pending || 0)}</p><p className="text-text-light text-xs">筆預約</p></div>
+          {/* 冠 #4459 2026-05-30: 拉開容器寬度 + 卡片內距加大、字級加大、間距增加 */}
+          <div className="max-w-2xl mx-auto px-6 py-8 text-center space-y-6">
+            <div className="grid grid-cols-2 gap-5">
+              <div className="bg-white rounded-2xl p-7 border border-rose-100/60 shadow-sm"><p className="text-text-light text-base mb-2">今日營收</p><p className="text-rose-500 font-bold font-serif-tc text-3xl">${Number(s.today?.revenue || 0).toLocaleString()}</p><p className="text-text-light text-sm mt-1">{Number(s.today?.count || 0)} 筆</p></div>
+              <div className="bg-white rounded-2xl p-7 border border-rose-100/60 shadow-sm"><p className="text-text-light text-base mb-2">本月營收</p><p className="text-rose-500 font-bold font-serif-tc text-3xl">${Number(s.month?.revenue || 0).toLocaleString()}</p><p className="text-text-light text-sm mt-1">{Number(s.month?.count || 0)} 筆</p></div>
+              <div className="bg-white rounded-2xl p-7 border border-rose-100/60 shadow-sm"><p className="text-text-light text-base mb-2">累計營收</p><p className="text-rose-500 font-bold font-serif-tc text-3xl">${Number(s.total?.revenue || 0).toLocaleString()}</p><p className="text-text-light text-sm mt-1">{Number(s.total?.count || 0)} 筆</p></div>
+              <div className="bg-white rounded-2xl p-7 border border-rose-100/60 shadow-sm"><p className="text-text-light text-base mb-2">待確認</p><p className="text-dark font-bold text-3xl">{Number((stats as Record<string, number>).pending || 0)}</p><p className="text-text-light text-sm mt-1">筆預約</p></div>
             </div>
-            <div className="bg-white rounded-2xl p-5 border border-rose-100/60"><p className="text-text-light text-sm mb-1">熱門套餐</p><p className="text-dark font-bold text-lg">{String((stats as Record<string, string>).popularPackage || "—")}</p></div>
-            <div className="bg-white rounded-2xl p-5 border border-rose-100/60"><p className="text-text-light text-sm mb-1">需回訪提醒</p><p className="text-dark font-bold text-2xl">{Number((stats as Record<string, number>).needFollowUp || 0)} 位客戶</p><p className="text-text-light text-xs">超過 30 天未到訪</p></div>
-            <div className="bg-white rounded-2xl p-5 border border-rose-100/60 text-left mt-4">
-              <p className="text-text-light text-sm mb-3 text-center">客戶分析</p>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between"><span className="text-text-light">總客戶數</span><span className="text-dark font-bold">{customers.length} 位</span></div>
-                <div className="flex justify-between"><span className="text-text-light">本月新客</span><span className="text-dark font-bold">{customers.filter(c => c.created_at && c.created_at.startsWith(new Date().toISOString().slice(0,7))).length} 位</span></div>
-                <div className="flex justify-between"><span className="text-text-light">本月預約數</span><span className="text-dark font-bold">{Number(s.month?.count || 0)} 筆</span></div>
-                <div className="flex justify-between"><span className="text-text-light">平均客單價</span><span className="text-rose-500 font-bold">${Number(s.month?.count || 0) > 0 ? Math.round(Number(s.month?.revenue || 0) / Number(s.month?.count || 1)).toLocaleString() : "—"}</span></div>
-                <div className="flex justify-between"><span className="text-text-light">優惠券使用</span><span className="text-dark font-bold">{coupons.filter((c: Record<string, unknown>) => Number(c.used_count || 0) > 0).length} / {coupons.length} 張</span></div>
-                <div className="flex justify-between"><span className="text-text-light">推薦紀錄</span><span className="text-dark font-bold">{referrals.length} 筆</span></div>
+            <div className="bg-white rounded-2xl p-7 border border-rose-100/60 shadow-sm"><p className="text-text-light text-base mb-2">熱門套餐</p><p className="text-dark font-bold text-xl">{String((stats as Record<string, string>).popularPackage || "—")}</p></div>
+            <div className="bg-white rounded-2xl p-7 border border-rose-100/60 shadow-sm"><p className="text-text-light text-base mb-2">需回訪提醒</p><p className="text-dark font-bold text-3xl">{Number((stats as Record<string, number>).needFollowUp || 0)} 位客戶</p><p className="text-text-light text-sm mt-1">超過 30 天未到訪</p></div>
+            <div className="bg-white rounded-2xl p-7 border border-rose-100/60 text-left mt-2 shadow-sm">
+              <p className="text-text-light text-base mb-4 text-center">客戶分析</p>
+              <div className="space-y-3 text-base">
+                <div className="flex justify-between py-1"><span className="text-text-light">總客戶數</span><span className="text-dark font-bold">{customers.length} 位</span></div>
+                <div className="flex justify-between py-1"><span className="text-text-light">本月新客</span><span className="text-dark font-bold">{customers.filter(c => c.created_at && c.created_at.startsWith(new Date().toISOString().slice(0,7))).length} 位</span></div>
+                <div className="flex justify-between py-1"><span className="text-text-light">本月預約數</span><span className="text-dark font-bold">{Number(s.month?.count || 0)} 筆</span></div>
+                <div className="flex justify-between py-1"><span className="text-text-light">平均客單價</span><span className="text-rose-500 font-bold">${Number(s.month?.count || 0) > 0 ? Math.round(Number(s.month?.revenue || 0) / Number(s.month?.count || 1)).toLocaleString() : "—"}</span></div>
+                <div className="flex justify-between py-1"><span className="text-text-light">優惠券使用</span><span className="text-dark font-bold">{coupons.filter((c: Record<string, unknown>) => Number(c.used_count || 0) > 0).length} / {coupons.length} 張</span></div>
+                <div className="flex justify-between py-1"><span className="text-text-light">推薦紀錄</span><span className="text-dark font-bold">{referrals.length} 筆</span></div>
               </div>
             </div>
-            <button onClick={fetchStats} className="w-full py-4 rounded-2xl border-2 border-rose-400 text-rose-500 text-base font-medium active:bg-rose-500 active:text-white">重新整理</button>
+            <button onClick={fetchStats} className="w-full py-5 rounded-2xl border-2 border-rose-400 text-rose-500 text-lg font-medium active:bg-rose-500 active:text-white">重新整理</button>
           </div>
         </>
       )}

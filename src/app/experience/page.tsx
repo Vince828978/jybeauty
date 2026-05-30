@@ -37,7 +37,8 @@ export default function ExperiencePage() {
         </div>
       </div>
 
-      <div className="w-full px-5 py-8" style={{maxWidth:"420px", margin:"0 auto"}}>
+      {/* 冠 #4459 2026-05-30: 不再用固定 420px，桌面用 max-w-2xl，pb 留空白避免堆底 */}
+      <div className="w-full max-w-2xl mx-auto px-6 md:px-10 py-10 pb-20">
         {/* 冠 #4412 2026-05-30: 兩個體驗方案間距加大，獨立感更強 */}
         <div className="space-y-14">
           {experiences.map((p) => {
