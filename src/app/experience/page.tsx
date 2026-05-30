@@ -86,7 +86,8 @@ export default function ExperiencePage() {
             className="inline-block border-2 border-gold/40 text-gold px-14 py-5 rounded-full text-base font-medium tracking-wide active:bg-gold active:text-white transition-colors">
             💬 LINE 諮詢
           </a>
-          <a href="/" className="block w-full max-w-xs mx-auto border border-white/20 text-white/60 py-5 rounded-2xl text-base tracking-wide active:bg-white/10 transition-colors">
+          {/* 冠 #4511: 回首頁拉成跟卡片同寬，不留右邊空白 */}
+          <a href="/" className="block w-full border border-white/20 text-white/60 py-5 rounded-2xl text-base tracking-wide active:bg-white/10 transition-colors">
             ← 回首頁
           </a>
         </div>
