@@ -55,6 +55,9 @@ async function ensureBlockedTable() {
   )`;
 }
 
+// 冠 #4409 2026-05-30: 每筆預約後加 40 分鐘 buffer（肉包收拾+移動安全時間）
+const BUFFER_MIN = 40;
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const dateStr = searchParams.get("date");
@@ -95,7 +98,8 @@ export async function GET(request: Request) {
         const slotEnd = new Date(slotStart.getTime() + durMin * 60 * 1000);
         const isBlocked = busy.some((b) => {
           const busyStart = new Date(b.start!);
-          const busyEnd = new Date(b.end!);
+          // 既有預約 end 多卡 40 分鐘 buffer (冠 #4409)
+          const busyEnd = new Date(new Date(b.end!).getTime() + BUFFER_MIN * 60 * 1000);
           return slotStart < busyEnd && slotEnd > busyStart;
         });
         if (isBlocked) busySlots.push(slot);
@@ -115,11 +119,12 @@ export async function GET(request: Request) {
         return NextResponse.json({ busySlots: slots, blockedAll: true });
       }
       if (row.end_time) {
-        // 範圍封鎖：把區間內所有 slot 都加進 busy（含可預約服務時長重疊）
+        // 範圍封鎖：把區間內所有 slot 都加進 busy（含可預約服務時長重疊 + 40 buffer）
         const [bsH, bsM] = String(row.time).split(":").map(Number);
         const [beH, beM] = String(row.end_time).split(":").map(Number);
         const blockStartMin = bsH * 60 + bsM;
-        const blockEndMin = beH * 60 + beM;
+        // 冠 #4409: 後台封鎖區間後也加 40 buffer
+        const blockEndMin = beH * 60 + beM + BUFFER_MIN;
         for (const slot of slots) {
           const [sh, sm] = slot.split(":").map(Number);
           const slotStart = sh * 60 + sm;
@@ -138,7 +143,7 @@ export async function GET(request: Request) {
     console.error("Blocked dates query error:", e);
   }
 
-  return NextResponse.json({ busySlots });
+  return NextResponse.json({ busySlots, bufferMin: BUFFER_MIN });
 }
 
 export async function POST(request: Request) {

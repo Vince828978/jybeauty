@@ -47,6 +47,13 @@ const timeSlots = (() => {
   }
   return out;
 })();
+// 冠 #4409 2026-05-30: 兩段式選時 — 先選小時，再選分鐘 (10/20/30/40/50)
+const hourSlots = (() => {
+  const out: number[] = [];
+  for (let h = 10; h <= 19; h++) out.push(h); // 20:00 是最晚開始，因 9pm 後就壓不到時段
+  return out;
+})();
+const minuteSteps = [0, 10, 20, 30, 40, 50];
 
 function getNextDays(count: number) {
   const days = [];
@@ -66,9 +73,12 @@ function getNextDays(count: number) {
 
 
 export default function BookingPage() {
+  // 冠 #4412 2026-05-30: 從 /experience 進來時 URL 帶 ?exp=...&dur=...&price=... → 跳過選服務直接到選時間
+  const [expPlan, setExpPlan] = useState<{ name: string; dur: number; price: number } | null>(null);
   const [step, setStep] = useState(0);
   const [selectedServiceIds, setSelectedServiceIds] = useState<number[]>([]);
   const [selectedDate, setSelectedDate] = useState("");
+  const [selectedHour, setSelectedHour] = useState<number | null>(null);
   const [selectedTime, setSelectedTime] = useState("");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -80,6 +90,19 @@ export default function BookingPage() {
   const [busySlots, setBusySlots] = useState<string[]>([]);
   const [dbServices, setDbServices] = useState<DbService[]>([]);
 
+  // 解析 URL ?exp=...&dur=...&price=... 並跳到 step 1
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const sp = new URLSearchParams(window.location.search);
+    const exp = sp.get("exp");
+    const dur = parseInt(sp.get("dur") || "0");
+    const price = parseInt(sp.get("price") || "0");
+    if (exp && dur > 0 && price > 0) {
+      setExpPlan({ name: exp, dur, price });
+      setStep(1);
+    }
+  }, []);
+
   // Fetch active + 客戶可見 services from DB（is_public=false 的只有後台手動下單看得到）
   useEffect(() => {
     fetch("/api/services")
@@ -90,8 +113,9 @@ export default function BookingPage() {
   }, []);
 
   const selectedServices = dbServices.filter(s => selectedServiceIds.includes(s.id));
-  const total = selectedServices.reduce((sum, s) => sum + s.price, 0);
-  const totalDur = selectedServices.reduce((sum, s) => sum + (s.duration_min || 0), 0);
+  // expPlan 模式下用體驗方案的價格/時長；否則用選的服務加總
+  const total = expPlan ? expPlan.price : selectedServices.reduce((sum, s) => sum + s.price, 0);
+  const totalDur = expPlan ? expPlan.dur : selectedServices.reduce((sum, s) => sum + (s.duration_min || 0), 0);
 
   // Group services by category for display
   const servicesByCategory: Record<string, DbService[]> = {};
@@ -231,6 +255,16 @@ export default function BookingPage() {
             <h2 className="font-serif-tc text-2xl font-bold text-dark text-center mb-2">選擇日期與時段</h2>
             <p className="text-text-light text-center text-sm mb-8">挑一個你最放鬆的時間</p>
 
+            {/* 冠 #4412 2026-05-30: 從 /experience 來的方案，直接顯示已選方案 */}
+            {expPlan && (
+              <div className="bg-gold/10 border border-gold/30 rounded-2xl p-5 mb-6 text-center">
+                <p className="text-gold text-xs tracking-widest mb-1">已選方案</p>
+                <p className="text-dark font-serif-tc text-xl font-bold">{expPlan.name}</p>
+                <p className="text-text-light text-sm mt-1">{expPlan.dur} 分鐘 · 體驗價 ${expPlan.price.toLocaleString()}</p>
+                <a href="/experience" className="inline-block text-xs text-gold mt-3 underline">換其他方案</a>
+              </div>
+            )}
+
             <div className="mb-8">
               <p className="text-dark font-medium mb-4 text-sm">選擇日期</p>
               <div className="flex gap-2 overflow-x-auto pb-2 snap-x">
@@ -238,7 +272,7 @@ export default function BookingPage() {
                   const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
                   const isSelected = selectedDate === key;
                   return (
-                    <button key={key} onClick={() => { setSelectedDate(key); setSelectedTime(""); }}
+                    <button key={key} onClick={() => { setSelectedDate(key); setSelectedHour(null); setSelectedTime(""); }}
                       className={`flex-shrink-0 w-20 py-4 rounded-2xl text-center transition-all snap-center ${isSelected ? "bg-gold text-white shadow-lg scale-105" : "bg-white border-2 border-gold-light/20 hover:border-gold/50 active:scale-95"}`}>
                       <p className={`text-sm font-medium ${isSelected ? "text-white/80" : "text-text-light"}`}>{weekdays[d.getDay()]}</p>
                       <p className={`text-2xl font-bold ${isSelected ? "text-white" : "text-dark"}`}>{d.getDate()}</p>
@@ -249,26 +283,64 @@ export default function BookingPage() {
               </div>
             </div>
 
+            {/* 冠 #4409 2026-05-30: 兩段式選時 — 先選小時，再選 10 分鐘 */}
             {selectedDate && (
               <div className="fade-in mb-8">
-                <p className="text-dark font-medium mb-4 text-sm">選擇時段</p>
-                <div className="grid grid-cols-3 gap-3">
-                  {timeSlots.map((t) => {
-                    const isBooked = booked.includes(t);
-                    const isSelected = selectedTime === t;
+                <p className="text-dark font-medium mb-4 text-sm">選擇時段（先選小時）</p>
+                <div className="grid grid-cols-4 gap-3 mb-6">
+                  {hourSlots.map((h) => {
+                    const hh = String(h).padStart(2, "0");
+                    // 該小時內 6 個 10 分鐘 slot 是否全 busy
+                    const allBusy = minuteSteps.every((m) => {
+                      const t = `${hh}:${String(m).padStart(2, "0")}`;
+                      return !timeSlots.includes(t) || booked.includes(t);
+                    });
+                    const isSelected = selectedHour === h;
                     return (
-                      <button key={t} onClick={() => !isBooked && setSelectedTime(t)} disabled={isBooked}
-                        className={`py-5 rounded-2xl text-base font-semibold tracking-wide transition-all ${isBooked ? "bg-gray-100 text-gray-300 cursor-not-allowed opacity-40" : isSelected ? "bg-gold text-white shadow-lg scale-105" : "bg-white border-2 border-gold-light/30 text-dark hover:border-gold/60 active:scale-95"}`}>
-                        {isBooked ? <span className="flex flex-col items-center"><span className="line-through">{t}</span><span className="text-xs font-normal mt-1">已約</span></span> : t}
+                      <button key={h} onClick={() => !allBusy && (setSelectedHour(h), setSelectedTime(""))} disabled={allBusy}
+                        className={`py-6 rounded-2xl text-2xl font-bold tracking-wide transition-all ${allBusy ? "bg-gray-100 text-gray-300 cursor-not-allowed opacity-40" : isSelected ? "bg-gold text-white shadow-lg scale-105" : "bg-white border-2 border-gold-light/30 text-dark hover:border-gold/60 active:scale-95"}`}>
+                        {hh}<span className="text-base font-normal opacity-70">:00</span>
                       </button>
                     );
                   })}
                 </div>
+
+                {selectedHour !== null && (
+                  <div className="fade-in">
+                    <p className="text-dark font-medium mb-4 text-sm">選擇開始時間（{String(selectedHour).padStart(2, "0")} 點）</p>
+                    <div className="grid grid-cols-3 gap-3">
+                      {minuteSteps.map((m) => {
+                        const hh = String(selectedHour).padStart(2, "0");
+                        const mm = String(m).padStart(2, "0");
+                        const t = `${hh}:${mm}`;
+                        const exists = timeSlots.includes(t);
+                        const isBooked = !exists || booked.includes(t);
+                        const isSelected = selectedTime === t;
+                        return (
+                          <button key={t} onClick={() => !isBooked && setSelectedTime(t)} disabled={isBooked}
+                            className={`py-6 rounded-2xl text-xl font-semibold tracking-wide transition-all ${isBooked ? "bg-gray-100 text-gray-300 cursor-not-allowed opacity-40" : isSelected ? "bg-gold text-white shadow-lg scale-105" : "bg-white border-2 border-gold-light/30 text-dark hover:border-gold/60 active:scale-95"}`}>
+                            {isBooked ? <span className="flex flex-col items-center"><span className="line-through">{t}</span><span className="text-xs font-normal mt-1">已約</span></span> : t}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    {totalDur > 0 && (
+                      <p className="text-text-light text-xs mt-4 text-center">
+                        服務 {totalDur} 分鐘 + 40 分鐘整理時間，共佔用 {totalDur + 40} 分鐘
+                      </p>
+                    )}
+                  </div>
+                )}
               </div>
             )}
 
             <div className="flex gap-4 mt-6">
-              <button onClick={() => setStep(0)} className="flex-1 py-5 rounded-2xl border-2 border-gold text-gold text-base font-medium tracking-wide active:bg-gold active:text-white transition-colors">上一步</button>
+              {/* expPlan 模式下「上一步」回到 /experience；否則回 step 0 */}
+              {expPlan ? (
+                <a href="/experience" className="flex-1 py-5 rounded-2xl border-2 border-gold text-gold text-base font-medium tracking-wide text-center active:bg-gold active:text-white transition-colors">換方案</a>
+              ) : (
+                <button onClick={() => setStep(0)} className="flex-1 py-5 rounded-2xl border-2 border-gold text-gold text-base font-medium tracking-wide active:bg-gold active:text-white transition-colors">上一步</button>
+              )}
               <button onClick={() => selectedDate && selectedTime && setStep(2)} disabled={!selectedDate || !selectedTime}
                 className={`flex-1 py-5 rounded-2xl text-base font-medium tracking-wide transition-colors ${selectedDate && selectedTime ? "bg-gold text-white active:bg-dark-light" : "bg-gray-200 text-gray-400 cursor-not-allowed"}`}>下一步：填寫資料</button>
             </div>
@@ -284,7 +356,7 @@ export default function BookingPage() {
             <div className="bg-white rounded-2xl p-6 mb-6 border border-gold-light/20">
               <p className="text-gold text-xs tracking-wide mb-4">預約摘要</p>
               <div className="space-y-2 text-sm">
-                <div className="flex justify-between"><span className="text-text-light">服務項目</span><span className="text-dark font-medium text-right">{selectedServices.map(s => s.name).join("、")}</span></div>
+                <div className="flex justify-between"><span className="text-text-light">服務項目</span><span className="text-dark font-medium text-right">{expPlan ? expPlan.name : selectedServices.map(s => s.name).join("、")}</span></div>
                 <div className="flex justify-between"><span className="text-text-light">日期</span><span className="text-dark font-medium">{selectedDate}</span></div>
                 <div className="flex justify-between"><span className="text-text-light">時段</span><span className="text-dark font-medium">{selectedTime}</span></div>
                 <div className="flex justify-between border-t border-gold-light/20 pt-2 mt-2">
@@ -368,11 +440,12 @@ export default function BookingPage() {
               <button onClick={async () => {
                 if (submitting) return;
                 setSubmitting(true);
-                const serviceNames = selectedServices.map(s => s.name).join(" + ");
+                // expPlan 模式下用體驗方案名稱；否則用選的服務串
+                const serviceNames = expPlan ? expPlan.name : selectedServices.map(s => s.name).join(" + ");
                 await fetch("/api/bookings", {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ package: serviceNames, packageTier: "", addons: selectedServiceIds, date: selectedDate, time: selectedTime, name, phone, total, address, serviceMode, referralPhone, durationMin: totalDur }),
+                  body: JSON.stringify({ package: serviceNames, packageTier: expPlan ? "首次體驗" : "", addons: expPlan ? [] : selectedServiceIds, date: selectedDate, time: selectedTime, name, phone, total, address, serviceMode, referralPhone, durationMin: totalDur }),
                 });
                 if (referralPhone) {
                   await fetch("/api/referrals", { method: "POST", headers: { "Content-Type": "application/json" },

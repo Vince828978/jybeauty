@@ -38,29 +38,35 @@ export default function ExperiencePage() {
       </div>
 
       <div className="w-full px-5 py-8" style={{maxWidth:"420px", margin:"0 auto"}}>
-        <div className="space-y-6">
-          {experiences.map((p) => (
-            <div key={p.id} className="border border-gold/30 rounded-2xl overflow-hidden">
-              <div className="bg-gold/10 px-4 py-3 text-center">
-                <span className="text-gold text-xs tracking-wider font-medium">{p.tag}</span>
-              </div>
-              <div className="px-5 py-6 text-center">
-                <h3 className="text-white font-serif-tc text-2xl font-bold mb-1">{p.name}</h3>
-                <p className="text-gold-light text-sm mb-3">{p.time}</p>
-                <div className="w-10 h-px bg-gold/40 mx-auto my-4" />
-                <p className="text-white/70 text-sm mb-4">{p.desc}</p>
-                <div className="bg-gold/5 rounded-xl py-3 px-4 mb-5">
-                  <p className="text-gold text-sm font-medium">🎁 {p.bonus}</p>
+        {/* 冠 #4412 2026-05-30: 兩個體驗方案間距加大，獨立感更強 */}
+        <div className="space-y-14">
+          {experiences.map((p) => {
+            const expDur = parseInt(p.time) || 90;
+            const url = `/booking?exp=${encodeURIComponent(p.name)}&dur=${expDur}&price=${p.price}`;
+            return (
+              <div key={p.id} className="border-2 border-gold/40 rounded-2xl overflow-hidden shadow-xl shadow-black/30">
+                <div className="bg-gold/10 px-4 py-3 text-center">
+                  <span className="text-gold text-xs tracking-wider font-medium">{p.tag}</span>
                 </div>
-                <p className="text-white/40 text-xs mb-1">體驗價</p>
-                <p className="text-gold font-serif-tc text-4xl font-bold mb-5">${p.price.toLocaleString()}</p>
-                <a href={`/booking?pkg=${p.id}`}
-                  className="block w-full bg-gold text-white py-4 rounded-2xl text-lg font-medium tracking-wide active:bg-dark-light transition-colors">
-                  立即預約
-                </a>
+                <div className="px-5 py-6 text-center">
+                  <h3 className="text-white font-serif-tc text-2xl font-bold mb-1">{p.name}</h3>
+                  <p className="text-gold-light text-sm mb-3">{p.time}</p>
+                  <div className="w-10 h-px bg-gold/40 mx-auto my-4" />
+                  <p className="text-white/70 text-sm mb-4">{p.desc}</p>
+                  <div className="bg-gold/5 rounded-xl py-3 px-4 mb-5">
+                    <p className="text-gold text-sm font-medium">🎁 {p.bonus}</p>
+                  </div>
+                  <p className="text-white/40 text-xs mb-1">體驗價</p>
+                  <p className="text-gold font-serif-tc text-4xl font-bold mb-5">${p.price.toLocaleString()}</p>
+                  {/* 冠 #4412: 按進去直接跳「選時間」，不再選服務 */}
+                  <a href={url}
+                    className="block w-full bg-gold text-white py-4 rounded-2xl text-lg font-medium tracking-wide active:bg-dark-light transition-colors">
+                    立即預約
+                  </a>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         <div className="mt-8 text-center space-y-3">
