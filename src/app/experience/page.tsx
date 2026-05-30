@@ -39,8 +39,8 @@ export default function ExperiencePage() {
 
       {/* 冠 #4459 2026-05-30: 不再用固定 420px，桌面用 max-w-2xl，pb 留空白避免堆底 */}
       <div className="w-full max-w-2xl mx-auto px-6 md:px-10 py-10 pb-20">
-        {/* 冠 #4412 2026-05-30: 兩個體驗方案間距加大，獨立感更強 */}
-        <div className="space-y-14">
+        {/* 冠 #4490 2026-05-30: 兩方案脫得更開，中間明顯獨立分區 */}
+        <div className="space-y-20">
           {experiences.map((p) => {
             const expDur = parseInt(p.time) || 90;
             const url = `/booking?exp=${encodeURIComponent(p.name)}&dur=${expDur}&price=${p.price}`;
@@ -70,13 +70,16 @@ export default function ExperiencePage() {
           })}
         </div>
 
-        <div className="mt-8 text-center space-y-3">
-          <p className="text-white/30 text-xs">身體＋臉部組合享 85 折</p>
+        {/* 冠 #4492 2026-05-30: LINE 諮詢 + 回首頁 兩按鈕加大、拉開、好按 */}
+        <div className="mt-16 text-center space-y-8">
+          <p className="text-white/40 text-sm">身體＋臉部組合享 85 折</p>
           <a href="https://lin.ee/PeB8CkE" target="_blank"
-            className="inline-block border border-gold/30 text-gold px-10 py-3 rounded-full text-sm tracking-wide active:bg-gold active:text-white transition-colors">
-            LINE 諮詢
+            className="inline-block border-2 border-gold/40 text-gold px-14 py-5 rounded-full text-base font-medium tracking-wide active:bg-gold active:text-white transition-colors">
+            💬 LINE 諮詢
           </a>
-          <a href="/" className="block text-white/30 text-sm mt-4">回首頁</a>
+          <a href="/" className="block w-full max-w-xs mx-auto border border-white/20 text-white/60 py-5 rounded-2xl text-base tracking-wide active:bg-white/10 transition-colors">
+            ← 回首頁
+          </a>
         </div>
       </div>
     </div>
