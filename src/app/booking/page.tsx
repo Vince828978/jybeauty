@@ -324,11 +324,7 @@ export default function BookingPage() {
                         );
                       })}
                     </div>
-                    {totalDur > 0 && (
-                      <p className="text-text-light text-xs mt-4 text-center">
-                        服務 {totalDur} 分鐘 + 40 分鐘整理時間，共佔用 {totalDur + 40} 分鐘
-                      </p>
-                    )}
+{/* 冠 #4438: 40min buffer 只給後台看，客人預約頁不顯示 */}
                   </div>
                 )}
               </div>
