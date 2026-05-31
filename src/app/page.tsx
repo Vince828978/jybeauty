@@ -258,8 +258,8 @@ function PackagesPage() {
           </div>
         </div>
       </div>
-      {/* 冠 #4452 2026-05-30: 加大左右 padding，pb 留空間避免被右下浮動按鈕擋住 */}
-      <div className="md:max-w-3xl mx-auto px-8 md:px-16 py-8 pb-40">
+      {/* 冠 #4452/#4792: pb 從 40 加到 56 (224px) 避免懸浮按鈕擋到加購最後一項 */}
+      <div className="md:max-w-3xl mx-auto px-8 md:px-16 py-8 pb-56">
         {!loaded ? (
           <p className="text-white/40 py-12 text-center">載入中...</p>
         ) : services.length === 0 ? (
@@ -275,13 +275,15 @@ function PackagesPage() {
                 <p className="text-gold-light text-xs tracking-[0.3em] uppercase mb-2 text-center">{cat.toUpperCase()}</p>
                 <h3 className="text-gold font-serif-tc text-2xl font-bold mb-6 text-center">{cat}</h3>
                 <div className="space-y-4 md:grid md:grid-cols-2 md:gap-4 md:space-y-0">
-                  {/* 冠 #4489 2026-05-30: 字級加大、移除分線、時長改放金額上方 */}
+                  {/* 冠 #4792 2026-05-31: 分鐘接服務名後 (inline)，價格往左移 (text-left)，加 bottom padding 避免被懸浮按鈕擋 */}
                   {grouped[cat].map((s) => (
                     <div key={s.id} className="border border-gold/30 rounded-2xl p-7 flex flex-col bg-dark/30">
-                      <h4 className="text-white font-serif-tc text-2xl font-bold mb-2">{s.name}</h4>
+                      <h4 className="text-white font-serif-tc text-2xl font-bold mb-2">
+                        {s.name}
+                        <span className="text-white/50 text-base font-normal ml-3">{s.duration_min} 分鐘</span>
+                      </h4>
                       {s.description && <p className="text-white/60 text-sm mb-3">{s.description}</p>}
-                      <div className="mt-auto pt-4 text-right">
-                        <p className="text-white/60 text-base mb-1">{s.duration_min} 分鐘</p>
+                      <div className="mt-auto pt-4 text-left">
                         <p className="text-gold font-serif-tc text-3xl font-bold">${s.price.toLocaleString()}</p>
                       </div>
                     </div>
