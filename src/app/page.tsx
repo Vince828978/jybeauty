@@ -275,19 +275,27 @@ function PackagesPage() {
                 <p className="text-gold-light text-xs tracking-[0.3em] uppercase mb-2 text-center">{cat.toUpperCase()}</p>
                 <h3 className="text-gold font-serif-tc text-2xl font-bold mb-6 text-center">{cat}</h3>
                 <div className="space-y-4 md:grid md:grid-cols-2 md:gap-4 md:space-y-0">
-                  {/* 冠 #4792 2026-05-31: 分鐘接服務名後 (inline)，價格往左移 (text-left)，加 bottom padding 避免被懸浮按鈕擋 */}
-                  {grouped[cat].map((s) => (
-                    <div key={s.id} className="border border-gold/30 rounded-2xl p-7 flex flex-col bg-dark/30">
-                      <h4 className="text-white font-serif-tc text-2xl font-bold mb-2">
-                        {s.name}
-                        <span className="text-white/50 text-base font-normal ml-3">{s.duration_min} 分鐘</span>
-                      </h4>
-                      {s.description && <p className="text-white/60 text-sm mb-3">{s.description}</p>}
-                      <div className="mt-auto pt-4 text-left">
-                        <p className="text-gold font-serif-tc text-3xl font-bold">${s.price.toLocaleString()}</p>
+                  {/* 冠 #4794 2026-05-31:
+                      - 若服務名已含時間 (e.g. "60min" "90min") → 不再多顯示「N 分鐘」
+                      - 整張卡 center-align
+                      - 文字 略比數字大些 (name text-3xl, price text-2xl) */}
+                  {grouped[cat].map((s) => {
+                    const nameAlreadyHasDuration = /\d+\s*(min|分|hr|hour)/i.test(s.name);
+                    return (
+                      <div key={s.id} className="border border-gold/30 rounded-2xl p-7 flex flex-col bg-dark/30 text-center">
+                        <h4 className="text-white font-serif-tc text-3xl font-bold mb-2">
+                          {s.name}
+                          {!nameAlreadyHasDuration && (
+                            <span className="text-white/50 text-base font-normal ml-3">{s.duration_min} 分鐘</span>
+                          )}
+                        </h4>
+                        {s.description && <p className="text-white/60 text-sm mb-3">{s.description}</p>}
+                        <div className="mt-auto pt-4">
+                          <p className="text-gold font-serif-tc text-2xl font-bold">${s.price.toLocaleString()}</p>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             ))}
