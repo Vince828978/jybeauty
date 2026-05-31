@@ -1,0 +1,19 @@
+{
+  "name": "JY Beauty",
+  "short_name": "JY Beauty",
+  "description": "JY Beauty 到府芳療預約 & 管理",
+  "start_url": "/admin",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#FAF7F2",
+  "theme_color": "#C9A961",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

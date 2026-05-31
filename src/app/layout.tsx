@@ -12,6 +12,12 @@ export const metadata: Metadata = {
     icon: "/icon-192.png",
     apple: "/apple-touch-icon.png",
   },
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    title: "JY Beauty",
+    statusBarStyle: "default",
+  },
   alternates: {
     canonical: "https://jybeauty.tw",
   },
