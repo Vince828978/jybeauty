@@ -271,15 +271,10 @@ export default function BookingPage() {
               {selectedDate && (() => {
                 const dt = new Date(selectedDate + "T00:00:00");
                 return (
-                  <div className="bg-gold rounded-3xl px-7 py-6 mb-4 text-white shadow-xl flex items-center justify-between gap-4">
-                    <div className="flex-shrink-0">
-                      <p className="font-serif-tc text-[5.5rem] font-bold leading-none">{dt.getDate()}</p>
-                    </div>
-                    <div className="flex-1 text-right">
-                      <p className="text-white/85 text-base tracking-wide">{dt.getMonth() + 1} 月</p>
-                      <p className="text-white text-lg font-medium mb-1">星期{weekdays[dt.getDay()]}</p>
-                      <p className="text-white/90 text-sm">▶ 看時段</p>
-                    </div>
+                  <div className="bg-gold rounded-3xl px-6 py-5 mb-4 text-white shadow-xl text-center">
+                    <p className="text-white/85 text-sm tracking-[0.2em] mb-1">{dt.getMonth() + 1} 月 {dt.getDate()} 日 · 星期{weekdays[dt.getDay()]}</p>
+                    <p className="font-serif-tc text-6xl font-bold leading-tight">{dt.getDate()}</p>
+                    <p className="text-white/85 text-xs tracking-widest mt-1">▶ 看 時 段</p>
                   </div>
                 );
               })()}
