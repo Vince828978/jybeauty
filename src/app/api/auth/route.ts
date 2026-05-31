@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { neon } from "@neondatabase/serverless";
+import { notify } from "@/lib/notify";
 
 function getDb() {
   return neon(process.env.STORAGE_URL || process.env.DATABASE_URL || "");
@@ -34,6 +35,13 @@ export async function POST(request: Request) {
       if (body.referral_phone) {
         await sql`INSERT INTO referrals (referrer_phone, referred_phone, referred_name) VALUES (${body.referral_phone}, ${body.phone}, ${body.name}) ON CONFLICT DO NOTHING`;
       }
+      // 主理人 #4864 2026-05-31: 新會員加入通知
+      const refNote = body.referral_phone ? `\n🤝 推薦人: ${body.referral_phone}` : "";
+      await notify(
+        "member",
+        `新會員 — ${body.name}\n📞 ${body.phone}${body.address ? `\n📍 ${body.address}` : ""}${refNote}`,
+        { name: body.name, phone: body.phone }
+      );
       return NextResponse.json({ success: true });
     }
 

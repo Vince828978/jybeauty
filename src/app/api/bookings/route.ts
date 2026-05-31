@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { neon } from "@neondatabase/serverless";
+import { notify } from "@/lib/notify";
 
 function getDb() {
   const url = process.env.STORAGE_URL || process.env.DATABASE_URL || "";
@@ -40,6 +41,14 @@ export async function POST(request: Request) {
     const sql = getDb();
     await sql`INSERT INTO bookings (package, package_tier, addons, date, time, name, phone, total, address, duration_min)
       VALUES (${body.package}, ${body.packageTier}, ${JSON.stringify(body.addons || [])}, ${body.date}, ${body.time}, ${body.name}, ${body.phone}, ${body.total}, ${body.address || ""}, ${body.durationMin || null})`;
+    // 主理人 #4864 2026-05-31: 新預約通知 (admin 紅點 + Telegram push)
+    const dur = body.durationMin ? ` · ${body.durationMin} 分` : "";
+    const totalStr = body.total ? ` · NT$ ${Number(body.total).toLocaleString()}` : "";
+    await notify(
+      "booking",
+      `新預約 — ${body.name}\n📞 ${body.phone}\n🌿 ${body.package}${dur}${totalStr}\n📅 ${body.date} ${body.time}${body.address ? `\n📍 ${body.address}` : ""}`,
+      { name: body.name, phone: body.phone, date: body.date, time: body.time }
+    );
     // sync to Google Calendar
     // 冠 #4336 2026-05-29: 之前用 VERCEL_URL fallback 導致 deployment-specific URL，
     // 改成永遠 hit 正式網址；失敗會 log 但不擋客戶送單流程
