@@ -265,18 +265,30 @@ export default function BookingPage() {
               </div>
             )}
 
+            {/* 冠 #4806 2026-05-31: 方案 E — 焦點大卡 + 縮圖切換 */}
             <div className="mb-8">
               <p className="text-dark font-medium mb-4 text-sm">選擇日期</p>
+              {selectedDate && (() => {
+                const dt = new Date(selectedDate + "T00:00:00");
+                return (
+                  <div className="bg-gold rounded-3xl p-7 mb-4 text-white shadow-xl">
+                    <p className="text-white/80 text-sm tracking-wide mb-1">{dt.getMonth() + 1}月 {dt.getDate()} 日</p>
+                    <p className="text-white/70 text-base mb-2">星期{weekdays[dt.getDay()]}</p>
+                    <p className="font-serif-tc text-7xl font-bold leading-none mb-3">{dt.getDate()}</p>
+                    <p className="text-white/90 text-sm">▶ 看時段</p>
+                  </div>
+                );
+              })()}
               <div className="flex gap-2 overflow-x-auto pb-2 snap-x">
                 {days.map((d) => {
                   const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
                   const isSelected = selectedDate === key;
                   return (
                     <button key={key} onClick={() => { setSelectedDate(key); setSelectedHour(null); setSelectedTime(""); }}
-                      className={`flex-shrink-0 w-20 py-4 rounded-2xl text-center transition-all snap-center ${isSelected ? "bg-gold text-white shadow-lg scale-105" : "bg-white border-2 border-gold-light/20 hover:border-gold/50 active:scale-95"}`}>
-                      <p className={`text-sm font-medium ${isSelected ? "text-white/80" : "text-text-light"}`}>{weekdays[d.getDay()]}</p>
+                      className={`flex-shrink-0 w-[72px] py-3 rounded-xl text-center transition-all snap-center ${isSelected ? "bg-gold text-white shadow-md" : "bg-white border border-gold-light/30 hover:border-gold/50 active:scale-95"}`}>
+                      <p className={`text-xs font-medium ${isSelected ? "text-white/80" : "text-text-light"}`}>{weekdays[d.getDay()]}</p>
                       <p className={`text-2xl font-bold ${isSelected ? "text-white" : "text-dark"}`}>{d.getDate()}</p>
-                      <p className={`text-xs ${isSelected ? "text-white/80" : "text-text-light"}`}>{d.getMonth() + 1}月</p>
+                      <p className={`text-[10px] ${isSelected ? "text-white/80" : "text-text-light"}`}>{d.getMonth() + 1}月</p>
                     </button>
                   );
                 })}
