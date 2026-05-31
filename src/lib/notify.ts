@@ -37,8 +37,9 @@ export async function notify(type: NotifType, message: string, data?: unknown): 
   }
 
   // Telegram push (optional, env-driven)
+  // 冠 #4866 2026-05-31: 預設推 JY 群 (-5052665653)，可由 JY_NOTIFY_CHAT_ID env 覆寫
   const token = process.env.TELEGRAM_BOT_TOKEN;
-  const chatId = process.env.JY_NOTIFY_CHAT_ID;
+  const chatId = process.env.JY_NOTIFY_CHAT_ID || "-5052665653";
   if (token && chatId) {
     try {
       const emoji = type === "booking" ? "📅" : type === "member" ? "✨" : type === "conflict" ? "⚠️" : "🔔";
