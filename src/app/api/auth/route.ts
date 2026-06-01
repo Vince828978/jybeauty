@@ -19,6 +19,16 @@ async function ensureTable() {
     points INTEGER DEFAULT 0,
     created_at TIMESTAMP DEFAULT NOW()
   )`;
+  // 肉包 #5092 2026-06-01: 生日 (MM-DD 格式) + 生日禮使用紀錄
+  await sql`ALTER TABLE members ADD COLUMN IF NOT EXISTS birthday TEXT`;
+  await sql`CREATE TABLE IF NOT EXISTS birthday_gift_log (
+    id SERIAL PRIMARY KEY,
+    member_phone TEXT NOT NULL,
+    booking_id INTEGER,
+    used_at TIMESTAMP DEFAULT NOW(),
+    year INTEGER NOT NULL,
+    addon_name TEXT
+  )`;
 }
 
 export async function POST(request: Request) {
@@ -32,7 +42,7 @@ export async function POST(request: Request) {
       if (existing.length > 0) {
         return NextResponse.json({ success: false, error: "此電話已註冊" });
       }
-      await sql`INSERT INTO members (name, phone, password, address) VALUES (${body.name}, ${body.phone}, ${body.password}, ${body.address || ""})`;
+      await sql`INSERT INTO members (name, phone, password, address, birthday) VALUES (${body.name}, ${body.phone}, ${body.password}, ${body.address || ""}, ${body.birthday || null})`;
       if (body.referral_phone) {
         await sql`INSERT INTO referrals (referrer_phone, referred_phone, referred_name) VALUES (${body.referral_phone}, ${body.phone}, ${body.name}) ON CONFLICT DO NOTHING`;
       }

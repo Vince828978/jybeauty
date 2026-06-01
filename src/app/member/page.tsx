@@ -24,6 +24,7 @@ export default function MemberPage() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
+  const [birthday, setBirthday] = useState(""); // 肉包 #5092: 生日
   const [referralPhone, setReferralPhone] = useState("");
   const [error, setError] = useState("");
   const [member, setMember] = useState<MemberData | null>(null);
@@ -91,7 +92,7 @@ export default function MemberPage() {
     setError("");
     if (!name || !phone || !password) { setError("請填寫必要欄位"); return; }
     const r = await fetch("/api/auth", { method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "register", name, phone, password, address, referral_phone: referralPhone }) });
+      body: JSON.stringify({ action: "register", name, phone, password, address, birthday, referral_phone: referralPhone }) });
     const d = await r.json();
     if (d.success) {
       setMode("login");
@@ -343,6 +344,11 @@ export default function MemberPage() {
             <>
               <input value={address} onChange={e => setAddress(e.target.value)} placeholder="地址（選填）"
                 className="w-full px-6 py-7 rounded-2xl border-2 border-gold-light/30 text-xl text-center focus:outline-none focus:border-gold" />
+              <div>
+                <label className="block text-text-light text-base mb-2 px-2">🎂 生日（當月可享免費加項）</label>
+                <input type="date" value={birthday} onChange={e => setBirthday(e.target.value)}
+                  className="w-full px-6 py-7 rounded-2xl border-2 border-gold-light/30 text-xl text-center focus:outline-none focus:border-gold" />
+              </div>
               <input value={referralPhone} onChange={e => setReferralPhone(e.target.value)} placeholder="推薦人電話（選填）"
                 className="w-full px-6 py-7 rounded-2xl border-2 border-gold-light/30 text-xl text-center focus:outline-none focus:border-gold" />
             </>
