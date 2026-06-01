@@ -402,6 +402,13 @@ export default function Home() {
         </div>
         {/* 右下懸浮按鈕 */}
         <div className="fixed bottom-6 right-5 z-[150] flex flex-col gap-3">
+          {/* 肉包 #5038 2026-06-01: 寫給妳的 放在立即體驗上方 */}
+          <a href="/dear-you"
+            className="w-[68px] h-[68px] float-btn flex flex-col items-center justify-center">
+            <span className="corner-tr" /><span className="corner-bl" />
+            <span className="text-gold/90 text-xs font-medium leading-tight">寫給</span>
+            <span className="text-gold/90 text-xs font-medium leading-tight">妳的</span>
+          </a>
           <a href="/experience"
             className="w-[68px] h-[68px] float-btn flex flex-col items-center justify-center">
             <span className="corner-tr" /><span className="corner-bl" />
