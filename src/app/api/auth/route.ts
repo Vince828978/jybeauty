@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { neon } from "@neondatabase/serverless";
 import { notify } from "@/lib/notify";
+import { computeTier, currentQuarterRange, nextTierProgress, TIER_CONFIG } from "@/lib/tier";
 
 function getDb() {
   return neon(process.env.STORAGE_URL || process.env.DATABASE_URL || "");
@@ -64,7 +65,30 @@ export async function POST(request: Request) {
         created_at TIMESTAMP DEFAULT NOW()
       )`;
       const coupons = await sql`SELECT * FROM member_coupons WHERE member_phone = ${body.phone} ORDER BY used ASC, created_at DESC`;
-      return NextResponse.json({ success: true, member, bookings, referralCount: referrals.length, referrals, coupons });
+
+      // 肉包 #5092 2026-06-01: 計算本季消費 → 會員等級
+      const q = currentQuarterRange();
+      const spentRow = await sql`
+        SELECT COALESCE(SUM(total), 0) AS spent
+        FROM bookings
+        WHERE phone = ${body.phone}
+          AND status = 'confirmed'
+          AND date >= ${q.start} AND date <= ${q.end}
+      ` as Array<{ spent: string | number }>;
+      const quarterSpent = Number(spentRow[0]?.spent || 0);
+      const tier = computeTier(quarterSpent);
+      const progress = nextTierProgress(quarterSpent);
+      const tierInfo = {
+        tier,
+        tier_config: tier ? TIER_CONFIG[tier] : null,
+        quarter: q,
+        quarter_spent: quarterSpent,
+        next_tier: progress.next,
+        next_tier_remaining: progress.remaining,
+        next_tier_config: progress.next ? TIER_CONFIG[progress.next] : null,
+      };
+
+      return NextResponse.json({ success: true, member, bookings, referralCount: referrals.length, referrals, coupons, tierInfo });
     }
 
     // 冠 #4456 2026-05-30: 改密碼

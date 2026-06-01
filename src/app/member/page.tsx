@@ -7,6 +7,16 @@ interface MemberData {
 interface BookingData {
   id: number; package: string; date: string; time: string; total: number; status: string;
 }
+// 肉包 #5092 2026-06-01: 會員等級
+interface TierInfo {
+  tier: "black" | "gold" | "silver" | null;
+  tier_config: { label: string; emoji: string; threshold: number; discount: number; perks: string[] } | null;
+  quarter: { start: string; end: string; label: string };
+  quarter_spent: number;
+  next_tier: "black" | "gold" | "silver" | null;
+  next_tier_remaining: number;
+  next_tier_config: { label: string; emoji: string; threshold: number; discount: number } | null;
+}
 
 export default function MemberPage() {
   const [mode, setMode] = useState<"login"|"register">("login");
@@ -21,6 +31,7 @@ export default function MemberPage() {
   const [referralCount, setReferralCount] = useState(0);
   const [referrals, setReferrals] = useState<Array<{id: number; referred_phone: string; referred_name: string; created_at: string}>>([]);
   const [coupons, setCoupons] = useState<Array<{id: number; code: string; discount_value: number; description: string; expires_at: string; used: boolean}>>([]);
+  const [tierInfo, setTierInfo] = useState<TierInfo | null>(null);
   // 冠 #4456: 修改密碼 state
   const [pwOld, setPwOld] = useState(""); const [pwNew, setPwNew] = useState(""); const [pwConfirm, setPwConfirm] = useState("");
   const [pwMsg, setPwMsg] = useState("");
@@ -36,6 +47,7 @@ export default function MemberPage() {
       setCoupons(d.coupons || []);
       setReferralCount(d.referralCount || 0);
       setReferrals(d.referrals || []);
+      setTierInfo(d.tierInfo || null);
     } else {
       setError(d.error || "登入失敗");
     }
@@ -106,6 +118,54 @@ export default function MemberPage() {
               </div>
             </div>
           </div>
+
+          {/* 肉包 #5092 2026-06-01: 會員等級卡 */}
+          {tierInfo && (
+            <div className={`rounded-3xl p-8 mb-8 shadow-lg ${
+              tierInfo.tier === "black" ? "bg-gradient-to-br from-gray-900 to-gray-700 text-white" :
+              tierInfo.tier === "gold" ? "bg-gradient-to-br from-amber-300 to-yellow-500 text-amber-950" :
+              tierInfo.tier === "silver" ? "bg-gradient-to-br from-slate-200 to-slate-400 text-slate-800" :
+              "bg-white border border-gold-light/20 text-dark"
+            }`}>
+              <p className={`text-sm tracking-widest mb-3 ${tierInfo.tier === "black" ? "text-amber-300" : "text-current opacity-70"}`}>
+                MEMBER TIER · {tierInfo.quarter.label}
+              </p>
+              {tierInfo.tier_config ? (
+                <>
+                  <p className="text-4xl font-bold mb-2">
+                    {tierInfo.tier_config.emoji} {tierInfo.tier_config.label}
+                  </p>
+                  <p className="text-sm opacity-80 mb-4">
+                    本季享 {tierInfo.tier_config.discount === 1 ? "無折扣" : `${(tierInfo.tier_config.discount * 10).toFixed(1)} 折`}
+                  </p>
+                  <div className="space-y-1 text-xs opacity-90">
+                    {tierInfo.tier_config.perks.map((p, i) => (
+                      <p key={i}>✓ {p}</p>
+                    ))}
+                  </div>
+                  <div className="mt-5 pt-5 border-t border-current opacity-60">
+                    <p className="text-xs">本季消費</p>
+                    <p className="text-xl font-bold">NT$ {tierInfo.quarter_spent.toLocaleString()}</p>
+                    {tierInfo.next_tier_config && tierInfo.next_tier_remaining > 0 && (
+                      <p className="text-xs mt-2 opacity-80">
+                        再消費 NT$ {tierInfo.next_tier_remaining.toLocaleString()} 升 {tierInfo.next_tier_config.emoji} {tierInfo.next_tier_config.label}
+                      </p>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <p className="text-2xl font-bold mb-2">尚未升級</p>
+                  <p className="text-sm opacity-70 mb-4">本季消費 NT$ {tierInfo.quarter_spent.toLocaleString()}</p>
+                  {tierInfo.next_tier_config && (
+                    <p className="text-sm text-gold">
+                      再消費 NT$ {tierInfo.next_tier_remaining.toLocaleString()} 升 {tierInfo.next_tier_config.emoji} {tierInfo.next_tier_config.label}
+                    </p>
+                  )}
+                </>
+              )}
+            </div>
+          )}
 
           <div className="bg-white rounded-3xl p-8 border border-gold-light/20 mb-8 shadow-sm">
             <p className="text-gold text-sm tracking-widest mb-4">推薦好友</p>

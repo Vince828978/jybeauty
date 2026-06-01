@@ -89,6 +89,8 @@ export default function BookingPage() {
   const [submitting, setSubmitting] = useState(false);
   const [busySlots, setBusySlots] = useState<string[]>([]);
   const [dbServices, setDbServices] = useState<DbService[]>([]);
+  // 肉包 #5092: 會員等級折扣
+  const [memberTier, setMemberTier] = useState<{ tier: string | null; tier_config: { label: string; emoji: string; discount: number } | null } | null>(null);
 
   // 解析 URL ?exp=...&dur=...&price=... 並跳到 step 1
   useEffect(() => {
@@ -114,8 +116,24 @@ export default function BookingPage() {
 
   const selectedServices = dbServices.filter(s => selectedServiceIds.includes(s.id));
   // expPlan 模式下用體驗方案的價格/時長；否則用選的服務加總
-  const total = expPlan ? expPlan.price : selectedServices.reduce((sum, s) => sum + s.price, 0);
+  const subtotal = expPlan ? expPlan.price : selectedServices.reduce((sum, s) => sum + s.price, 0);
   const totalDur = expPlan ? expPlan.dur : selectedServices.reduce((sum, s) => sum + (s.duration_min || 0), 0);
+  // 肉包 #5092: 套用會員等級折扣（首次體驗方案不打折）
+  const tierDiscount = memberTier?.tier_config?.discount ?? 1.0;
+  const total = expPlan ? subtotal : Math.round(subtotal * tierDiscount);
+  const discountAmount = subtotal - total;
+
+  // 當電話填了 10 碼 → 查會員等級
+  useEffect(() => {
+    if (phone.length < 10) { setMemberTier(null); return; }
+    fetch(`/api/members/tier?phone=${encodeURIComponent(phone)}`)
+      .then(r => r.json())
+      .then(d => {
+        if (d.ok) setMemberTier({ tier: d.tier, tier_config: d.tier_config });
+        else setMemberTier(null);
+      })
+      .catch(() => setMemberTier(null));
+  }, [phone]);
 
   // Group services by category for display
   const servicesByCategory: Record<string, DbService[]> = {};
@@ -444,6 +462,19 @@ export default function BookingPage() {
                 )}
                 {referralPhone && (
                   <div className="flex justify-between py-2 border-b border-gold-light/10"><span className="text-text-light">推薦人</span><span className="text-dark font-medium">{referralPhone}</span></div>
+                )}
+                {/* 肉包 #5092: 會員折扣顯示 */}
+                {memberTier?.tier_config && discountAmount > 0 && !expPlan && (
+                  <>
+                    <div className="flex justify-between py-2 border-b border-gold-light/10 text-sm">
+                      <span className="text-text-light">原價</span>
+                      <span className="text-text-light line-through">${subtotal.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between py-2 border-b border-gold-light/10 text-sm">
+                      <span className="text-pink-600">{memberTier.tier_config.emoji} {memberTier.tier_config.label} 折扣 ({(memberTier.tier_config.discount * 10).toFixed(1)} 折)</span>
+                      <span className="text-pink-600 font-semibold">−${discountAmount.toLocaleString()}</span>
+                    </div>
+                  </>
                 )}
                 <div className="flex justify-between pt-4 mt-2 border-t-2 border-gold/20">
                   <span className="text-dark font-bold text-lg">預估金額</span>
