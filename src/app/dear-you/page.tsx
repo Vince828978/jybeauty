@@ -73,7 +73,7 @@ export default function DearYouPage() {
           <div className="border-t border-gold-light/30 pt-8 text-center">
             <p className="font-serif-tc text-xl text-warm-text leading-relaxed">
               JY Beauty 為妳準備的<br />
-              是 90 分鐘的「<span className="text-gold-dark">只屬於妳</span>」
+              是 140 分鐘的「<span className="text-gold-dark">只屬於妳</span>」
             </p>
             <p className="text-warm-text/60 text-sm mt-4 leading-loose">
               手機關掉、孩子交給家人<br />
@@ -99,7 +99,7 @@ export default function DearYouPage() {
             <div className="text-3xl mb-3">🕯️</div>
             <h3 className="font-serif-tc text-lg text-gold-dark mb-2">為妳安靜留白</h3>
             <p className="text-warm-text/70 text-sm leading-relaxed">
-              不被打擾的 90 分鐘<br />
+              不被打擾的 140 分鐘<br />
               不用想任何事
             </p>
           </div>
