@@ -9,7 +9,7 @@
 import { neon } from "@neondatabase/serverless";
 import webpush from "web-push";
 
-type NotifType = "booking" | "member" | "conflict" | "system";
+type NotifType = "booking" | "member" | "conflict" | "system" | "card_order";
 
 function getDb() {
   const url = process.env.STORAGE_URL || process.env.DATABASE_URL || "";

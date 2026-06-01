@@ -32,6 +32,10 @@ export default function MemberPage() {
   const [referrals, setReferrals] = useState<Array<{id: number; referred_phone: string; referred_name: string; created_at: string}>>([]);
   const [coupons, setCoupons] = useState<Array<{id: number; code: string; discount_value: number; description: string; expires_at: string; used: boolean}>>([]);
   const [tierInfo, setTierInfo] = useState<TierInfo | null>(null);
+  // 肉包 #5100/#5105 2026-06-01: 卡片餘額 + 兌換碼
+  const [cardBalance, setCardBalance] = useState<number>(0);
+  const [redeemCode, setRedeemCode] = useState("");
+  const [redeemMsg, setRedeemMsg] = useState("");
   // 冠 #4456: 修改密碼 state
   const [pwOld, setPwOld] = useState(""); const [pwNew, setPwNew] = useState(""); const [pwConfirm, setPwConfirm] = useState("");
   const [pwMsg, setPwMsg] = useState("");
@@ -48,6 +52,11 @@ export default function MemberPage() {
       setReferralCount(d.referralCount || 0);
       setReferrals(d.referrals || []);
       setTierInfo(d.tierInfo || null);
+      // 取卡片餘額
+      fetch(`/api/cards/balance?phone=${encodeURIComponent(phone)}`)
+        .then(r => r.json())
+        .then(b => { if (b.ok) setCardBalance(b.balance || 0); })
+        .catch(() => {});
     } else {
       setError(d.error || "登入失敗");
     }
@@ -166,6 +175,39 @@ export default function MemberPage() {
               )}
             </div>
           )}
+
+          {/* 肉包 #5100/#5105 2026-06-01: 卡片餘額 + 兌換碼 */}
+          <div className="bg-white rounded-3xl p-8 border border-gold-light/20 mb-8 shadow-sm">
+            <div className="flex justify-between items-baseline mb-4">
+              <p className="text-gold text-sm tracking-widest">💳 卡片餘額</p>
+              <a href="/cards" className="text-pink-600 text-sm font-medium">＋ 購買卡</a>
+            </div>
+            <p className="text-warm-text text-4xl font-bold mb-4">NT$ {cardBalance.toLocaleString()}</p>
+
+            <div className="border-t border-gold-light/30 pt-4">
+              <p className="text-warm-text/70 text-sm mb-3">收到禮品卡兌換碼？輸入這裡：</p>
+              <div className="flex gap-2">
+                <input value={redeemCode} onChange={e => setRedeemCode(e.target.value.toUpperCase())}
+                  placeholder="8 碼兌換碼" maxLength={8}
+                  className="flex-1 px-4 py-3 rounded-xl border border-gold-light/40 font-mono tracking-widest text-center" />
+                <button onClick={async () => {
+                  setRedeemMsg("");
+                  if (redeemCode.length !== 8) { setRedeemMsg("兌換碼是 8 碼"); return; }
+                  const r = await fetch("/api/cards/redeem", { method: "POST", headers: {"Content-Type":"application/json"},
+                    body: JSON.stringify({ code: redeemCode, phone: member?.phone }) });
+                  const d = await r.json();
+                  if (d.ok) {
+                    setRedeemMsg(`✅ 入帳 NT$ ${d.added.toLocaleString()}`);
+                    setCardBalance(d.new_balance);
+                    setRedeemCode("");
+                  } else {
+                    setRedeemMsg(`❌ ${d.error}`);
+                  }
+                }} className="bg-pink-500 text-white px-5 py-3 rounded-xl font-medium">兌換</button>
+              </div>
+              {redeemMsg && <p className={`text-sm mt-2 ${redeemMsg.startsWith("✅") ? "text-green-600" : "text-red-600"}`}>{redeemMsg}</p>}
+            </div>
+          </div>
 
           <div className="bg-white rounded-3xl p-8 border border-gold-light/20 mb-8 shadow-sm">
             <p className="text-gold text-sm tracking-widest mb-4">推薦好友</p>
