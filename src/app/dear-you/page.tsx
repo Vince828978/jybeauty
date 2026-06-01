@@ -1,8 +1,37 @@
 "use client";
 import Image from "next/image";
+import { useState, useEffect } from "react";
 
 // 肉包 #5036 2026-06-01: 「給辛苦的妳」品牌頁面 — 給每天努力的女性客戶
+// 肉包 #5047 2026-06-01: 嵌入「下班放鬆儀式」套餐
+type Pkg = {
+  id: number;
+  name: string;
+  description?: string;
+  original_price: number;
+  package_price: number;
+  duration_min: number;
+  serviceDetails?: { id: number; name: string }[];
+};
+
 export default function DearYouPage() {
+  const [pkg, setPkg] = useState<Pkg | null>(null);
+  useEffect(() => {
+    fetch("/api/packages")
+      .then(r => r.json())
+      .then(d => {
+        const all = (d.packages || []) as Pkg[];
+        // 抓「下班放鬆儀式」套餐
+        const target = all.find(p => p.name.includes("下班放鬆"));
+        if (target) setPkg(target);
+      })
+      .catch(() => {});
+  }, []);
+
+  const savePct = pkg
+    ? Math.round(((pkg.original_price - pkg.package_price) / pkg.original_price) * 100)
+    : 0;
+
   return (
     <div className="min-h-screen bg-warm-bg">
       {/* Hero */}
@@ -84,6 +113,56 @@ export default function DearYouPage() {
           </div>
         </div>
       </section>
+
+      {/* 肉包 #5047 套餐展示 */}
+      {pkg && (
+        <section className="max-w-md mx-auto px-6 pb-8">
+          <div className="bg-white rounded-3xl shadow-lg overflow-hidden border border-gold-light/40">
+            <div className="bg-gradient-to-r from-pink-100 to-gold-light/30 px-6 py-5">
+              <p className="text-gold-dark text-xs tracking-[0.3em] uppercase mb-1">FOR TIRED YOU</p>
+              <h3 className="font-serif-tc text-2xl text-warm-text font-bold">{pkg.name}</h3>
+              {pkg.description && (
+                <p className="text-warm-text/60 text-xs mt-2 leading-relaxed">{pkg.description}</p>
+              )}
+            </div>
+
+            <div className="px-6 py-5">
+              {(pkg.serviceDetails && pkg.serviceDetails.length > 0) && (
+                <ul className="space-y-2 mb-5">
+                  {pkg.serviceDetails.map(s => (
+                    <li key={s.id} className="flex items-start text-sm text-warm-text/80">
+                      <span className="text-gold-dark mr-2 mt-0.5">●</span>
+                      <span>{s.name}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              <div className="flex items-baseline gap-3 border-t border-gold-light/30 pt-4">
+                <span className="text-warm-text/40 text-sm line-through">
+                  ${pkg.original_price.toLocaleString()}
+                </span>
+                <span className="text-gold-dark text-3xl font-bold font-serif-tc">
+                  ${pkg.package_price.toLocaleString()}
+                </span>
+                {savePct > 0 && (
+                  <span className="text-pink-600 text-xs font-medium bg-pink-50 px-2 py-0.5 rounded-full">
+                    省 {savePct}%
+                  </span>
+                )}
+                <span className="ml-auto text-warm-text/60 text-sm">{pkg.duration_min} 分鐘</span>
+              </div>
+
+              <a
+                href="/experience"
+                className="block w-full mt-5 bg-gold text-white text-center py-3 rounded-xl font-medium active:bg-gold-light transition-colors"
+              >
+                預約這款 🌸
+              </a>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* CTA */}
       <section className="bg-gradient-to-b from-warm-bg to-pink-50 py-16 px-6">
