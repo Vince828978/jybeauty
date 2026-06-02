@@ -227,41 +227,52 @@ function PackagesPage() {
   useEffect(() => {
     fetch("/api/services")
       .then(r => r.json())
-      // 親友價格這種 is_public=false 不在官網露出
       .then(d => setServices((d.services || []).filter((s: SiteService) => s.is_active && s.is_public !== false)))
       .catch(() => {})
       .finally(() => setLoaded(true));
   }, []);
 
-  // 分類分組顯示 (身體 / 臉部 / 未分類 / 其他)
+  // 冠 #5296 2026-06-02: 方案 3 Recommendation — 推薦 hero + 次推薦 + accordion
   const grouped: Record<string, SiteService[]> = {};
   for (const s of services) {
     const cat = s.category || "其他";
     if (!grouped[cat]) grouped[cat] = [];
     grouped[cat].push(s);
   }
-  const orderHint = ["身體", "臉部", "未分類", "其他"];
+  const orderHint = ["身體", "臉部", "暖宮", "未分類", "其他"];
   const cats = Object.keys(grouped).sort((a, b) => {
     const ai = orderHint.indexOf(a);
     const bi = orderHint.indexOf(b);
     return (ai < 0 ? 99 : ai) - (bi < 0 ? 99 : bi);
   });
+
+  // 推薦邏輯：依價格高→低排序，#1 最高價 (signature)，#2 #3 依次
+  const sortedByPrice = [...services].sort((a, b) => b.price - a.price);
+  const featured = sortedByPrice[0];
+  const sub2 = sortedByPrice[1];
+  const sub3 = sortedByPrice[2];
+
+  const catIcons: Record<string, string> = {
+    "身體": "💧", "臉部": "✨", "暖宮": "🔥", "未分類": "📋", "其他": "🎯",
+  };
+
   return (
     <section className="min-h-screen pt-20 bg-dark">
-      <div className="relative h-[35vh]">
+      <div className="relative h-[28vh]">
         <Image src="/about-2.jpg" alt="JY Beauty 服務項目" fill className="object-cover object-top" />
-        <div className="absolute inset-0 bg-dark/50" />
-        <div className="absolute inset-0 flex items-center justify-center">
+        <div className="absolute inset-0 bg-gradient-to-b from-dark/40 via-dark/60 to-dark" />
+        <div className="absolute inset-0 flex items-end justify-center pb-6">
           <div className="text-center">
-            <p className="text-gold-light text-xs tracking-[0.3em] uppercase mb-2">SERVICES</p>
-            <h2 className="font-serif-tc text-3xl font-bold text-white">服務項目</h2>
+            <p className="text-gold-light text-[10px] tracking-[0.5em] uppercase mb-2">SERVICES</p>
+            <h2 className="font-serif-tc text-4xl text-white tracking-wide">服務方案</h2>
+            <p className="text-white/50 text-xs tracking-[0.2em] mt-2">為妳量身打造的療癒儀式</p>
           </div>
         </div>
       </div>
-      {/* 冠 #4452/#4792: pb 從 40 加到 56 (224px) 避免懸浮按鈕擋到加購最後一項 */}
-      <div className="md:max-w-3xl mx-auto px-8 md:px-16 py-8 pb-56">
+
+      <div className="md:max-w-3xl mx-auto px-6 md:px-12 py-8 pb-56">
         {!loaded ? (
-          <p className="text-white/40 py-12 text-center">載入中...</p>
+          <p className="text-white/40 py-12 text-center">載入中…</p>
         ) : services.length === 0 ? (
           <div className="border border-gold/30 rounded-2xl p-10 text-center">
             <p className="text-3xl mb-3">📋</p>
@@ -269,37 +280,147 @@ function PackagesPage() {
             <p className="text-white/50 text-sm">店家正在後台建立中，請稍後再回來看看～</p>
           </div>
         ) : (
-          <div className="space-y-10">
-            {cats.map((cat) => (
-              <div key={cat}>
-                <p className="text-gold-light text-xs tracking-[0.3em] uppercase mb-2 text-center">{cat.toUpperCase()}</p>
-                <h3 className="text-gold font-serif-tc text-2xl font-bold mb-6 text-center">{cat}</h3>
-                <div className="space-y-4 md:grid md:grid-cols-2 md:gap-4 md:space-y-0">
-                  {/* 冠 #4794 2026-05-31:
-                      - 若服務名已含時間 (e.g. "60min" "90min") → 不再多顯示「N 分鐘」
-                      - 整張卡 center-align
-                      - 文字 略比數字大些 (name text-3xl, price text-2xl) */}
-                  {grouped[cat].map((s) => {
-                    const nameAlreadyHasDuration = /\d+\s*(min|分|hr|hour)/i.test(s.name);
-                    return (
-                      <div key={s.id} className="border border-gold/30 rounded-2xl p-7 flex flex-col bg-dark/30 text-center">
-                        <h4 className="text-white font-serif-tc text-3xl font-bold mb-2">
-                          {s.name}
-                          {!nameAlreadyHasDuration && (
-                            <span className="text-white/50 text-base font-normal ml-3">{s.duration_min} 分鐘</span>
-                          )}
-                        </h4>
-                        {s.description && <p className="text-white/60 text-sm mb-3">{s.description}</p>}
-                        <div className="mt-auto pt-4">
-                          <p className="text-gold font-serif-tc text-2xl font-bold">${s.price.toLocaleString()}</p>
-                        </div>
+          <>
+            {/* Featured Hero Card */}
+            {featured && (
+              <div className="mb-6">
+                <p className="text-[10px] tracking-[0.5em] text-white/40 mb-3 text-center">FOR YOU · 為妳推薦</p>
+                <a
+                  href={`/booking?exp=${encodeURIComponent(featured.name)}&dur=${featured.duration_min}&price=${featured.price}`}
+                  className="block relative rounded-3xl overflow-hidden border border-gold/40 active:scale-[0.99] transition-transform"
+                  style={{
+                    background: "linear-gradient(160deg,#4A2818 0%,#2A1810 60%,#0B0907 100%)",
+                    boxShadow: "0 0 60px rgba(201,169,97,0.18), inset 0 1px 0 rgba(255,255,255,0.06)",
+                  }}
+                >
+                  <div className="absolute top-0 left-0 right-0 p-4 flex items-center justify-between z-10">
+                    <span className="text-[10px] tracking-[0.3em] text-gold-light px-3 py-1 rounded-full bg-black/40 backdrop-blur border border-gold/30">
+                      SIGNATURE · #1
+                    </span>
+                    <span className="text-[10px] text-gold-light px-3 py-1 rounded-full bg-black/40 backdrop-blur">
+                      ✨ 最熱門
+                    </span>
+                  </div>
+                  <div
+                    className="absolute inset-0 opacity-30 pointer-events-none"
+                    style={{
+                      background: "linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.06) 50%, transparent 60%)",
+                    }}
+                  />
+                  <div className="pt-20 pb-6 px-6 relative">
+                    <p className="text-[10px] tracking-[0.4em] text-gold/70">
+                      {(featured.category || "BODY").toUpperCase()} · {featured.category || "全身放鬆"}
+                    </p>
+                    <p className="font-serif-tc text-3xl text-white mt-2 leading-tight">
+                      {featured.name}
+                    </p>
+                    <p className="font-serif-tc text-2xl text-gold mt-1 leading-tight">
+                      {featured.duration_min} minutes
+                    </p>
+                    {featured.description && (
+                      <p className="text-xs text-white/60 mt-3 leading-relaxed">{featured.description}</p>
+                    )}
+                    <div className="mt-5 flex items-end justify-between gap-3">
+                      <div>
+                        <p className="text-[9px] text-white/50 tracking-[2px]">FROM</p>
+                        <p className="font-serif-tc text-3xl text-gold-light">NT$ {featured.price.toLocaleString()}</p>
                       </div>
-                    );
-                  })}
-                </div>
+                      <span
+                        className="px-5 py-3 rounded-full text-[#1A1006] text-xs font-semibold tracking-[3px]"
+                        style={{ background: "linear-gradient(135deg,#F5E9C8,#C9A961,#9B7A3A)" }}
+                      >
+                        立即預約 →
+                      </span>
+                    </div>
+                  </div>
+                </a>
               </div>
-            ))}
-          </div>
+            )}
+
+            {/* 2 次推薦 */}
+            {(sub2 || sub3) && (
+              <div className="grid grid-cols-2 gap-3 mb-10">
+                {[sub2, sub3].filter(Boolean).map((s, idx) => (
+                  <a
+                    key={s!.id}
+                    href={`/booking?exp=${encodeURIComponent(s!.name)}&dur=${s!.duration_min}&price=${s!.price}`}
+                    className="relative rounded-2xl p-4 border border-gold/30 overflow-hidden active:scale-[0.97] transition-transform"
+                    style={{ background: "linear-gradient(160deg, #1A1410 0%, #0F0B08 100%)" }}
+                  >
+                    <span className="absolute top-3 right-3 text-[9px] text-gold-light tracking-[2px]">#{idx + 2}</span>
+                    <p className="text-2xl mt-2">{catIcons[s!.category || "其他"]}</p>
+                    <p className="font-serif-tc text-base text-white mt-2">{s!.name}</p>
+                    <p className="text-[10px] text-white/50 mt-1">{s!.duration_min} min</p>
+                    <div className="mt-3 pt-3 border-t border-gold/20 flex justify-between items-baseline">
+                      <p className="text-[9px] text-white/50 tracking-[2px]">{idx === 0 ? "次推薦" : "新客最愛"}</p>
+                      <p className="font-serif-tc text-xl text-gold">${s!.price.toLocaleString()}</p>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            )}
+
+            {/* Divider */}
+            <div className="flex items-center gap-4 mb-6">
+              <div className="flex-1 h-px bg-gradient-to-r from-transparent to-gold/40" />
+              <p className="text-[10px] text-white/40 tracking-[0.5em]">ALL SERVICES</p>
+              <div className="flex-1 h-px bg-gradient-to-l from-transparent to-gold/40" />
+            </div>
+
+            {/* Accordion 分類 */}
+            <div className="space-y-3">
+              {cats.map((cat, idx) => (
+                <details
+                  key={cat}
+                  open={idx === 0}
+                  className="border border-gold/30 rounded-2xl overflow-hidden"
+                  style={{ background: "linear-gradient(160deg, #1A1410 0%, #0F0B08 100%)" }}
+                >
+                  <summary className="px-5 py-4 cursor-pointer flex items-center justify-between list-none">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full flex items-center justify-center bg-gold/10 border border-gold/20 text-lg">
+                        {catIcons[cat] || "🎯"}
+                      </div>
+                      <div>
+                        <p className="font-serif-tc text-xl text-gold-light">{cat}</p>
+                        <p className="text-[9px] text-white/40 tracking-[2px]">{grouped[cat].length} 項 · {Math.min(...grouped[cat].map(s => s.duration_min))}-{Math.max(...grouped[cat].map(s => s.duration_min))} MIN</p>
+                      </div>
+                    </div>
+                    <svg className="w-4 h-4 text-gold/60 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </summary>
+                  <div className="px-5 pb-4 border-t border-gold/20">
+                    <div className="space-y-1 mt-3">
+                      {grouped[cat].map((s) => {
+                        const nameAlreadyHasDuration = /\d+\s*(min|分|hr|hour)/i.test(s.name);
+                        return (
+                          <a
+                            key={s.id}
+                            href={`/booking?exp=${encodeURIComponent(s.name)}&dur=${s.duration_min}&price=${s.price}`}
+                            className="flex items-center justify-between py-3 border-b border-white/5 last:border-0 active:bg-gold/5 px-2 -mx-2 rounded-lg transition-colors"
+                          >
+                            <div className="flex-1 min-w-0">
+                              <p className="font-serif-tc text-base text-white truncate">
+                                {s.name}
+                                {!nameAlreadyHasDuration && (
+                                  <span className="text-white/40 text-xs font-normal ml-2">{s.duration_min} 分鐘</span>
+                                )}
+                              </p>
+                              {s.description && (
+                                <p className="text-[11px] text-white/40 mt-0.5 truncate">{s.description}</p>
+                              )}
+                            </div>
+                            <p className="font-serif-tc text-xl text-gold ml-3 whitespace-nowrap">${s.price.toLocaleString()}</p>
+                          </a>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </details>
+              ))}
+            </div>
+          </>
         )}
         <div className="text-center mt-12">
           <a href="/member" className="inline-block bg-gold text-white px-12 py-5 text-lg tracking-wide rounded-2xl font-medium active:bg-dark-light transition-colors">
