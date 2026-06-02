@@ -105,6 +105,28 @@ export default function BookingPage() {
     }
   }, []);
 
+  // 冠 #5292 2026-06-02: 已登入會員自動帶入姓名/電話/地址 (從 localStorage)
+  const [memberPrefilled, setMemberPrefilled] = useState(false);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const raw = localStorage.getItem("jy_member");
+      if (!raw) return;
+      const m = JSON.parse(raw);
+      if (m?.name) setName(m.name);
+      if (m?.phone) setPhone(m.phone);
+      if (m?.address) setAddress(m.address);
+      if (m?.name || m?.phone) setMemberPrefilled(true);
+    } catch {}
+  }, []);
+
+  const clearMemberPrefill = () => {
+    setName("");
+    setPhone("");
+    setAddress("");
+    setMemberPrefilled(false);
+  };
+
   // Fetch active + 客戶可見 services from DB（is_public=false 的只有後台手動下單看得到）
   useEffect(() => {
     fetch("/api/services")
@@ -404,6 +426,14 @@ export default function BookingPage() {
             </div>
 
             <div className="space-y-4 mb-8">
+              {memberPrefilled && (
+                <div className="flex items-center justify-between bg-gold/10 border border-gold-light/40 rounded-xl px-4 py-3 text-sm">
+                  <span className="text-dark">
+                    ✓ 已自動帶入會員資料 <span className="text-text-light">（{name}）</span>
+                  </span>
+                  <button onClick={clearMemberPrefill} className="text-gold underline text-xs">清空</button>
+                </div>
+              )}
               <div>
                 <label className="text-dark text-sm font-medium mb-2 block">服務方式</label>
                 <div className="grid grid-cols-2 gap-3">

@@ -53,6 +53,14 @@ export default function MemberPage() {
       setReferralCount(d.referralCount || 0);
       setReferrals(d.referrals || []);
       setTierInfo(d.tierInfo || null);
+      // 冠 #5292 2026-06-02: 持久化 member 到 localStorage，booking 頁進入時自動帶入資料
+      try {
+        localStorage.setItem("jy_member", JSON.stringify({
+          name: d.member.name,
+          phone: d.member.phone,
+          address: d.member.address || "",
+        }));
+      } catch {}
       // 取卡片餘額
       fetch(`/api/cards/balance?phone=${encodeURIComponent(phone)}`)
         .then(r => r.json())
