@@ -86,7 +86,7 @@ export default function ServicesPage() {
 
   // Service form
   const [editService, setEditService] = useState<Service | null>(null);
-  const [serviceForm, setServiceForm] = useState({ name: "", description: "", duration_min: 60, price: 0, category: "身體", sort_order: 0, is_public: true });
+  const [serviceForm, setServiceForm] = useState({ name: "", description: "", duration_min: 60, price: 0, category: "身體", sort_order: 0, is_public: true, is_recommended: false });
   const [showServiceForm, setShowServiceForm] = useState(false);
 
   // Package builder
@@ -159,7 +159,7 @@ export default function ServicesPage() {
   }, 0);
 
   const resetServiceForm = () => {
-    setServiceForm({ name: "", description: "", duration_min: 60, price: 0, category: "身體", sort_order: 0, is_public: true });
+    setServiceForm({ name: "", description: "", duration_min: 60, price: 0, category: "身體", sort_order: 0, is_public: true, is_recommended: false });
     setEditService(null);
     setShowServiceForm(false);
   };
@@ -253,6 +253,7 @@ export default function ServicesPage() {
       category: svc.category || "身體",
       sort_order: svc.sort_order || 0,
       is_public: (svc as { is_public?: boolean }).is_public !== false,
+      is_recommended: (svc as { is_recommended?: boolean }).is_recommended === true,
     });
     setEditService(svc);
     setShowServiceForm(true);
@@ -383,6 +384,16 @@ export default function ServicesPage() {
                     <span className="text-sm text-dark flex-1">
                       🌐 客戶網站可見
                       <span className="block text-xs text-text-light">關閉的話只有後台「手動建立預約」會看到（例：親友優惠方案）</span>
+                    </span>
+                  </label>
+                  {/* 肉包 2026-06-08: 推薦標籤開關 — 開啟後前台這個課程旁會顯示「推薦」 */}
+                  <label className="flex items-center gap-3 px-1 py-2 cursor-pointer">
+                    <input type="checkbox" checked={serviceForm.is_recommended}
+                      onChange={(e) => setServiceForm({ ...serviceForm, is_recommended: e.target.checked })}
+                      className="w-6 h-6 accent-rose-500" />
+                    <span className="text-sm text-dark flex-1">
+                      ⭐ 標註「推薦」
+                      <span className="block text-xs text-text-light">開啟後，前台這個課程旁邊會顯示「推薦」標籤</span>
                     </span>
                   </label>
                   <div className="flex gap-3 pt-2">

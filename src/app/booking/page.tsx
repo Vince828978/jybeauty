@@ -33,6 +33,7 @@ interface DbService {
   price: number;
   category?: string;
   is_active: boolean;
+  is_recommended?: boolean;
   sort_order?: number;
 }
 
@@ -259,7 +260,7 @@ export default function BookingPage() {
                             className={`flex items-center gap-4 p-5 rounded-2xl border-2 cursor-pointer transition-all ${sel ? "border-gold bg-gold/5 shadow-md" : "border-gold-light/20 bg-white"}`}>
                             <input type="checkbox" checked={sel} onChange={() => toggleService(s.id)} className="w-6 h-6 accent-gold flex-shrink-0" />
                             <div className="flex-1 min-w-0">
-                              <p className="text-dark text-lg font-bold">{s.name}</p>
+                              <p className="text-dark text-lg font-bold">{s.name}{s.is_recommended && <span className="ml-2 align-middle inline-block text-xs font-bold text-white bg-gold rounded-full px-2 py-0.5">推薦</span>}</p>
                               {s.description && <p className="text-text-light text-sm mt-1">{s.description}</p>}
                               <p className="text-text-light text-sm mt-1">約 {s.duration_min} 分鐘</p>
                             </div>

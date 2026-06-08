@@ -22,6 +22,8 @@ async function ensureTable() {
   )`;
   // 冠 #4344 2026-05-29: 加 is_public 欄，true=客戶網站可見、false=只有後台手動下單看得到
   try { await sql`ALTER TABLE services ADD COLUMN IF NOT EXISTS is_public BOOLEAN DEFAULT true`; } catch {}
+  // 肉包 2026-06-08: 加 is_recommended 欄，true=前台課程旁顯示「推薦」標籤
+  try { await sql`ALTER TABLE services ADD COLUMN IF NOT EXISTS is_recommended BOOLEAN DEFAULT false`; } catch {}
 }
 
 export async function GET() {
@@ -40,8 +42,8 @@ export async function POST(request: Request) {
     await ensureTable();
     const body = await request.json();
     const sql = getDb();
-    const result = await sql`INSERT INTO services (name, description, duration_min, price, category, is_active, is_public, sort_order)
-      VALUES (${body.name}, ${body.description || ""}, ${body.duration_min || 60}, ${body.price}, ${body.category || "身體"}, ${body.is_active !== false}, ${body.is_public !== false}, ${body.sort_order || 0})
+    const result = await sql`INSERT INTO services (name, description, duration_min, price, category, is_active, is_public, is_recommended, sort_order)
+      VALUES (${body.name}, ${body.description || ""}, ${body.duration_min || 60}, ${body.price}, ${body.category || "身體"}, ${body.is_active !== false}, ${body.is_public !== false}, ${body.is_recommended === true}, ${body.sort_order || 0})
       RETURNING *`;
     return NextResponse.json({ success: true, service: result[0] });
   } catch (e) {
@@ -62,6 +64,7 @@ export async function PUT(request: Request) {
       category = ${body.category || "身體"},
       is_active = ${body.is_active !== false},
       is_public = ${body.is_public !== false},
+      is_recommended = ${body.is_recommended === true},
       sort_order = ${body.sort_order || 0}
       WHERE id = ${body.id}`;
     return NextResponse.json({ success: true });
