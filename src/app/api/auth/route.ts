@@ -101,6 +101,49 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true, member, bookings, referralCount: referrals.length, referrals, coupons, tierInfo });
     }
 
+    // 冠 #5644 2026-06-09: 記住登入 — 同支手機免密碼還原 session（本機 localStorage 已存登入狀態）
+    if (body.action === "restore") {
+      const members = await sql`SELECT * FROM members WHERE phone = ${body.phone}`;
+      if (members.length === 0) {
+        return NextResponse.json({ success: false, error: "查無此會員" });
+      }
+      const member = members[0];
+      const bookings = await sql`SELECT * FROM bookings WHERE phone = ${body.phone} ORDER BY created_at DESC`;
+      const referrals = await sql`SELECT * FROM referrals WHERE referrer_phone = ${body.phone}`;
+      await sql`CREATE TABLE IF NOT EXISTS member_coupons (
+        id SERIAL PRIMARY KEY,
+        member_phone TEXT NOT NULL,
+        code TEXT NOT NULL,
+        discount_value INTEGER DEFAULT 10,
+        description TEXT,
+        expires_at TIMESTAMP,
+        used BOOLEAN DEFAULT false,
+        created_at TIMESTAMP DEFAULT NOW()
+      )`;
+      const coupons = await sql`SELECT * FROM member_coupons WHERE member_phone = ${body.phone} ORDER BY used ASC, created_at DESC`;
+      const q = currentQuarterRange();
+      const spentRow = await sql`
+        SELECT COALESCE(SUM(total), 0) AS spent
+        FROM bookings
+        WHERE phone = ${body.phone}
+          AND status = 'confirmed'
+          AND date >= ${q.start} AND date <= ${q.end}
+      ` as Array<{ spent: string | number }>;
+      const quarterSpent = Number(spentRow[0]?.spent || 0);
+      const tier = computeTier(quarterSpent);
+      const progress = nextTierProgress(quarterSpent);
+      const tierInfo = {
+        tier,
+        tier_config: tier ? TIER_CONFIG[tier] : null,
+        quarter: q,
+        quarter_spent: quarterSpent,
+        next_tier: progress.next,
+        next_tier_remaining: progress.remaining,
+        next_tier_config: progress.next ? TIER_CONFIG[progress.next] : null,
+      };
+      return NextResponse.json({ success: true, member, bookings, referralCount: referrals.length, referrals, coupons, tierInfo });
+    }
+
     // 冠 #4456 2026-05-30: 改密碼
     if (body.action === "change_password") {
       const { phone, oldPassword, newPassword } = body;

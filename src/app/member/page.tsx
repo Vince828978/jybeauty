@@ -1,5 +1,5 @@
 "use client";
-import { useState, type ReactNode } from "react";
+import { useState, useEffect, type ReactNode } from "react";
 
 // 冠 #5621 2026-06-09: 自訂線條圖示（非 emoji），B-1 暖金米版採用
 function Ic({ name, className = "w-[22px] h-[22px]" }: { name: string; className?: string }) {
@@ -59,6 +59,41 @@ export default function MemberPage() {
   const [pwMsg, setPwMsg] = useState("");
   // 冠 2026-06-09: App 化 — 底部分頁，不再一長串流水
   const [tab, setTab] = useState<"home" | "booking" | "cards" | "me">("home");
+  // 冠 #5644 2026-06-09: 記住登入 — 一進頁面若本機有登入紀錄就免密碼自動還原
+  const [restoring, setRestoring] = useState(true);
+
+  useEffect(() => {
+    let saved: { phone?: string } | null = null;
+    try { saved = JSON.parse(localStorage.getItem("jy_member") || "null"); } catch {}
+    if (!saved?.phone) { setRestoring(false); return; }
+    const ph = saved.phone;
+    (async () => {
+      try {
+        const r = await fetch("/api/auth", { method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "restore", phone: ph }) });
+        const d = await r.json();
+        if (d.success) {
+          setMember(d.member);
+          setBookings(d.bookings || []);
+          setCoupons(d.coupons || []);
+          setReferralCount(d.referralCount || 0);
+          setReferrals(d.referrals || []);
+          setTierInfo(d.tierInfo || null);
+          setPhone(ph);
+          fetch(`/api/cards/balance?phone=${encodeURIComponent(ph)}`)
+            .then(r => r.json()).then(b => { if (b.ok) setCardBalance(b.balance || 0); }).catch(() => {});
+        }
+      } catch {}
+      setRestoring(false);
+    })();
+  }, []);
+
+  const handleLogout = () => {
+    try { localStorage.removeItem("jy_member"); } catch {}
+    setMember(null); setBookings([]); setCoupons([]); setReferralCount(0);
+    setReferrals([]); setTierInfo(null); setCardBalance(0);
+    setPhone(""); setPassword(""); setTab("home");
+  };
 
   const handleLogin = async () => {
     setError("");
@@ -426,10 +461,20 @@ export default function MemberPage() {
                 </div>
               </details>
 
+              <button onClick={handleLogout} className="block w-full py-4 rounded-2xl text-base text-red-500 text-center border border-red-200 bg-white active:bg-red-50">登出</button>
               <a href="/" className="block w-full py-4 rounded-2xl text-base text-text-light text-center border border-gold-light/30 bg-white">回首頁</a>
             </>
           )}
         </div>
+      </div>
+    );
+  }
+
+  // 冠 #5644: 還原登入中先顯示品牌啟動畫面，避免閃一下登入表單
+  if (restoring) {
+    return (
+      <div className="min-h-screen bg-warm-bg flex items-center justify-center">
+        <p className="font-serif-tc text-3xl font-bold text-dark"><span className="text-gold">JY</span> Beauty</p>
       </div>
     );
   }
