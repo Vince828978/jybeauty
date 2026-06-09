@@ -21,6 +21,9 @@
   --color-text: var(--text);
   --color-text-light: var(--text-light);
   --font-sans: var(--font-geist-sans);
+  /* 冠 #5693: 立體陰影做成主題 token（Tailwind v4 不吃 rgba 逗號的任意 shadow class）*/
+  --shadow-tile: 0 3px 0 rgba(201,168,106,0.26), 0 9px 18px -6px rgba(150,110,40,0.18);
+  --shadow-cta: 0 4px 0 rgba(140,100,40,0.5), 0 11px 22px -5px rgba(160,120,50,0.45);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }

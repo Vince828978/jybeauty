@@ -245,7 +245,7 @@ export default function MemberPage() {
               </div>
 
               {/* B-1 暖金米：CTA 橫幅領頭 */}
-              <a href="/booking" className="flex items-center gap-3 p-4 rounded-2xl bg-gradient-to-b from-gold-light to-gold text-white shadow-[0_4px_0_rgba(140,100,40,0.5),0_11px_22px_-5px_rgba(160,120,50,0.45)] active:translate-y-0.5 transition-transform">
+              <a href="/booking" className="flex items-center gap-3 p-4 rounded-2xl bg-gradient-to-b from-gold-light to-gold text-white shadow-cta active:translate-y-0.5 transition-transform">
                 <span className="w-11 h-11 shrink-0 rounded-xl bg-white/25 text-white flex items-center justify-center"><Ic name="book" /></span>
                 <span>
                   <span className="block font-bold text-base">立即預約療程</span>
@@ -256,48 +256,48 @@ export default function MemberPage() {
               {/* 統一 4:3 方塊 × 6（套設計準則：一致比例、內容填滿、8px 間距） */}
               <div className="grid grid-cols-2 gap-2.5">
                 <button onClick={() => setTab("booking")}
-                  className="flex flex-col gap-2.5 p-4 rounded-[18px] bg-gradient-to-b from-white to-[#f6f0e4] border border-gold-light/40 shadow-[0_3px_0_rgba(201,168,106,0.26),0_9px_18px_-6px_rgba(150,110,40,0.18)] active:scale-[0.97] transition-transform text-left">
-                  <span className="w-12 h-12 rounded-xl bg-gold/15 text-gold flex items-center justify-center"><Ic name="list" /></span>
+                  className="flex flex-col justify-center gap-2 p-4 rounded-[18px] bg-gradient-to-b from-white to-[#f6f0e4] border border-gold-light/40 shadow-tile active:scale-[0.97] transition-transform text-left">
+                  <span className="w-12 h-12 rounded-xl bg-gold/20 text-gold flex items-center justify-center"><Ic name="list" /></span>
                   <span>
                     <span className="block text-dark font-bold text-sm">我的預約</span>
                     <span className="block text-text-light text-[11px] mt-0.5">{bookings.length} 次紀錄</span>
                   </span>
                 </button>
                 <button onClick={() => setTab("cards")}
-                  className="flex flex-col gap-2.5 p-4 rounded-[18px] bg-gradient-to-b from-white to-[#f6f0e4] border border-gold-light/40 shadow-[0_3px_0_rgba(201,168,106,0.26),0_9px_18px_-6px_rgba(150,110,40,0.18)] active:scale-[0.97] transition-transform text-left">
-                  <span className="w-12 h-12 rounded-xl bg-gold/15 text-gold flex items-center justify-center"><Ic name="ticket" /></span>
+                  className="flex flex-col justify-center gap-2 p-4 rounded-[18px] bg-gradient-to-b from-white to-[#f6f0e4] border border-gold-light/40 shadow-tile active:scale-[0.97] transition-transform text-left">
+                  <span className="w-12 h-12 rounded-xl bg-gold/20 text-gold flex items-center justify-center"><Ic name="ticket" /></span>
                   <span>
                     <span className="block text-dark font-bold text-sm">我的卡券</span>
                     <span className="block text-text-light text-[11px] mt-0.5">{coupons.filter(c => !c.used).length} 張可用</span>
                   </span>
                 </button>
                 <button onClick={() => setTab("cards")}
-                  className="flex flex-col gap-2.5 p-4 rounded-[18px] bg-gradient-to-b from-white to-[#f6f0e4] border border-gold-light/40 shadow-[0_3px_0_rgba(201,168,106,0.26),0_9px_18px_-6px_rgba(150,110,40,0.18)] active:scale-[0.97] transition-transform text-left">
-                  <span className="w-12 h-12 rounded-xl bg-gold/15 text-gold flex items-center justify-center"><Ic name="card" /></span>
+                  className="flex flex-col justify-center gap-2 p-4 rounded-[18px] bg-gradient-to-b from-white to-[#f6f0e4] border border-gold-light/40 shadow-tile active:scale-[0.97] transition-transform text-left">
+                  <span className="w-12 h-12 rounded-xl bg-gold/20 text-gold flex items-center justify-center"><Ic name="card" /></span>
                   <span>
                     <span className="block text-dark font-bold text-sm">卡片餘額</span>
                     <span className="block text-gold font-bold text-sm mt-0.5">NT$ {cardBalance.toLocaleString()}</span>
                   </span>
                 </button>
                 <button onClick={() => setTab("me")}
-                  className="flex flex-col gap-2.5 p-4 rounded-[18px] bg-gradient-to-b from-white to-[#f6f0e4] border border-gold-light/40 shadow-[0_3px_0_rgba(201,168,106,0.26),0_9px_18px_-6px_rgba(150,110,40,0.18)] active:scale-[0.97] transition-transform text-left">
-                  <span className="w-12 h-12 rounded-xl bg-gold/15 text-gold flex items-center justify-center"><Ic name="refer" /></span>
+                  className="flex flex-col justify-center gap-2 p-4 rounded-[18px] bg-gradient-to-b from-white to-[#f6f0e4] border border-gold-light/40 shadow-tile active:scale-[0.97] transition-transform text-left">
+                  <span className="w-12 h-12 rounded-xl bg-gold/20 text-gold flex items-center justify-center"><Ic name="refer" /></span>
                   <span>
                     <span className="block text-dark font-bold text-sm">推薦好友</span>
                     <span className="block text-text-light text-[11px] mt-0.5">已推薦 {referralCount} 人</span>
                   </span>
                 </button>
                 <a href="/booking"
-                  className="flex flex-col gap-2.5 p-4 rounded-[18px] bg-gradient-to-b from-white to-[#f6f0e4] border border-gold-light/40 shadow-[0_3px_0_rgba(201,168,106,0.26),0_9px_18px_-6px_rgba(150,110,40,0.18)] active:scale-[0.97] transition-transform text-left">
-                  <span className="w-12 h-12 rounded-xl bg-gold/15 text-gold flex items-center justify-center"><Ic name="bag" /></span>
+                  className="flex flex-col justify-center gap-2 p-4 rounded-[18px] bg-gradient-to-b from-white to-[#f6f0e4] border border-gold-light/40 shadow-tile active:scale-[0.97] transition-transform text-left">
+                  <span className="w-12 h-12 rounded-xl bg-gold/20 text-gold flex items-center justify-center"><Ic name="bag" /></span>
                   <span>
                     <span className="block text-dark font-bold text-sm">服務項目</span>
                     <span className="block text-text-light text-[11px] mt-0.5">看療程與價格</span>
                   </span>
                 </a>
                 <button onClick={() => setTab("me")}
-                  className="flex flex-col gap-2.5 p-4 rounded-[18px] bg-gradient-to-b from-white to-[#f6f0e4] border border-gold-light/40 shadow-[0_3px_0_rgba(201,168,106,0.26),0_9px_18px_-6px_rgba(150,110,40,0.18)] active:scale-[0.97] transition-transform text-left">
-                  <span className="w-12 h-12 rounded-xl bg-gold/15 text-gold flex items-center justify-center"><Ic name="gear" /></span>
+                  className="flex flex-col justify-center gap-2 p-4 rounded-[18px] bg-gradient-to-b from-white to-[#f6f0e4] border border-gold-light/40 shadow-tile active:scale-[0.97] transition-transform text-left">
+                  <span className="w-12 h-12 rounded-xl bg-gold/20 text-gold flex items-center justify-center"><Ic name="gear" /></span>
                   <span>
                     <span className="block text-dark font-bold text-sm">帳號設定</span>
                     <span className="block text-text-light text-[11px] mt-0.5">資料・密碼</span>
