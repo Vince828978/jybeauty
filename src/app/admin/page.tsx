@@ -176,6 +176,8 @@ export default function AdminPage() {
         </div>
 
         <div className="max-w-lg mx-auto px-4 mt-4">
+          {/* 肉包 #5583: 通知開啟提示（已開則不顯示）*/}
+          <PushPrompt />
           {/* 快速操作 — 加大觸控區 */}
           <div className="grid grid-cols-4 gap-3 mb-4">
             {[
@@ -850,6 +852,48 @@ function PushEnableCard() {
       <p className="text-[11px] text-text-light mt-3">
         💡 iPhone 用戶必須從<b>桌面 icon 打開（非 Safari）</b>才能啟用，且需要 iOS 16.4+
       </p>
+    </div>
+  );
+}
+
+// 肉包 #5583 2026-06-09: 首頁頂部醒目提示 — 還沒開通知就引導她開（已開則不顯示）
+function PushPrompt() {
+  const [supported, setSupported] = useState<boolean | null>(null);
+  const [subscribed, setSubscribed] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState("");
+  useEffect(() => {
+    isPushSupported().then(setSupported);
+    isPushSubscribed().then(setSubscribed);
+  }, []);
+  if (supported === null || subscribed) return null; // 還在判斷 or 已開 → 不顯示
+  if (!supported) {
+    return (
+      <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-4">
+        <p className="text-sm font-bold text-amber-800 mb-1">📲 想讓新預約跳手機通知？</p>
+        <p className="text-xs text-amber-700 leading-relaxed">
+          iPhone：用 Safari 開此頁 → 點分享 ⬆️ →「加入主畫面」→ 之後一定要從<b>主畫面那個 icon</b> 打開（不是 Safari）→ 回到這裡就會出現「開啟」按鈕。（需 iOS 16.4 以上）
+        </p>
+      </div>
+    );
+  }
+  return (
+    <div className="bg-rose-50 border border-rose-200 rounded-2xl p-4 mb-4 flex items-center justify-between gap-3">
+      <div className="min-w-0">
+        <p className="text-sm font-bold text-dark">🔔 開啟手機通知</p>
+        <p className={`text-xs mt-0.5 ${msg.startsWith("✗") ? "text-rose-600" : "text-text-light"}`}>{msg || "啟用後新預約會自動跳通知到手機"}</p>
+      </div>
+      <button disabled={busy}
+        onClick={async () => {
+          setBusy(true); setMsg("");
+          const r = await enablePush();
+          setBusy(false);
+          if (r.ok) setSubscribed(true);
+          else setMsg("✗ " + (r.error || "啟用失敗"));
+        }}
+        className="bg-rose-500 text-white px-5 py-2.5 rounded-xl text-sm font-bold active:bg-rose-600 disabled:opacity-50 shrink-0 whitespace-nowrap">
+        {busy ? "..." : "開啟"}
+      </button>
     </div>
   );
 }
