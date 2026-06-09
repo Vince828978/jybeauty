@@ -196,19 +196,66 @@ export default function MemberPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 bg-white rounded-3xl border border-gold-light/20 shadow-sm divide-x divide-gold-light/20 overflow-hidden">
-                <div className="py-5 text-center">
-                  <p className="text-2xl font-bold text-dark">{bookings.length}</p>
-                  <p className="text-xs text-text-light mt-1">預約次數</p>
-                </div>
-                <div className="py-5 text-center">
-                  <p className="text-2xl font-bold text-gold">{referralCount}</p>
-                  <p className="text-xs text-text-light mt-1">推薦好友</p>
-                </div>
-                <div className="py-5 text-center">
-                  <p className="text-2xl font-bold text-dark">${cardBalance.toLocaleString()}</p>
-                  <p className="text-xs text-text-light mt-1">卡片餘額</p>
-                </div>
+              {/* 主要 CTA：立即預約 */}
+              <a href="/booking" className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-gold to-gold-light text-white py-5 rounded-2xl text-xl font-bold text-center active:scale-[0.98] transition-transform shadow-lg">
+                ✨ 立即預約療程
+              </a>
+
+              {/* 快捷功能：App 圖塊，所有會員功能一目了然 */}
+              <div className="grid grid-cols-2 gap-3">
+                <button onClick={() => setTab("booking")}
+                  className="flex items-center gap-3 p-4 rounded-2xl bg-gradient-to-br from-sky-50 to-blue-100 border border-white/60 shadow-sm active:scale-[0.97] transition-transform text-left">
+                  <span className="w-11 h-11 shrink-0 rounded-xl bg-white/80 flex items-center justify-center text-2xl">📋</span>
+                  <span className="min-w-0">
+                    <span className="block text-dark font-bold text-sm">我的預約</span>
+                    <span className="block text-text-light text-xs mt-0.5">{bookings.length} 次紀錄</span>
+                  </span>
+                </button>
+
+                <button onClick={() => setTab("cards")}
+                  className="flex items-center gap-3 p-4 rounded-2xl bg-gradient-to-br from-pink-50 to-rose-100 border border-white/60 shadow-sm active:scale-[0.97] transition-transform text-left">
+                  <span className="w-11 h-11 shrink-0 rounded-xl bg-white/80 flex items-center justify-center text-2xl">🎟</span>
+                  <span className="min-w-0">
+                    <span className="block text-dark font-bold text-sm">我的卡券</span>
+                    <span className="block text-text-light text-xs mt-0.5">{coupons.filter(c => !c.used).length} 張可用</span>
+                  </span>
+                </button>
+
+                <button onClick={() => setTab("cards")}
+                  className="flex items-center gap-3 p-4 rounded-2xl bg-gradient-to-br from-amber-50 to-yellow-100 border border-white/60 shadow-sm active:scale-[0.97] transition-transform text-left">
+                  <span className="w-11 h-11 shrink-0 rounded-xl bg-white/80 flex items-center justify-center text-2xl">💳</span>
+                  <span className="min-w-0">
+                    <span className="block text-dark font-bold text-sm">卡片餘額</span>
+                    <span className="block text-gold font-bold text-xs mt-0.5">NT$ {cardBalance.toLocaleString()}</span>
+                  </span>
+                </button>
+
+                <button onClick={() => setTab("me")}
+                  className="flex items-center gap-3 p-4 rounded-2xl bg-gradient-to-br from-emerald-50 to-green-100 border border-white/60 shadow-sm active:scale-[0.97] transition-transform text-left">
+                  <span className="w-11 h-11 shrink-0 rounded-xl bg-white/80 flex items-center justify-center text-2xl">🤝</span>
+                  <span className="min-w-0">
+                    <span className="block text-dark font-bold text-sm">推薦好友</span>
+                    <span className="block text-text-light text-xs mt-0.5">已推薦 {referralCount} 人</span>
+                  </span>
+                </button>
+
+                <a href="/booking"
+                  className="flex items-center gap-3 p-4 rounded-2xl bg-gradient-to-br from-violet-50 to-purple-100 border border-white/60 shadow-sm active:scale-[0.97] transition-transform text-left">
+                  <span className="w-11 h-11 shrink-0 rounded-xl bg-white/80 flex items-center justify-center text-2xl">🛍</span>
+                  <span className="min-w-0">
+                    <span className="block text-dark font-bold text-sm">服務項目</span>
+                    <span className="block text-text-light text-xs mt-0.5">看療程與價格</span>
+                  </span>
+                </a>
+
+                <button onClick={() => setTab("me")}
+                  className="flex items-center gap-3 p-4 rounded-2xl bg-gradient-to-br from-slate-50 to-gray-100 border border-white/60 shadow-sm active:scale-[0.97] transition-transform text-left">
+                  <span className="w-11 h-11 shrink-0 rounded-xl bg-white/80 flex items-center justify-center text-2xl">⚙️</span>
+                  <span className="min-w-0">
+                    <span className="block text-dark font-bold text-sm">帳號設定</span>
+                    <span className="block text-text-light text-xs mt-0.5">資料・密碼</span>
+                  </span>
+                </button>
               </div>
 
               {/* 推薦好友 promo */}
@@ -217,8 +264,6 @@ export default function MemberPage() {
                 <p className="text-text-light text-sm leading-relaxed">把你的電話分享給朋友，朋友預約時填入 →</p>
                 <p className="text-gold font-bold text-lg mt-3">雙方皆享加值項目免費升級</p>
               </div>
-
-              <a href="/booking" className="block w-full bg-gold text-white py-5 rounded-2xl text-xl font-medium text-center active:bg-dark-light shadow-md">立即預約療程</a>
             </>
           )}
 
