@@ -1,5 +1,22 @@
 "use client";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
+
+// 冠 #5621 2026-06-09: 自訂線條圖示（非 emoji），B-1 暖金米版採用
+function Ic({ name, className = "w-[22px] h-[22px]" }: { name: string; className?: string }) {
+  const paths: Record<string, ReactNode> = {
+    book: <><rect x="3.5" y="5" width="17" height="15" rx="2.5" /><path d="M3.5 9.5h17M8 3v4M16 3v4" /><path d="M15.8 13.5l.8 1.6 1.6.8-1.6.8-.8 1.6-.8-1.6-1.6-.8 1.6-.8z" /></>,
+    list: <><rect x="5" y="4" width="14" height="17" rx="2.2" /><path d="M9 3.4h6v2.7H9z" /><path d="M8.6 11h6.8M8.6 14.4h6.8M8.6 17.8h4.4" /></>,
+    ticket: <><path d="M4 8.5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v1a2 2 0 0 0 0 4v1a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-1a2 2 0 0 0 0-4z" /><path d="M14.4 6.6v10.8" /></>,
+    card: <><rect x="3" y="5.5" width="18" height="13" rx="2.4" /><path d="M3 9.8h18M6.5 14.6h4" /></>,
+    refer: <><circle cx="9" cy="8.4" r="2.7" /><path d="M3.8 19c0-2.9 2.3-4.6 5.2-4.6s5.2 1.7 5.2 4.6" /><circle cx="17" cy="7" r="2" /><path d="M16 12.3c2.6-.3 5 1.2 5 4" /></>,
+    bag: <><path d="M6.2 8h11.6l-.9 11.4a1.3 1.3 0 0 1-1.3 1.2H8.4a1.3 1.3 0 0 1-1.3-1.2z" /><path d="M9 8a3 3 0 0 1 6 0" /></>,
+    gear: <><circle cx="12" cy="12" r="3.1" /><path d="M12 3.6v2.2M12 18.2v2.2M3.6 12h2.2M18.2 12h2.2M6.1 6.1l1.5 1.5M16.4 16.4l1.5 1.5M17.9 6.1l-1.5 1.5M7.6 16.4l-1.5 1.5" /></>,
+  };
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round">{paths[name]}</svg>
+  );
+}
 
 interface MemberData {
   name: string; phone: string; address: string; points: number; created_at: string;
@@ -126,12 +143,6 @@ export default function MemberPage() {
       : 100;
     const sectionCard = "bg-white rounded-3xl p-6 border border-gold-light/20 shadow-sm";
     const sectionTitle = "text-dark font-serif-tc text-lg font-bold mb-4 flex items-center gap-2";
-    const tabs = [
-      { k: "home" as const, icon: "👤", label: "會員" },
-      { k: "booking" as const, icon: "📅", label: "預約" },
-      { k: "cards" as const, icon: "🎟", label: "卡券" },
-      { k: "me" as const, icon: "⚙", label: "我的" },
-    ];
     return (
       <div className="min-h-screen bg-warm-bg">
         {/* App 化：固定頂部 bar */}
@@ -140,7 +151,7 @@ export default function MemberPage() {
         </div>
 
         {/* 內容區（底部留空給 tab bar，每頁聚焦不長滾）*/}
-        <div className="max-w-md mx-auto px-5 pt-5 pb-28 space-y-5">
+        <div className="max-w-md mx-auto px-5 pt-5 pb-12 space-y-5">
 
           {/* ===== 會員 ===== */}
           {tab === "home" && (
@@ -196,73 +207,62 @@ export default function MemberPage() {
                 </div>
               </div>
 
-              {/* 主要 CTA：立即預約 */}
-              <a href="/booking" className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-gold to-gold-light text-white py-5 rounded-2xl text-xl font-bold text-center active:scale-[0.98] transition-transform shadow-lg">
-                ✨ 立即預約療程
+              {/* B-1 暖金米：CTA 橫幅領頭 */}
+              <a href="/booking" className="flex items-center gap-3 p-4 rounded-2xl bg-gradient-to-r from-gold to-gold-light text-white shadow-lg active:scale-[0.98] transition-transform">
+                <span className="w-11 h-11 shrink-0 rounded-xl bg-white/25 text-white flex items-center justify-center"><Ic name="book" /></span>
+                <span>
+                  <span className="block font-bold text-base">立即預約療程</span>
+                  <span className="block text-white/85 text-xs mt-0.5">挑時段・到府或工作室</span>
+                </span>
               </a>
 
-              {/* 快捷功能：App 圖塊，所有會員功能一目了然 */}
+              {/* 2 欄：我的預約 / 我的卡券 */}
               <div className="grid grid-cols-2 gap-3">
                 <button onClick={() => setTab("booking")}
-                  className="flex items-center gap-3 p-4 rounded-2xl bg-gradient-to-br from-sky-50 to-blue-100 border border-white/60 shadow-sm active:scale-[0.97] transition-transform text-left">
-                  <span className="w-11 h-11 shrink-0 rounded-xl bg-white/80 flex items-center justify-center text-2xl">📋</span>
+                  className="flex items-center gap-3 p-4 rounded-2xl bg-white border border-gold-light/30 shadow-sm active:scale-[0.97] transition-transform text-left">
+                  <span className="w-11 h-11 shrink-0 rounded-xl bg-gold/10 text-gold flex items-center justify-center"><Ic name="list" /></span>
                   <span className="min-w-0">
                     <span className="block text-dark font-bold text-sm">我的預約</span>
                     <span className="block text-text-light text-xs mt-0.5">{bookings.length} 次紀錄</span>
                   </span>
                 </button>
-
                 <button onClick={() => setTab("cards")}
-                  className="flex items-center gap-3 p-4 rounded-2xl bg-gradient-to-br from-pink-50 to-rose-100 border border-white/60 shadow-sm active:scale-[0.97] transition-transform text-left">
-                  <span className="w-11 h-11 shrink-0 rounded-xl bg-white/80 flex items-center justify-center text-2xl">🎟</span>
+                  className="flex items-center gap-3 p-4 rounded-2xl bg-white border border-gold-light/30 shadow-sm active:scale-[0.97] transition-transform text-left">
+                  <span className="w-11 h-11 shrink-0 rounded-xl bg-gold/10 text-gold flex items-center justify-center"><Ic name="ticket" /></span>
                   <span className="min-w-0">
                     <span className="block text-dark font-bold text-sm">我的卡券</span>
                     <span className="block text-text-light text-xs mt-0.5">{coupons.filter(c => !c.used).length} 張可用</span>
                   </span>
                 </button>
-
-                <button onClick={() => setTab("cards")}
-                  className="flex items-center gap-3 p-4 rounded-2xl bg-gradient-to-br from-amber-50 to-yellow-100 border border-white/60 shadow-sm active:scale-[0.97] transition-transform text-left">
-                  <span className="w-11 h-11 shrink-0 rounded-xl bg-white/80 flex items-center justify-center text-2xl">💳</span>
-                  <span className="min-w-0">
-                    <span className="block text-dark font-bold text-sm">卡片餘額</span>
-                    <span className="block text-gold font-bold text-xs mt-0.5">NT$ {cardBalance.toLocaleString()}</span>
-                  </span>
-                </button>
-
-                <button onClick={() => setTab("me")}
-                  className="flex items-center gap-3 p-4 rounded-2xl bg-gradient-to-br from-emerald-50 to-green-100 border border-white/60 shadow-sm active:scale-[0.97] transition-transform text-left">
-                  <span className="w-11 h-11 shrink-0 rounded-xl bg-white/80 flex items-center justify-center text-2xl">🤝</span>
-                  <span className="min-w-0">
-                    <span className="block text-dark font-bold text-sm">推薦好友</span>
-                    <span className="block text-text-light text-xs mt-0.5">已推薦 {referralCount} 人</span>
-                  </span>
-                </button>
-
-                <a href="/booking"
-                  className="flex items-center gap-3 p-4 rounded-2xl bg-gradient-to-br from-violet-50 to-purple-100 border border-white/60 shadow-sm active:scale-[0.97] transition-transform text-left">
-                  <span className="w-11 h-11 shrink-0 rounded-xl bg-white/80 flex items-center justify-center text-2xl">🛍</span>
-                  <span className="min-w-0">
-                    <span className="block text-dark font-bold text-sm">服務項目</span>
-                    <span className="block text-text-light text-xs mt-0.5">看療程與價格</span>
-                  </span>
-                </a>
-
-                <button onClick={() => setTab("me")}
-                  className="flex items-center gap-3 p-4 rounded-2xl bg-gradient-to-br from-slate-50 to-gray-100 border border-white/60 shadow-sm active:scale-[0.97] transition-transform text-left">
-                  <span className="w-11 h-11 shrink-0 rounded-xl bg-white/80 flex items-center justify-center text-2xl">⚙️</span>
-                  <span className="min-w-0">
-                    <span className="block text-dark font-bold text-sm">帳號設定</span>
-                    <span className="block text-text-light text-xs mt-0.5">資料・密碼</span>
-                  </span>
-                </button>
               </div>
 
-              {/* 推薦好友 promo */}
-              <div className="rounded-3xl p-6 bg-gradient-to-br from-gold/10 to-pink-50 border border-gold-light/20 shadow-sm">
-                <p className={sectionTitle}>🤝 推薦好友，雙方都賺</p>
-                <p className="text-text-light text-sm leading-relaxed">把你的電話分享給朋友，朋友預約時填入 →</p>
-                <p className="text-gold font-bold text-lg mt-3">雙方皆享加值項目免費升級</p>
+              {/* 整排：卡片餘額 */}
+              <button onClick={() => setTab("cards")}
+                className="flex items-center gap-3 p-4 rounded-2xl bg-white border border-gold-light/30 shadow-sm active:scale-[0.97] transition-transform text-left w-full">
+                <span className="w-11 h-11 shrink-0 rounded-xl bg-gold/10 text-gold flex items-center justify-center"><Ic name="card" /></span>
+                <span className="min-w-0">
+                  <span className="block text-dark font-bold text-sm">卡片餘額　<span className="text-gold">NT$ {cardBalance.toLocaleString()}</span></span>
+                  <span className="block text-text-light text-xs mt-0.5">輸入兌換碼可儲值</span>
+                </span>
+              </button>
+
+              {/* 3 欄：推薦 / 服務 / 設定 */}
+              <div className="grid grid-cols-3 gap-3">
+                <button onClick={() => setTab("me")}
+                  className="flex flex-col items-start gap-2 p-3 rounded-2xl bg-white border border-gold-light/30 shadow-sm active:scale-[0.97] transition-transform text-left">
+                  <span className="w-10 h-10 rounded-xl bg-gold/10 text-gold flex items-center justify-center"><Ic name="refer" /></span>
+                  <span className="text-dark font-bold text-xs">推薦好友</span>
+                </button>
+                <a href="/booking"
+                  className="flex flex-col items-start gap-2 p-3 rounded-2xl bg-white border border-gold-light/30 shadow-sm active:scale-[0.97] transition-transform text-left">
+                  <span className="w-10 h-10 rounded-xl bg-gold/10 text-gold flex items-center justify-center"><Ic name="bag" /></span>
+                  <span className="text-dark font-bold text-xs">服務項目</span>
+                </a>
+                <button onClick={() => setTab("me")}
+                  className="flex flex-col items-start gap-2 p-3 rounded-2xl bg-white border border-gold-light/30 shadow-sm active:scale-[0.97] transition-transform text-left">
+                  <span className="w-10 h-10 rounded-xl bg-gold/10 text-gold flex items-center justify-center"><Ic name="gear" /></span>
+                  <span className="text-dark font-bold text-xs">帳號設定</span>
+                </button>
               </div>
             </>
           )}
@@ -270,6 +270,9 @@ export default function MemberPage() {
           {/* ===== 預約 ===== */}
           {tab === "booking" && (
             <>
+              <button onClick={() => setTab("home")} className="flex items-center gap-1 text-text-light text-sm active:text-gold">
+                <span className="text-xl leading-none">‹</span> 返回會員
+              </button>
               <div className={sectionCard}>
                 <div className="flex items-baseline justify-between mb-4">
                   <h3 className={sectionTitle.replace("mb-4", "mb-0")}>📋 預約紀錄</h3>
@@ -305,6 +308,9 @@ export default function MemberPage() {
           {/* ===== 卡券 ===== */}
           {tab === "cards" && (
             <>
+              <button onClick={() => setTab("home")} className="flex items-center gap-1 text-text-light text-sm active:text-gold">
+                <span className="text-xl leading-none">‹</span> 返回會員
+              </button>
               <div className={sectionCard}>
                 <div className="flex justify-between items-center mb-4">
                   <p className={sectionTitle.replace("mb-4", "mb-0")}>💳 儲值卡餘額</p>
@@ -365,6 +371,9 @@ export default function MemberPage() {
           {/* ===== 我的 ===== */}
           {tab === "me" && (
             <>
+              <button onClick={() => setTab("home")} className="flex items-center gap-1 text-text-light text-sm active:text-gold">
+                <span className="text-xl leading-none">‹</span> 返回會員
+              </button>
               <div className={sectionCard}>
                 <p className="text-gold text-xs tracking-widest mb-1">MEMBER</p>
                 <p className="text-dark text-2xl font-bold">{member.name}</p>
@@ -415,19 +424,6 @@ export default function MemberPage() {
             </>
           )}
         </div>
-
-        {/* App 化核心：固定底部 tab bar */}
-        <nav className="fixed bottom-0 inset-x-0 z-20 max-w-md mx-auto bg-white/95 backdrop-blur border-t border-gold-light/30 pb-[env(safe-area-inset-bottom)]">
-          <div className="grid grid-cols-4">
-            {tabs.map((t) => (
-              <button key={t.k} onClick={() => setTab(t.k)}
-                className={`flex flex-col items-center gap-0.5 py-2.5 transition-colors ${tab === t.k ? "text-gold" : "text-text-light"}`}>
-                <span className="text-xl leading-none">{t.icon}</span>
-                <span className="text-[11px] font-medium">{t.label}</span>
-              </button>
-            ))}
-          </div>
-        </nav>
       </div>
     );
   }
