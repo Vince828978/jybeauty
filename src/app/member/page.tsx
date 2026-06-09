@@ -40,6 +40,8 @@ export default function MemberPage() {
   // 冠 #4456: 修改密碼 state
   const [pwOld, setPwOld] = useState(""); const [pwNew, setPwNew] = useState(""); const [pwConfirm, setPwConfirm] = useState("");
   const [pwMsg, setPwMsg] = useState("");
+  // 冠 2026-06-09: App 化 — 底部分頁，不再一長串流水
+  const [tab, setTab] = useState<"home" | "booking" | "cards" | "me">("home");
 
   const handleLogin = async () => {
     setError("");
@@ -124,223 +126,263 @@ export default function MemberPage() {
       : 100;
     const sectionCard = "bg-white rounded-3xl p-6 border border-gold-light/20 shadow-sm";
     const sectionTitle = "text-dark font-serif-tc text-lg font-bold mb-4 flex items-center gap-2";
+    const tabs = [
+      { k: "home" as const, icon: "👤", label: "會員" },
+      { k: "booking" as const, icon: "📅", label: "預約" },
+      { k: "cards" as const, icon: "🎟", label: "卡券" },
+      { k: "me" as const, icon: "⚙", label: "我的" },
+    ];
     return (
-      <div className="min-h-screen bg-warm-bg pb-16">
-        {/* sticky 精簡 header */}
-        <div className="bg-white/85 backdrop-blur border-b border-gold-light/30 px-6 py-4 text-center sticky top-0 z-10">
-          <p className="font-serif-tc text-xl font-bold text-dark"><span className="text-gold">JY</span> Beauty</p>
+      <div className="min-h-screen bg-warm-bg">
+        {/* App 化：固定頂部 bar */}
+        <div className="bg-white/90 backdrop-blur border-b border-gold-light/30 px-6 py-4 text-center sticky top-0 z-20">
+          <p className="font-serif-tc text-lg font-bold text-dark"><span className="text-gold">JY</span> Beauty</p>
         </div>
 
-        <div className="max-w-md mx-auto px-5 pt-6 space-y-5">
-          {/* ── Hero 會員卡：頭像/姓名 + 等級 + 進度，一個強焦點 ── */}
-          <div className={`relative rounded-[28px] p-7 bg-gradient-to-br ${heroBg} shadow-xl overflow-hidden`}>
-            <div className="absolute -right-10 -top-10 w-36 h-36 rounded-full bg-white/10" />
-            <div className="absolute right-6 top-16 w-20 h-20 rounded-full bg-white/10" />
-            <div className="relative">
-              <div className="flex items-start justify-between gap-4">
-                <div className="min-w-0">
-                  <p className="text-[11px] tracking-[0.35em] opacity-70 mb-1">MEMBER</p>
-                  <p className="text-3xl font-bold leading-tight truncate">{member.name}</p>
-                  <p className="text-sm opacity-85 mt-1.5">{member.phone}</p>
-                </div>
-                <div className="text-right shrink-0">
-                  <span className="inline-block text-xs px-3 py-1.5 rounded-full bg-white/20 backdrop-blur font-medium whitespace-nowrap">
-                    {tierInfo?.tier_config ? `${tierInfo.tier_config.emoji} ${tierInfo.tier_config.label}` : "🥉 尚未升級"}
-                  </span>
-                  {tierInfo?.quarter?.label && <p className="text-[10px] opacity-60 mt-2">{tierInfo.quarter.label}</p>}
-                </div>
-              </div>
+        {/* 內容區（底部留空給 tab bar，每頁聚焦不長滾）*/}
+        <div className="max-w-md mx-auto px-5 pt-5 pb-28 space-y-5">
 
-              {tierInfo && (
-                <div className="mt-7">
-                  <div className="flex items-baseline justify-between mb-2">
-                    <span className="text-xs opacity-75">本季消費</span>
-                    <span className="text-xl font-bold">NT$ {tierInfo.quarter_spent.toLocaleString()}</span>
-                  </div>
-                  {tierInfo.next_tier_config && tierInfo.next_tier_remaining > 0 ? (
-                    <>
-                      <div className="h-2 rounded-full bg-white/25 overflow-hidden">
-                        <div className="h-full bg-white/95 rounded-full transition-all" style={{ width: `${progressPct}%` }} />
-                      </div>
-                      <p className="text-[11px] opacity-85 mt-2">
-                        再 NT$ {tierInfo.next_tier_remaining.toLocaleString()} 升 {tierInfo.next_tier_config.emoji} {tierInfo.next_tier_config.label}
-                      </p>
-                    </>
-                  ) : (
-                    tierInfo.tier_config && (
-                      <p className="text-[11px] opacity-85">
-                        本季享 {tierInfo.tier_config.discount === 1 ? "無折扣" : `${(tierInfo.tier_config.discount * 10).toFixed(1)} 折`}
-                      </p>
-                    )
-                  )}
-                  {tierInfo.tier_config && tierInfo.tier_config.perks?.length > 0 && (
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      {tierInfo.tier_config.perks.map((p, i) => (
-                        <span key={i} className="text-[11px] px-2.5 py-1 rounded-full bg-white/15">✓ {p}</span>
-                      ))}
+          {/* ===== 會員 ===== */}
+          {tab === "home" && (
+            <>
+              <div className={`relative rounded-[28px] p-7 bg-gradient-to-br ${heroBg} shadow-xl overflow-hidden`}>
+                <div className="absolute -right-10 -top-10 w-36 h-36 rounded-full bg-white/10" />
+                <div className="absolute right-6 top-16 w-20 h-20 rounded-full bg-white/10" />
+                <div className="relative">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0">
+                      <p className="text-[11px] tracking-[0.35em] opacity-70 mb-1">MEMBER</p>
+                      <p className="text-3xl font-bold leading-tight truncate">{member.name}</p>
+                      <p className="text-sm opacity-85 mt-1.5">{member.phone}</p>
                     </div>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* ── 三欄統計條（一張卡，不再各自分開）── */}
-          <div className="grid grid-cols-3 bg-white rounded-3xl border border-gold-light/20 shadow-sm divide-x divide-gold-light/20 overflow-hidden">
-            <div className="py-5 text-center">
-              <p className="text-2xl font-bold text-dark">{bookings.length}</p>
-              <p className="text-xs text-text-light mt-1">預約次數</p>
-            </div>
-            <div className="py-5 text-center">
-              <p className="text-2xl font-bold text-gold">{referralCount}</p>
-              <p className="text-xs text-text-light mt-1">推薦好友</p>
-            </div>
-            <div className="py-5 text-center">
-              <p className="text-2xl font-bold text-dark">${cardBalance.toLocaleString()}</p>
-              <p className="text-xs text-text-light mt-1">卡片餘額</p>
-            </div>
-          </div>
-
-          {/* ── 儲值卡 + 兌換碼（精簡）── */}
-          <div className={sectionCard}>
-            <div className="flex justify-between items-center mb-4">
-              <p className={sectionTitle.replace("mb-4", "mb-0")}>💳 儲值卡</p>
-              <a href="/cards" className="text-pink-600 text-sm font-medium">＋ 購買卡</a>
-            </div>
-            <div className="flex gap-2">
-              <input value={redeemCode} onChange={e => setRedeemCode(e.target.value.toUpperCase())}
-                placeholder="輸入 8 碼禮品卡兌換碼" maxLength={8}
-                className="flex-1 px-4 py-3 rounded-xl border border-gold-light/40 font-mono tracking-widest text-center" />
-              <button onClick={async () => {
-                setRedeemMsg("");
-                if (redeemCode.length !== 8) { setRedeemMsg("兌換碼是 8 碼"); return; }
-                const r = await fetch("/api/cards/redeem", { method: "POST", headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ code: redeemCode, phone: member?.phone }) });
-                const d = await r.json();
-                if (d.ok) {
-                  setRedeemMsg(`✅ 入帳 NT$ ${d.added.toLocaleString()}`);
-                  setCardBalance(d.new_balance);
-                  setRedeemCode("");
-                } else {
-                  setRedeemMsg(`❌ ${d.error}`);
-                }
-              }} className="bg-pink-500 text-white px-5 py-3 rounded-xl font-medium shrink-0">兌換</button>
-            </div>
-            {redeemMsg && <p className={`text-sm mt-2 ${redeemMsg.startsWith("✅") ? "text-green-600" : "text-red-600"}`}>{redeemMsg}</p>}
-          </div>
-
-          {/* ── 推薦好友（升級成有插圖感的色塊）── */}
-          <div className="rounded-3xl p-6 bg-gradient-to-br from-gold/10 to-pink-50 border border-gold-light/20 shadow-sm">
-            <p className={sectionTitle}>🤝 推薦好友，雙方都賺</p>
-            <p className="text-text-light text-sm leading-relaxed">把你的電話分享給朋友，朋友預約時填入 →</p>
-            <p className="text-gold font-bold text-lg mt-3">雙方皆享加值項目免費升級</p>
-          </div>
-
-          {/* ── 我的優惠券 ── */}
-          <div className={sectionCard}>
-            <p className={sectionTitle}>🎟 我的優惠券</p>
-            {coupons.length === 0 ? (
-              <p className="text-text-light text-sm py-2">目前沒有優惠券</p>
-            ) : (
-              <div className="space-y-3">
-                {coupons.map((c) => (
-                  <div key={c.id} className={`relative rounded-2xl p-5 border-2 ${c.used ? "border-gray-200 bg-gray-50 opacity-60" : "border-gold/30 bg-gradient-to-r from-gold/5 to-transparent"}`}>
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <p className={`font-bold text-2xl ${c.used ? "text-gray-400 line-through" : "text-gold"}`}>{c.discount_value}% OFF</p>
-                        <p className={`text-sm mt-1 ${c.used ? "text-gray-400" : "text-dark"}`}>{c.description || "折扣優惠券"}</p>
-                      </div>
-                      <span className={`text-xs px-3 py-1.5 rounded-full ${c.used ? "bg-gray-200 text-gray-500" : "bg-gold/10 text-gold"}`}>
-                        {c.used ? "已使用" : "可使用"}
+                    <div className="text-right shrink-0">
+                      <span className="inline-block text-xs px-3 py-1.5 rounded-full bg-white/20 backdrop-blur font-medium whitespace-nowrap">
+                        {tierInfo?.tier_config ? `${tierInfo.tier_config.emoji} ${tierInfo.tier_config.label}` : "🥉 尚未升級"}
                       </span>
-                    </div>
-                    <div className="flex justify-between items-center mt-4">
-                      <p className="text-xs text-text-light">代碼：{c.code}</p>
-                      <p className="text-xs text-text-light">{c.expires_at ? `有效期限 ${c.expires_at.slice(0, 10)}` : "無期限"}</p>
+                      {tierInfo?.quarter?.label && <p className="text-[10px] opacity-60 mt-2">{tierInfo.quarter.label}</p>}
                     </div>
                   </div>
-                ))}
+                  {tierInfo && (
+                    <div className="mt-7">
+                      <div className="flex items-baseline justify-between mb-2">
+                        <span className="text-xs opacity-75">本季消費</span>
+                        <span className="text-xl font-bold">NT$ {tierInfo.quarter_spent.toLocaleString()}</span>
+                      </div>
+                      {tierInfo.next_tier_config && tierInfo.next_tier_remaining > 0 ? (
+                        <>
+                          <div className="h-2 rounded-full bg-white/25 overflow-hidden">
+                            <div className="h-full bg-white/95 rounded-full transition-all" style={{ width: `${progressPct}%` }} />
+                          </div>
+                          <p className="text-[11px] opacity-85 mt-2">
+                            再 NT$ {tierInfo.next_tier_remaining.toLocaleString()} 升 {tierInfo.next_tier_config.emoji} {tierInfo.next_tier_config.label}
+                          </p>
+                        </>
+                      ) : (
+                        tierInfo.tier_config && (
+                          <p className="text-[11px] opacity-85">
+                            本季享 {tierInfo.tier_config.discount === 1 ? "無折扣" : `${(tierInfo.tier_config.discount * 10).toFixed(1)} 折`}
+                          </p>
+                        )
+                      )}
+                      {tierInfo.tier_config && tierInfo.tier_config.perks?.length > 0 && (
+                        <div className="mt-4 flex flex-wrap gap-2">
+                          {tierInfo.tier_config.perks.map((p, i) => (
+                            <span key={i} className="text-[11px] px-2.5 py-1 rounded-full bg-white/15">✓ {p}</span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
-            )}
-          </div>
 
-          {/* 冠 #4456: 推薦好友明細 (可移除測試資料) */}
-          {referrals.length > 0 && (
-            <div className={sectionCard}>
-              <p className={sectionTitle}>🫂 我邀請的好友 ({referrals.length})</p>
-              <div className="space-y-3">
-                {referrals.map((r) => (
-                  <div key={r.id} className="flex justify-between items-center bg-cream/40 rounded-xl p-4 border border-gold-light/10">
-                    <div className="text-left">
-                      <p className="text-dark font-medium text-base">{r.referred_name || "未填姓名"}</p>
-                      <p className="text-text-light text-xs mt-1">{r.referred_phone} · {r.created_at?.slice(0, 10)}</p>
-                    </div>
-                    <button onClick={() => handleDeleteReferral(r.referred_phone)}
-                      className="text-xs text-red-500 px-3 py-2 rounded-lg border border-red-200 active:bg-red-50">
-                      移除
-                    </button>
-                  </div>
-                ))}
+              <div className="grid grid-cols-3 bg-white rounded-3xl border border-gold-light/20 shadow-sm divide-x divide-gold-light/20 overflow-hidden">
+                <div className="py-5 text-center">
+                  <p className="text-2xl font-bold text-dark">{bookings.length}</p>
+                  <p className="text-xs text-text-light mt-1">預約次數</p>
+                </div>
+                <div className="py-5 text-center">
+                  <p className="text-2xl font-bold text-gold">{referralCount}</p>
+                  <p className="text-xs text-text-light mt-1">推薦好友</p>
+                </div>
+                <div className="py-5 text-center">
+                  <p className="text-2xl font-bold text-dark">${cardBalance.toLocaleString()}</p>
+                  <p className="text-xs text-text-light mt-1">卡片餘額</p>
+                </div>
               </div>
-            </div>
+
+              {/* 推薦好友 promo */}
+              <div className="rounded-3xl p-6 bg-gradient-to-br from-gold/10 to-pink-50 border border-gold-light/20 shadow-sm">
+                <p className={sectionTitle}>🤝 推薦好友，雙方都賺</p>
+                <p className="text-text-light text-sm leading-relaxed">把你的電話分享給朋友，朋友預約時填入 →</p>
+                <p className="text-gold font-bold text-lg mt-3">雙方皆享加值項目免費升級</p>
+              </div>
+
+              <a href="/booking" className="block w-full bg-gold text-white py-5 rounded-2xl text-xl font-medium text-center active:bg-dark-light shadow-md">立即預約療程</a>
+            </>
           )}
 
-          {/* 冠 #4456: 預約紀錄 + 累計消費 */}
-          <div className={sectionCard}>
-            <div className="flex items-baseline justify-between mb-4">
-              <h3 className={sectionTitle.replace("mb-4", "mb-0")}>📋 預約紀錄</h3>
-              {bookings.length > 0 && (
-                <div className="text-right">
-                  <p className="text-text-light text-xs">累計消費</p>
-                  <p className="text-gold font-bold text-xl">${totalSpent.toLocaleString()}</p>
+          {/* ===== 預約 ===== */}
+          {tab === "booking" && (
+            <>
+              <div className={sectionCard}>
+                <div className="flex items-baseline justify-between mb-4">
+                  <h3 className={sectionTitle.replace("mb-4", "mb-0")}>📋 預約紀錄</h3>
+                  {bookings.length > 0 && (
+                    <div className="text-right">
+                      <p className="text-text-light text-xs">累計消費</p>
+                      <p className="text-gold font-bold text-xl">${totalSpent.toLocaleString()}</p>
+                    </div>
+                  )}
+                </div>
+                {bookings.length === 0 ? <p className="text-text-light text-sm py-2">尚無預約紀錄</p> :
+                  <div className="space-y-3">
+                    {bookings.map((b) => (
+                      <div key={b.id} className="bg-cream/30 rounded-2xl p-5 border border-gold-light/10 text-left">
+                        <div className="flex justify-between items-center mb-2">
+                          <p className="text-dark font-medium text-base pr-2">{b.package}</p>
+                          <span className={`text-xs px-3 py-1.5 rounded-full shrink-0 ${b.status === "confirmed" ? "bg-green-100 text-green-700" : "bg-gold/10 text-gold"}`}>
+                            {b.status === "confirmed" ? "已確認" : "待確認"}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-baseline">
+                          <p className="text-text-light text-sm">{b.date} {b.time}</p>
+                          <p className="text-gold font-serif-tc font-bold text-lg">${b.total?.toLocaleString()}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>}
+              </div>
+              <a href="/booking" className="block w-full bg-gold text-white py-5 rounded-2xl text-xl font-medium text-center active:bg-dark-light shadow-md">＋ 新預約</a>
+            </>
+          )}
+
+          {/* ===== 卡券 ===== */}
+          {tab === "cards" && (
+            <>
+              <div className={sectionCard}>
+                <div className="flex justify-between items-center mb-4">
+                  <p className={sectionTitle.replace("mb-4", "mb-0")}>💳 儲值卡餘額</p>
+                  <a href="/cards" className="text-pink-600 text-sm font-medium">＋ 購買卡</a>
+                </div>
+                <p className="text-dark text-3xl font-bold mb-4">NT$ {cardBalance.toLocaleString()}</p>
+                <div className="flex gap-2">
+                  <input value={redeemCode} onChange={e => setRedeemCode(e.target.value.toUpperCase())}
+                    placeholder="輸入 8 碼禮品卡兌換碼" maxLength={8}
+                    className="flex-1 px-4 py-3 rounded-xl border border-gold-light/40 font-mono tracking-widest text-center" />
+                  <button onClick={async () => {
+                    setRedeemMsg("");
+                    if (redeemCode.length !== 8) { setRedeemMsg("兌換碼是 8 碼"); return; }
+                    const r = await fetch("/api/cards/redeem", { method: "POST", headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ code: redeemCode, phone: member?.phone }) });
+                    const d = await r.json();
+                    if (d.ok) {
+                      setRedeemMsg(`✅ 入帳 NT$ ${d.added.toLocaleString()}`);
+                      setCardBalance(d.new_balance);
+                      setRedeemCode("");
+                    } else {
+                      setRedeemMsg(`❌ ${d.error}`);
+                    }
+                  }} className="bg-pink-500 text-white px-5 py-3 rounded-xl font-medium shrink-0">兌換</button>
+                </div>
+                {redeemMsg && <p className={`text-sm mt-2 ${redeemMsg.startsWith("✅") ? "text-green-600" : "text-red-600"}`}>{redeemMsg}</p>}
+              </div>
+
+              <div className={sectionCard}>
+                <p className={sectionTitle}>🎟 我的優惠券</p>
+                {coupons.length === 0 ? (
+                  <p className="text-text-light text-sm py-2">目前沒有優惠券</p>
+                ) : (
+                  <div className="space-y-3">
+                    {coupons.map((c) => (
+                      <div key={c.id} className={`relative rounded-2xl p-5 border-2 ${c.used ? "border-gray-200 bg-gray-50 opacity-60" : "border-gold/30 bg-gradient-to-r from-gold/5 to-transparent"}`}>
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <p className={`font-bold text-2xl ${c.used ? "text-gray-400 line-through" : "text-gold"}`}>{c.discount_value}% OFF</p>
+                            <p className={`text-sm mt-1 ${c.used ? "text-gray-400" : "text-dark"}`}>{c.description || "折扣優惠券"}</p>
+                          </div>
+                          <span className={`text-xs px-3 py-1.5 rounded-full ${c.used ? "bg-gray-200 text-gray-500" : "bg-gold/10 text-gold"}`}>
+                            {c.used ? "已使用" : "可使用"}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center mt-4">
+                          <p className="text-xs text-text-light">代碼：{c.code}</p>
+                          <p className="text-xs text-text-light">{c.expires_at ? `有效期限 ${c.expires_at.slice(0, 10)}` : "無期限"}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+
+          {/* ===== 我的 ===== */}
+          {tab === "me" && (
+            <>
+              <div className={sectionCard}>
+                <p className="text-gold text-xs tracking-widest mb-1">MEMBER</p>
+                <p className="text-dark text-2xl font-bold">{member.name}</p>
+                <p className="text-text-light text-sm mt-1">{member.phone}</p>
+                {member.address && <p className="text-text-light text-sm mt-1">{member.address}</p>}
+              </div>
+
+              {referrals.length > 0 && (
+                <div className={sectionCard}>
+                  <p className={sectionTitle}>🫂 我邀請的好友 ({referrals.length})</p>
+                  <div className="space-y-3">
+                    {referrals.map((r) => (
+                      <div key={r.id} className="flex justify-between items-center bg-cream/40 rounded-xl p-4 border border-gold-light/10">
+                        <div className="text-left">
+                          <p className="text-dark font-medium text-base">{r.referred_name || "未填姓名"}</p>
+                          <p className="text-text-light text-xs mt-1">{r.referred_phone} · {r.created_at?.slice(0, 10)}</p>
+                        </div>
+                        <button onClick={() => handleDeleteReferral(r.referred_phone)}
+                          className="text-xs text-red-500 px-3 py-2 rounded-lg border border-red-200 active:bg-red-50">
+                          移除
+                        </button>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
-            </div>
-            {bookings.length === 0 ? <p className="text-text-light text-sm py-2">尚無預約紀錄</p> :
-              <div className="space-y-3">
-                {bookings.map((b) => (
-                  <div key={b.id} className="bg-cream/30 rounded-2xl p-5 border border-gold-light/10 text-left">
-                    <div className="flex justify-between items-center mb-2">
-                      <p className="text-dark font-medium text-base pr-2">{b.package}</p>
-                      <span className={`text-xs px-3 py-1.5 rounded-full shrink-0 ${b.status === "confirmed" ? "bg-green-100 text-green-700" : "bg-gold/10 text-gold"}`}>
-                        {b.status === "confirmed" ? "已確認" : "待確認"}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-baseline">
-                      <p className="text-text-light text-sm">{b.date} {b.time}</p>
-                      <p className="text-gold font-serif-tc font-bold text-lg">${b.total?.toLocaleString()}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>}
-          </div>
 
-          {/* 冠 #4456: 修改密碼 (折疊) */}
-          <details className="bg-white rounded-3xl border border-gold-light/20 shadow-sm overflow-hidden">
-            <summary className="px-6 py-5 cursor-pointer text-dark font-medium flex items-center gap-2" style={{ listStyle: "none" }}>
-              🔒 修改密碼 <span className="text-text-light text-xs ml-auto">點此展開 ▾</span>
-            </summary>
-            <div className="px-6 pb-6 space-y-4">
-              <input type="password" placeholder="原密碼" value={pwOld} onChange={e => setPwOld(e.target.value)}
-                className="w-full px-5 py-4 rounded-xl border-2 border-gold-light/30 text-base focus:outline-none focus:border-gold" />
-              <input type="password" placeholder="新密碼 (至少 4 字)" value={pwNew} onChange={e => setPwNew(e.target.value)}
-                className="w-full px-5 py-4 rounded-xl border-2 border-gold-light/30 text-base focus:outline-none focus:border-gold" />
-              <input type="password" placeholder="再次輸入新密碼" value={pwConfirm} onChange={e => setPwConfirm(e.target.value)}
-                className="w-full px-5 py-4 rounded-xl border-2 border-gold-light/30 text-base focus:outline-none focus:border-gold" />
-              {pwMsg && <p className={`text-sm py-1 ${pwMsg.startsWith("✅") ? "text-green-600" : "text-red-500"}`}>{pwMsg}</p>}
-              <button onClick={handleChangePw}
-                className="w-full bg-gold text-white py-4 rounded-xl text-base font-medium active:bg-dark-light">
-                更新密碼
-              </button>
-            </div>
-          </details>
+              <details className="bg-white rounded-3xl border border-gold-light/20 shadow-sm overflow-hidden">
+                <summary className="px-6 py-5 cursor-pointer text-dark font-medium flex items-center gap-2" style={{ listStyle: "none" }}>
+                  🔒 修改密碼 <span className="text-text-light text-xs ml-auto">點此展開 ▾</span>
+                </summary>
+                <div className="px-6 pb-6 space-y-4">
+                  <input type="password" placeholder="原密碼" value={pwOld} onChange={e => setPwOld(e.target.value)}
+                    className="w-full px-5 py-4 rounded-xl border-2 border-gold-light/30 text-base focus:outline-none focus:border-gold" />
+                  <input type="password" placeholder="新密碼 (至少 4 字)" value={pwNew} onChange={e => setPwNew(e.target.value)}
+                    className="w-full px-5 py-4 rounded-xl border-2 border-gold-light/30 text-base focus:outline-none focus:border-gold" />
+                  <input type="password" placeholder="再次輸入新密碼" value={pwConfirm} onChange={e => setPwConfirm(e.target.value)}
+                    className="w-full px-5 py-4 rounded-xl border-2 border-gold-light/30 text-base focus:outline-none focus:border-gold" />
+                  {pwMsg && <p className={`text-sm py-1 ${pwMsg.startsWith("✅") ? "text-green-600" : "text-red-500"}`}>{pwMsg}</p>}
+                  <button onClick={handleChangePw}
+                    className="w-full bg-gold text-white py-4 rounded-xl text-base font-medium active:bg-dark-light">
+                    更新密碼
+                  </button>
+                </div>
+              </details>
 
-          {/* 底部動作 */}
-          <div className="space-y-3 pt-2">
-            <a href="/booking" className="block w-full bg-gold text-white py-5 rounded-2xl text-xl font-medium text-center active:bg-dark-light shadow-md">預約療程</a>
-            <a href="/" className="block w-full py-3 rounded-2xl text-base text-text-light text-center">回首頁</a>
-          </div>
+              <a href="/" className="block w-full py-4 rounded-2xl text-base text-text-light text-center border border-gold-light/30 bg-white">回首頁</a>
+            </>
+          )}
         </div>
+
+        {/* App 化核心：固定底部 tab bar */}
+        <nav className="fixed bottom-0 inset-x-0 z-20 max-w-md mx-auto bg-white/95 backdrop-blur border-t border-gold-light/30 pb-[env(safe-area-inset-bottom)]">
+          <div className="grid grid-cols-4">
+            {tabs.map((t) => (
+              <button key={t.k} onClick={() => setTab(t.k)}
+                className={`flex flex-col items-center gap-0.5 py-2.5 transition-colors ${tab === t.k ? "text-gold" : "text-text-light"}`}>
+                <span className="text-xl leading-none">{t.icon}</span>
+                <span className="text-[11px] font-medium">{t.label}</span>
+              </button>
+            ))}
+          </div>
+        </nav>
       </div>
     );
   }
