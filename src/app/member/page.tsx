@@ -156,6 +156,8 @@ export default function MemberPage() {
           {/* ===== 會員 ===== */}
           {tab === "home" && (
             <>
+              {/* 冠 #5633 2026-06-09: 整頁撐滿手機高度，功能區平均分布，消除底部留白 */}
+              <div className="flex flex-col gap-4 min-h-[calc(100dvh-128px)]">
               <div className={`relative rounded-[28px] p-7 bg-gradient-to-br ${heroBg} shadow-xl overflow-hidden`}>
                 <div className="absolute -right-10 -top-10 w-36 h-36 rounded-full bg-white/10" />
                 <div className="absolute right-6 top-16 w-20 h-20 rounded-full bg-white/10" />
@@ -216,6 +218,8 @@ export default function MemberPage() {
                 </span>
               </a>
 
+              {/* 功能區：撐滿剩餘高度、平均分布，避免底部一片空白 */}
+              <div className="flex-1 flex flex-col justify-evenly gap-3 pt-1">
               {/* 2 欄：我的預約 / 我的卡券 */}
               <div className="grid grid-cols-2 gap-3">
                 <button onClick={() => setTab("booking")}
@@ -263,6 +267,8 @@ export default function MemberPage() {
                   <span className="w-10 h-10 rounded-xl bg-gold/10 text-gold flex items-center justify-center"><Ic name="gear" /></span>
                   <span className="text-dark font-bold text-xs">帳號設定</span>
                 </button>
+              </div>
+              </div>
               </div>
             </>
           )}
