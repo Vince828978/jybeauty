@@ -193,15 +193,21 @@ export default function MemberPage() {
             <>
               {/* 冠 #5668: 統一 4:3 方塊版（套設計準則）*/}
               <div className="flex flex-col gap-3.5">
-              <div className={`relative rounded-[28px] p-7 bg-gradient-to-br ${heroBg} shadow-xl overflow-hidden`}>
-                <div className="absolute -right-10 -top-10 w-36 h-36 rounded-full bg-white/10" />
-                <div className="absolute right-6 top-16 w-20 h-20 rounded-full bg-white/10" />
+              {/* 冠 #5712: 會員卡做大 + 視覺效果 */}
+              <div className={`relative rounded-[30px] p-8 bg-gradient-to-br ${heroBg} shadow-2xl ring-1 ring-white/15 overflow-hidden`}>
+                <div className="absolute -right-12 -top-12 w-44 h-44 rounded-full bg-white/10" />
+                <div className="absolute right-8 top-20 w-24 h-24 rounded-full bg-white/10" />
+                <div className="absolute -left-12 -bottom-14 w-40 h-40 rounded-full bg-black/5" />
+                {/* 斜向光澤 */}
+                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/15 to-transparent pointer-events-none" />
+                {/* 卡片晶片裝飾 */}
+                <div className="absolute right-8 bottom-7 w-12 h-9 rounded-md bg-gradient-to-br from-white/45 to-white/10 ring-1 ring-white/25 pointer-events-none" />
                 <div className="relative">
                   <div className="flex items-start justify-between gap-4">
                     <div className="min-w-0">
                       <p className="text-[11px] tracking-[0.35em] opacity-70 mb-1">MEMBER</p>
-                      <p className="text-3xl font-bold leading-tight truncate">{member.name}</p>
-                      <p className="text-sm opacity-85 mt-1.5">{member.phone}</p>
+                      <p className="text-4xl font-bold leading-tight truncate drop-shadow-sm">{member.name}</p>
+                      <p className="text-sm opacity-85 mt-2 tracking-wide">{member.phone}</p>
                     </div>
                     <div className="text-right shrink-0">
                       <span className="inline-block text-xs px-3 py-1.5 rounded-full bg-white/20 backdrop-blur font-medium whitespace-nowrap">
@@ -213,8 +219,8 @@ export default function MemberPage() {
                   {tierInfo && (
                     <div className="mt-7">
                       <div className="flex items-baseline justify-between mb-2">
-                        <span className="text-xs opacity-75">本季消費</span>
-                        <span className="text-xl font-bold">NT$ {tierInfo.quarter_spent.toLocaleString()}</span>
+                        <span className="text-xs opacity-75 tracking-wide">本季消費</span>
+                        <span className="text-2xl font-bold drop-shadow-sm">NT$ {tierInfo.quarter_spent.toLocaleString()}</span>
                       </div>
                       {tierInfo.next_tier_config && tierInfo.next_tier_remaining > 0 ? (
                         <>
@@ -245,11 +251,12 @@ export default function MemberPage() {
               </div>
 
               {/* B-1 暖金米：CTA 橫幅領頭 */}
-              <a href="/booking" className="flex items-center gap-4 p-5 rounded-[20px] bg-gradient-to-b from-gold-light to-gold text-white shadow-cta active:translate-y-0.5 transition-transform">
-                <span className="shrink-0 rounded-2xl bg-white/25 text-white flex items-center justify-center" style={{ width: 52, height: 52 }}><Ic name="book" className="w-[30px] h-[30px]" /></span>
-                <span>
-                  <span className="block font-bold text-xl">立即預約療程</span>
-                  <span className="block text-white/85 text-[13px] mt-0.5">挑時段・到府或工作室</span>
+              <a href="/booking" className="relative overflow-hidden flex items-center gap-4 p-6 rounded-[22px] bg-gradient-to-br from-gold-light to-gold text-white shadow-cta ring-1 ring-white/20 active:translate-y-0.5 transition-transform">
+                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent pointer-events-none" />
+                <span className="relative shrink-0 rounded-2xl bg-white/25 text-white flex items-center justify-center" style={{ width: 56, height: 56 }}><Ic name="book" className="w-[32px] h-[32px]" /></span>
+                <span className="relative">
+                  <span className="block font-bold text-2xl">立即預約療程</span>
+                  <span className="block text-white/85 text-sm mt-0.5">挑時段・到府或工作室</span>
                 </span>
               </a>
 
