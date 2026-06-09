@@ -112,131 +112,143 @@ export default function MemberPage() {
   };
 
   if (member) {
+    // 冠 2026-06-09: 會員頁重新設計 — 加入會員卡 Hero + 統計條，減少「流水/密密麻麻」感
+    const totalSpent = bookings.reduce((s, b) => s + (b.total || 0), 0);
+    const heroBg =
+      tierInfo?.tier === "black" ? "from-gray-900 via-gray-800 to-gray-700 text-white" :
+      tierInfo?.tier === "gold" ? "from-amber-300 to-yellow-500 text-amber-950" :
+      tierInfo?.tier === "silver" ? "from-slate-300 to-slate-500 text-slate-900" :
+      "from-[#c2a560] via-[#b3934f] to-[#9c7d40] text-white"; // 尚未升級也給優雅金漸層
+    const progressPct = tierInfo?.next_tier_config
+      ? Math.min(100, Math.max(4, Math.round((tierInfo.quarter_spent / tierInfo.next_tier_config.threshold) * 100)))
+      : 100;
+    const sectionCard = "bg-white rounded-3xl p-6 border border-gold-light/20 shadow-sm";
+    const sectionTitle = "text-dark font-serif-tc text-lg font-bold mb-4 flex items-center gap-2";
     return (
-      // 冠 #4411 2026-05-30: 欄位拉開加大 + 整體左右置中
-      <div className="min-h-screen bg-warm-bg">
-        <div className="bg-white border-b border-gold-light/30 px-6 py-6 text-center">
-          <p className="font-serif-tc text-2xl font-bold text-dark"><span className="text-gold">JY</span> Beauty</p>
-          <p className="text-text-light text-base mt-1">會員中心</p>
+      <div className="min-h-screen bg-warm-bg pb-16">
+        {/* sticky 精簡 header */}
+        <div className="bg-white/85 backdrop-blur border-b border-gold-light/30 px-6 py-4 text-center sticky top-0 z-10">
+          <p className="font-serif-tc text-xl font-bold text-dark"><span className="text-gold">JY</span> Beauty</p>
         </div>
-        <div className="max-w-md mx-auto px-6 py-10 text-center">
-          <div className="bg-white rounded-3xl p-10 border border-gold-light/20 mb-8 shadow-sm">
-            <p className="text-gold text-sm tracking-widest mb-3">MEMBER</p>
-            <p className="font-bold text-dark text-3xl mb-2">{member.name}</p>
-            <p className="text-text-light text-lg">{member.phone}</p>
-            {member.address && <p className="text-text-light text-base mt-2">{member.address}</p>}
-            <div className="grid grid-cols-2 gap-5 mt-8">
-              <div className="bg-cream/50 rounded-2xl p-6">
-                <p className="text-text-light text-sm mb-2">預約次數</p>
-                <p className="text-dark font-bold text-3xl">{bookings.length}</p>
-              </div>
-              <div className="bg-cream/50 rounded-2xl p-6">
-                <p className="text-text-light text-sm mb-2">推薦好友</p>
-                <p className="text-gold font-bold text-3xl">{referralCount}</p>
-              </div>
-            </div>
-          </div>
 
-          {/* 肉包 #5092 2026-06-01: 會員等級卡 */}
-          {tierInfo && (
-            <div className={`rounded-3xl p-8 mb-8 shadow-lg ${
-              tierInfo.tier === "black" ? "bg-gradient-to-br from-gray-900 to-gray-700 text-white" :
-              tierInfo.tier === "gold" ? "bg-gradient-to-br from-amber-300 to-yellow-500 text-amber-950" :
-              tierInfo.tier === "silver" ? "bg-gradient-to-br from-slate-200 to-slate-400 text-slate-800" :
-              "bg-white border border-gold-light/20 text-dark"
-            }`}>
-              <p className={`text-sm tracking-widest mb-3 ${tierInfo.tier === "black" ? "text-amber-300" : "text-current opacity-70"}`}>
-                MEMBER TIER · {tierInfo.quarter.label}
-              </p>
-              {tierInfo.tier_config ? (
-                <>
-                  <p className="text-4xl font-bold mb-2">
-                    {tierInfo.tier_config.emoji} {tierInfo.tier_config.label}
-                  </p>
-                  <p className="text-sm opacity-80 mb-4">
-                    本季享 {tierInfo.tier_config.discount === 1 ? "無折扣" : `${(tierInfo.tier_config.discount * 10).toFixed(1)} 折`}
-                  </p>
-                  <div className="space-y-1 text-xs opacity-90">
-                    {tierInfo.tier_config.perks.map((p, i) => (
-                      <p key={i}>✓ {p}</p>
-                    ))}
+        <div className="max-w-md mx-auto px-5 pt-6 space-y-5">
+          {/* ── Hero 會員卡：頭像/姓名 + 等級 + 進度，一個強焦點 ── */}
+          <div className={`relative rounded-[28px] p-7 bg-gradient-to-br ${heroBg} shadow-xl overflow-hidden`}>
+            <div className="absolute -right-10 -top-10 w-36 h-36 rounded-full bg-white/10" />
+            <div className="absolute right-6 top-16 w-20 h-20 rounded-full bg-white/10" />
+            <div className="relative">
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0">
+                  <p className="text-[11px] tracking-[0.35em] opacity-70 mb-1">MEMBER</p>
+                  <p className="text-3xl font-bold leading-tight truncate">{member.name}</p>
+                  <p className="text-sm opacity-85 mt-1.5">{member.phone}</p>
+                </div>
+                <div className="text-right shrink-0">
+                  <span className="inline-block text-xs px-3 py-1.5 rounded-full bg-white/20 backdrop-blur font-medium whitespace-nowrap">
+                    {tierInfo?.tier_config ? `${tierInfo.tier_config.emoji} ${tierInfo.tier_config.label}` : "🥉 尚未升級"}
+                  </span>
+                  {tierInfo?.quarter?.label && <p className="text-[10px] opacity-60 mt-2">{tierInfo.quarter.label}</p>}
+                </div>
+              </div>
+
+              {tierInfo && (
+                <div className="mt-7">
+                  <div className="flex items-baseline justify-between mb-2">
+                    <span className="text-xs opacity-75">本季消費</span>
+                    <span className="text-xl font-bold">NT$ {tierInfo.quarter_spent.toLocaleString()}</span>
                   </div>
-                  <div className="mt-5 pt-5 border-t border-current opacity-60">
-                    <p className="text-xs">本季消費</p>
-                    <p className="text-xl font-bold">NT$ {tierInfo.quarter_spent.toLocaleString()}</p>
-                    {tierInfo.next_tier_config && tierInfo.next_tier_remaining > 0 && (
-                      <p className="text-xs mt-2 opacity-80">
-                        再消費 NT$ {tierInfo.next_tier_remaining.toLocaleString()} 升 {tierInfo.next_tier_config.emoji} {tierInfo.next_tier_config.label}
+                  {tierInfo.next_tier_config && tierInfo.next_tier_remaining > 0 ? (
+                    <>
+                      <div className="h-2 rounded-full bg-white/25 overflow-hidden">
+                        <div className="h-full bg-white/95 rounded-full transition-all" style={{ width: `${progressPct}%` }} />
+                      </div>
+                      <p className="text-[11px] opacity-85 mt-2">
+                        再 NT$ {tierInfo.next_tier_remaining.toLocaleString()} 升 {tierInfo.next_tier_config.emoji} {tierInfo.next_tier_config.label}
                       </p>
-                    )}
-                  </div>
-                </>
-              ) : (
-                <>
-                  <p className="text-2xl font-bold mb-2">尚未升級</p>
-                  <p className="text-sm opacity-70 mb-4">本季消費 NT$ {tierInfo.quarter_spent.toLocaleString()}</p>
-                  {tierInfo.next_tier_config && (
-                    <p className="text-sm text-gold">
-                      再消費 NT$ {tierInfo.next_tier_remaining.toLocaleString()} 升 {tierInfo.next_tier_config.emoji} {tierInfo.next_tier_config.label}
-                    </p>
+                    </>
+                  ) : (
+                    tierInfo.tier_config && (
+                      <p className="text-[11px] opacity-85">
+                        本季享 {tierInfo.tier_config.discount === 1 ? "無折扣" : `${(tierInfo.tier_config.discount * 10).toFixed(1)} 折`}
+                      </p>
+                    )
                   )}
-                </>
+                  {tierInfo.tier_config && tierInfo.tier_config.perks?.length > 0 && (
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      {tierInfo.tier_config.perks.map((p, i) => (
+                        <span key={i} className="text-[11px] px-2.5 py-1 rounded-full bg-white/15">✓ {p}</span>
+                      ))}
+                    </div>
+                  )}
+                </div>
               )}
             </div>
-          )}
+          </div>
 
-          {/* 肉包 #5100/#5105 2026-06-01: 卡片餘額 + 兌換碼 */}
-          <div className="bg-white rounded-3xl p-8 border border-gold-light/20 mb-8 shadow-sm">
-            <div className="flex justify-between items-baseline mb-4">
-              <p className="text-gold text-sm tracking-widest">💳 卡片餘額</p>
+          {/* ── 三欄統計條（一張卡，不再各自分開）── */}
+          <div className="grid grid-cols-3 bg-white rounded-3xl border border-gold-light/20 shadow-sm divide-x divide-gold-light/20 overflow-hidden">
+            <div className="py-5 text-center">
+              <p className="text-2xl font-bold text-dark">{bookings.length}</p>
+              <p className="text-xs text-text-light mt-1">預約次數</p>
+            </div>
+            <div className="py-5 text-center">
+              <p className="text-2xl font-bold text-gold">{referralCount}</p>
+              <p className="text-xs text-text-light mt-1">推薦好友</p>
+            </div>
+            <div className="py-5 text-center">
+              <p className="text-2xl font-bold text-dark">${cardBalance.toLocaleString()}</p>
+              <p className="text-xs text-text-light mt-1">卡片餘額</p>
+            </div>
+          </div>
+
+          {/* ── 儲值卡 + 兌換碼（精簡）── */}
+          <div className={sectionCard}>
+            <div className="flex justify-between items-center mb-4">
+              <p className={sectionTitle.replace("mb-4", "mb-0")}>💳 儲值卡</p>
               <a href="/cards" className="text-pink-600 text-sm font-medium">＋ 購買卡</a>
             </div>
-            <p className="text-warm-text text-4xl font-bold mb-4">NT$ {cardBalance.toLocaleString()}</p>
-
-            <div className="border-t border-gold-light/30 pt-4">
-              <p className="text-warm-text/70 text-sm mb-3">收到禮品卡兌換碼？輸入這裡：</p>
-              <div className="flex gap-2">
-                <input value={redeemCode} onChange={e => setRedeemCode(e.target.value.toUpperCase())}
-                  placeholder="8 碼兌換碼" maxLength={8}
-                  className="flex-1 px-4 py-3 rounded-xl border border-gold-light/40 font-mono tracking-widest text-center" />
-                <button onClick={async () => {
-                  setRedeemMsg("");
-                  if (redeemCode.length !== 8) { setRedeemMsg("兌換碼是 8 碼"); return; }
-                  const r = await fetch("/api/cards/redeem", { method: "POST", headers: {"Content-Type":"application/json"},
-                    body: JSON.stringify({ code: redeemCode, phone: member?.phone }) });
-                  const d = await r.json();
-                  if (d.ok) {
-                    setRedeemMsg(`✅ 入帳 NT$ ${d.added.toLocaleString()}`);
-                    setCardBalance(d.new_balance);
-                    setRedeemCode("");
-                  } else {
-                    setRedeemMsg(`❌ ${d.error}`);
-                  }
-                }} className="bg-pink-500 text-white px-5 py-3 rounded-xl font-medium">兌換</button>
-              </div>
-              {redeemMsg && <p className={`text-sm mt-2 ${redeemMsg.startsWith("✅") ? "text-green-600" : "text-red-600"}`}>{redeemMsg}</p>}
+            <div className="flex gap-2">
+              <input value={redeemCode} onChange={e => setRedeemCode(e.target.value.toUpperCase())}
+                placeholder="輸入 8 碼禮品卡兌換碼" maxLength={8}
+                className="flex-1 px-4 py-3 rounded-xl border border-gold-light/40 font-mono tracking-widest text-center" />
+              <button onClick={async () => {
+                setRedeemMsg("");
+                if (redeemCode.length !== 8) { setRedeemMsg("兌換碼是 8 碼"); return; }
+                const r = await fetch("/api/cards/redeem", { method: "POST", headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ code: redeemCode, phone: member?.phone }) });
+                const d = await r.json();
+                if (d.ok) {
+                  setRedeemMsg(`✅ 入帳 NT$ ${d.added.toLocaleString()}`);
+                  setCardBalance(d.new_balance);
+                  setRedeemCode("");
+                } else {
+                  setRedeemMsg(`❌ ${d.error}`);
+                }
+              }} className="bg-pink-500 text-white px-5 py-3 rounded-xl font-medium shrink-0">兌換</button>
             </div>
+            {redeemMsg && <p className={`text-sm mt-2 ${redeemMsg.startsWith("✅") ? "text-green-600" : "text-red-600"}`}>{redeemMsg}</p>}
           </div>
 
-          <div className="bg-white rounded-3xl p-8 border border-gold-light/20 mb-8 shadow-sm">
-            <p className="text-gold text-sm tracking-widest mb-4">推薦好友</p>
-            <p className="text-dark text-base mb-3">分享你的電話號碼給朋友</p>
-            <p className="text-dark text-base mb-2">朋友預約時填入你的電話</p>
-            <p className="text-gold font-bold text-xl mt-5">雙方皆享加值項目免費升級</p>
+          {/* ── 推薦好友（升級成有插圖感的色塊）── */}
+          <div className="rounded-3xl p-6 bg-gradient-to-br from-gold/10 to-pink-50 border border-gold-light/20 shadow-sm">
+            <p className={sectionTitle}>🤝 推薦好友，雙方都賺</p>
+            <p className="text-text-light text-sm leading-relaxed">把你的電話分享給朋友，朋友預約時填入 →</p>
+            <p className="text-gold font-bold text-lg mt-3">雙方皆享加值項目免費升級</p>
           </div>
 
-          <div className="bg-white rounded-3xl p-8 border border-gold-light/20 mb-8 shadow-sm">
-            <p className="text-gold text-sm tracking-widest mb-4">🎟 我的優惠券</p>
+          {/* ── 我的優惠券 ── */}
+          <div className={sectionCard}>
+            <p className={sectionTitle}>🎟 我的優惠券</p>
             {coupons.length === 0 ? (
-              <p className="text-text-light text-base py-4">目前沒有優惠券</p>
+              <p className="text-text-light text-sm py-2">目前沒有優惠券</p>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {coupons.map((c) => (
                   <div key={c.id} className={`relative rounded-2xl p-5 border-2 ${c.used ? "border-gray-200 bg-gray-50 opacity-60" : "border-gold/30 bg-gradient-to-r from-gold/5 to-transparent"}`}>
                     <div className="flex justify-between items-start">
                       <div>
                         <p className={`font-bold text-2xl ${c.used ? "text-gray-400 line-through" : "text-gold"}`}>{c.discount_value}% OFF</p>
-                        <p className={`text-base mt-1 ${c.used ? "text-gray-400" : "text-dark"}`}>{c.description || "折扣優惠券"}</p>
+                        <p className={`text-sm mt-1 ${c.used ? "text-gray-400" : "text-dark"}`}>{c.description || "折扣優惠券"}</p>
                       </div>
                       <span className={`text-xs px-3 py-1.5 rounded-full ${c.used ? "bg-gray-200 text-gray-500" : "bg-gold/10 text-gold"}`}>
                         {c.used ? "已使用" : "可使用"}
@@ -244,7 +256,7 @@ export default function MemberPage() {
                     </div>
                     <div className="flex justify-between items-center mt-4">
                       <p className="text-xs text-text-light">代碼：{c.code}</p>
-                      <p className="text-xs text-text-light">{c.expires_at ? `有效期限 ${c.expires_at.slice(0,10)}` : "無期限"}</p>
+                      <p className="text-xs text-text-light">{c.expires_at ? `有效期限 ${c.expires_at.slice(0, 10)}` : "無期限"}</p>
                     </div>
                   </div>
                 ))}
@@ -254,14 +266,14 @@ export default function MemberPage() {
 
           {/* 冠 #4456: 推薦好友明細 (可移除測試資料) */}
           {referrals.length > 0 && (
-            <div className="bg-white rounded-3xl p-8 border border-gold-light/20 mb-8 shadow-sm">
-              <p className="text-gold text-sm tracking-widest mb-4">🤝 我邀請的好友 ({referrals.length})</p>
+            <div className={sectionCard}>
+              <p className={sectionTitle}>🫂 我邀請的好友 ({referrals.length})</p>
               <div className="space-y-3">
                 {referrals.map((r) => (
                   <div key={r.id} className="flex justify-between items-center bg-cream/40 rounded-xl p-4 border border-gold-light/10">
                     <div className="text-left">
                       <p className="text-dark font-medium text-base">{r.referred_name || "未填姓名"}</p>
-                      <p className="text-text-light text-xs mt-1">{r.referred_phone} · {r.created_at?.slice(0,10)}</p>
+                      <p className="text-text-light text-xs mt-1">{r.referred_phone} · {r.created_at?.slice(0, 10)}</p>
                     </div>
                     <button onClick={() => handleDeleteReferral(r.referred_phone)}
                       className="text-xs text-red-500 px-3 py-2 rounded-lg border border-red-200 active:bg-red-50">
@@ -274,46 +286,48 @@ export default function MemberPage() {
           )}
 
           {/* 冠 #4456: 預約紀錄 + 累計消費 */}
-          <div className="bg-white rounded-3xl p-8 border border-gold-light/20 mb-8 shadow-sm">
-            <div className="flex items-baseline justify-between mb-5">
-              <h3 className="font-serif-tc text-xl font-bold text-dark">預約紀錄</h3>
+          <div className={sectionCard}>
+            <div className="flex items-baseline justify-between mb-4">
+              <h3 className={sectionTitle.replace("mb-4", "mb-0")}>📋 預約紀錄</h3>
               {bookings.length > 0 && (
                 <div className="text-right">
                   <p className="text-text-light text-xs">累計消費</p>
-                  <p className="text-gold font-bold text-xl">${bookings.reduce((s,b)=>s+(b.total||0),0).toLocaleString()}</p>
+                  <p className="text-gold font-bold text-xl">${totalSpent.toLocaleString()}</p>
                 </div>
               )}
             </div>
-            {bookings.length === 0 ? <p className="text-text-light text-base py-6">尚無預約紀錄</p> :
-            <div className="space-y-4">
-              {bookings.map((b) => (
-                <div key={b.id} className="bg-cream/30 rounded-2xl p-6 border border-gold-light/10 text-left">
-                  <div className="flex justify-between items-center mb-3">
-                    <p className="text-dark font-medium text-base">{b.package}</p>
-                    <span className={`text-xs px-3 py-1.5 rounded-full ${b.status === "confirmed" ? "bg-green-100 text-green-700" : "bg-gold/10 text-gold"}`}>
-                      {b.status === "confirmed" ? "已確認" : "待確認"}
-                    </span>
+            {bookings.length === 0 ? <p className="text-text-light text-sm py-2">尚無預約紀錄</p> :
+              <div className="space-y-3">
+                {bookings.map((b) => (
+                  <div key={b.id} className="bg-cream/30 rounded-2xl p-5 border border-gold-light/10 text-left">
+                    <div className="flex justify-between items-center mb-2">
+                      <p className="text-dark font-medium text-base pr-2">{b.package}</p>
+                      <span className={`text-xs px-3 py-1.5 rounded-full shrink-0 ${b.status === "confirmed" ? "bg-green-100 text-green-700" : "bg-gold/10 text-gold"}`}>
+                        {b.status === "confirmed" ? "已確認" : "待確認"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-baseline">
+                      <p className="text-text-light text-sm">{b.date} {b.time}</p>
+                      <p className="text-gold font-serif-tc font-bold text-lg">${b.total?.toLocaleString()}</p>
+                    </div>
                   </div>
-                  <p className="text-text-light text-sm mb-2">{b.date} {b.time}</p>
-                  <p className="text-gold font-serif-tc font-bold text-xl">${b.total?.toLocaleString()}</p>
-                </div>
-              ))}
-            </div>}
+                ))}
+              </div>}
           </div>
 
           {/* 冠 #4456: 修改密碼 (折疊) */}
-          <details className="bg-white rounded-3xl border border-gold-light/20 mb-8 shadow-sm overflow-hidden">
-            <summary className="px-8 py-6 cursor-pointer text-gold text-sm tracking-widest font-medium" style={{listStyle:"none"}}>
-              🔒 修改密碼  <span className="text-text-light text-xs ml-2">點此展開</span>
+          <details className="bg-white rounded-3xl border border-gold-light/20 shadow-sm overflow-hidden">
+            <summary className="px-6 py-5 cursor-pointer text-dark font-medium flex items-center gap-2" style={{ listStyle: "none" }}>
+              🔒 修改密碼 <span className="text-text-light text-xs ml-auto">點此展開 ▾</span>
             </summary>
-            <div className="px-8 pb-8 space-y-4">
-              <input type="password" placeholder="原密碼" value={pwOld} onChange={e=>setPwOld(e.target.value)}
+            <div className="px-6 pb-6 space-y-4">
+              <input type="password" placeholder="原密碼" value={pwOld} onChange={e => setPwOld(e.target.value)}
                 className="w-full px-5 py-4 rounded-xl border-2 border-gold-light/30 text-base focus:outline-none focus:border-gold" />
-              <input type="password" placeholder="新密碼 (至少 4 字)" value={pwNew} onChange={e=>setPwNew(e.target.value)}
+              <input type="password" placeholder="新密碼 (至少 4 字)" value={pwNew} onChange={e => setPwNew(e.target.value)}
                 className="w-full px-5 py-4 rounded-xl border-2 border-gold-light/30 text-base focus:outline-none focus:border-gold" />
-              <input type="password" placeholder="再次輸入新密碼" value={pwConfirm} onChange={e=>setPwConfirm(e.target.value)}
+              <input type="password" placeholder="再次輸入新密碼" value={pwConfirm} onChange={e => setPwConfirm(e.target.value)}
                 className="w-full px-5 py-4 rounded-xl border-2 border-gold-light/30 text-base focus:outline-none focus:border-gold" />
-              {pwMsg && <p className={`text-sm py-2 ${pwMsg.startsWith("✅") ? "text-green-600" : "text-red-500"}`}>{pwMsg}</p>}
+              {pwMsg && <p className={`text-sm py-1 ${pwMsg.startsWith("✅") ? "text-green-600" : "text-red-500"}`}>{pwMsg}</p>}
               <button onClick={handleChangePw}
                 className="w-full bg-gold text-white py-4 rounded-xl text-base font-medium active:bg-dark-light">
                 更新密碼
@@ -321,9 +335,10 @@ export default function MemberPage() {
             </div>
           </details>
 
-          <div className="space-y-4">
-            <a href="/booking" className="block w-full bg-gold text-white py-6 rounded-2xl text-xl font-medium text-center active:bg-dark-light shadow-md">預約療程</a>
-            <a href="/" className="block w-full py-4 rounded-2xl text-base text-text-light text-center">回首頁</a>
+          {/* 底部動作 */}
+          <div className="space-y-3 pt-2">
+            <a href="/booking" className="block w-full bg-gold text-white py-5 rounded-2xl text-xl font-medium text-center active:bg-dark-light shadow-md">預約療程</a>
+            <a href="/" className="block w-full py-3 rounded-2xl text-base text-text-light text-center">回首頁</a>
           </div>
         </div>
       </div>
