@@ -219,6 +219,7 @@ type SiteService = {
   category?: string;
   is_active: boolean;
   is_public?: boolean;
+  is_recommended?: boolean;
 };
 
 function PackagesPage() {
@@ -282,16 +283,19 @@ function PackagesPage() {
                   {grouped[cat].map((s) => {
                     const nameAlreadyHasDuration = /\d+\s*(min|分|hr|hour)/i.test(s.name);
                     return (
-                      <div key={s.id} className="border border-gold/30 rounded-2xl p-7 flex flex-col bg-dark/30 text-center">
-                        <h4 className="text-white font-serif-tc text-3xl font-bold mb-2">
-                          {s.name}
-                          {!nameAlreadyHasDuration && (
-                            <span className="text-white/50 text-base font-normal ml-3">{s.duration_min} 分鐘</span>
-                          )}
-                        </h4>
+                      <div key={s.id} className="relative border border-gold/30 rounded-2xl p-7 flex flex-col bg-dark/30 text-center">
+                        {/* 冠 2026-06-10: 推薦旗標 → 右上角金色膠囊 (版本A) */}
+                        {s.is_recommended && (
+                          <span className="absolute top-3 right-3 bg-gradient-to-br from-gold to-gold-light text-dark text-xs font-bold px-2.5 py-0.5 rounded-full tracking-wide shadow-md">★ 推薦</span>
+                        )}
+                        <h4 className="text-white font-serif-tc text-3xl font-bold mb-2">{s.name}</h4>
                         {s.description && <p className="text-white/60 text-sm mb-3">{s.description}</p>}
-                        <div className="mt-auto pt-4">
+                        {/* 冠 2026-06-10: 分鐘數改小字、放金額旁邊 */}
+                        <div className="mt-auto pt-4 flex items-baseline justify-center gap-2">
                           <p className="text-gold font-serif-tc text-2xl font-bold">${s.price.toLocaleString()}</p>
+                          {!nameAlreadyHasDuration && (
+                            <span className="text-white/45 text-[13px] font-normal">{s.duration_min} 分鐘</span>
+                          )}
                         </div>
                       </div>
                     );
