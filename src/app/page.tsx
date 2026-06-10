@@ -284,9 +284,15 @@ function PackagesPage() {
                     const nameAlreadyHasDuration = /\d+\s*(min|分|hr|hour)/i.test(s.name);
                     return (
                       <div key={s.id} className="relative border border-gold/30 rounded-2xl p-7 flex flex-col bg-dark/30 text-center">
-                        {/* 冠 2026-06-10: 推薦旗標 → 右上角金色膠囊 (版本A) */}
+                        {/* 冠 2026-06-10「用這個」: 👍 推薦緞帶＋五星貼紙 (右上角微傾) */}
                         {s.is_recommended && (
-                          <span className="absolute top-3 right-3 bg-gradient-to-br from-gold to-gold-light text-dark text-xs font-bold px-2.5 py-0.5 rounded-full tracking-wide shadow-md">★ 推薦</span>
+                          <span className="absolute" style={{top:"-12px", right:"-4px", display:"flex", alignItems:"center", gap:"5px", background:"#FBF3DF", padding:"6px 11px 6px 8px", borderRadius:"24px", boxShadow:"0 4px 12px rgba(0,0,0,.4)", transform:"rotate(-4deg)", zIndex:10}}>
+                            <span style={{fontSize:"20px", lineHeight:1}}>👍</span>
+                            <span style={{display:"flex", flexDirection:"column", alignItems:"flex-start", lineHeight:1}}>
+                              <span style={{color:"#D8342A", fontWeight:900, fontSize:"16px", letterSpacing:".04em"}}>推薦</span>
+                              <span style={{color:"#F0A92B", fontSize:"9px", marginTop:"2px", letterSpacing:"1px"}}>★★★★★</span>
+                            </span>
+                          </span>
                         )}
                         <h4 className="text-white font-serif-tc text-3xl font-bold mb-2">{s.name}</h4>
                         {s.description && <p className="text-white/60 text-sm mb-3">{s.description}</p>}
